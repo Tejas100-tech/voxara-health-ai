@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Voice Biomarker Health Monitor"
+version = "1.0.0"
+id = "artifacts/voice-biomarker-monitor"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23945
+
+[services.development]
+run = "pnpm --filter @workspace/voice-biomarker-monitor run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/voice-biomarker-monitor", "run", "build" ]
+publicDir = "artifacts/voice-biomarker-monitor/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23945"
+BASE_PATH = "/"

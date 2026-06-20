@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clinical Sanctuary | Patient Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Inter:wght@100..900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary": "#ffffff",
+                    "surface": "#f8f9fa",
+                    "on-surface": "#191c1d",
+                    "error-container": "#ffdad6",
+                    "surface-variant": "#e1e3e4",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed": "#00201f",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#f8f9fa",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-container": "#edeeef",
+                    "background": "#f8f9fa",
+                    "tertiary-fixed-dim": "#83d3e1",
+                    "on-background": "#191c1d",
+                    "secondary-fixed-dim": "#8fd2d0",
+                    "tertiary": "#004e58",
+                    "outline": "#707880",
+                    "surface-container-highest": "#e1e3e4",
+                    "secondary": "#206867",
+                    "secondary-container": "#a8ece9",
+                    "on-primary-fixed": "#001e30",
+                    "error": "#ba1a1a",
+                    "on-surface-variant": "#40484f",
+                    "primary-fixed": "#cbe6ff",
+                    "on-primary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "surface-container-low": "#f3f4f5",
+                    "primary-container": "#006494",
+                    "on-primary-fixed-variant": "#004b71",
+                    "on-error": "#ffffff",
+                    "surface-container-high": "#e7e8e9",
+                    "on-secondary-fixed-variant": "#00504e",
+                    "primary": "#004b71",
+                    "surface-dim": "#d9dadb",
+                    "outline-variant": "#c0c7d0",
+                    "inverse-surface": "#2e3132",
+                    "primary-fixed-dim": "#8ecdff",
+                    "tertiary-fixed": "#9feffe",
+                    "on-tertiary-fixed": "#001f24",
+                    "on-tertiary-fixed-variant": "#004f59",
+                    "on-tertiary-container": "#95e5f4",
+                    "secondary-fixed": "#abefec",
+                    "on-secondary-container": "#266d6b",
+                    "on-primary-container": "#b6ddff",
+                    "surface-tint": "#006494",
+                    "tertiary-container": "#006875",
+                    "inverse-primary": "#8ecdff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-manrope { font-family: 'Manrope', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- SideNavBar -->
+<nav class="h-screen w-64 fixed left-0 top-0 bg-slate-50 dark:bg-slate-950 flex flex-col py-6 border-r border-slate-200/20 font-manrope text-sm font-semibold tracking-wide">
+<div class="px-6 mb-10 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">pulse_alert</span>
+</div>
+<div>
+<h2 class="text-lg font-black text-sky-900 dark:text-sky-50 leading-none">Precision Care</h2>
+<p class="text-[10px] uppercase tracking-widest text-slate-400">Clinical Sanctuary</p>
+</div>
+</div>
+<div class="flex-1 space-y-1">
+<a class="bg-white dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded-xl px-4 py-3 mx-2 flex items-center gap-3 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="text-slate-500 dark:text-slate-400 px-4 py-3 mx-2 flex items-center gap-3 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">mic</span>
+                My Recordings
+            </a>
+<a class="text-slate-500 dark:text-slate-400 px-4 py-3 mx-2 flex items-center gap-3 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+                Trends
+            </a>
+<a class="text-slate-500 dark:text-slate-400 px-4 py-3 mx-2 flex items-center gap-3 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">insights</span>
+                Insights
+            </a>
+<a class="text-slate-500 dark:text-slate-400 px-4 py-3 mx-2 flex items-center gap-3 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+</div>
+<div class="mt-auto px-4">
+<button class="w-full py-4 px-4 bg-gradient-to-r from-primary to-primary-container text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95 duration-150">
+<span class="material-symbols-outlined">add_circle</span>
+                New Recording
+            </button>
+<div class="mt-6 border-t border-slate-200/10 pt-4">
+<a class="text-slate-500 dark:text-slate-400 px-4 py-3 flex items-center gap-3 hover:bg-slate-200/50 rounded-xl transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+                    Help Center
+                </a>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl flex justify-between items-center px-8 py-3 z-50 shadow-sm dark:shadow-none">
+<div class="flex items-center gap-8">
+<h1 class="text-xl font-bold tracking-tight text-sky-900 dark:text-sky-50 font-manrope">Clinical Sanctuary</h1>
+<div class="hidden md:flex items-center bg-slate-100 dark:bg-slate-800 rounded-full px-4 py-1.5 gap-2">
+<span class="material-symbols-outlined text-slate-400 text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48 text-slate-600" placeholder="Search insights..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-slate-200">
+<img alt="Patient Profile Avatar" data-alt="Close-up portrait of a mature male patient with a warm smile in a brightly lit medical office" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_ZFWjnB4Fm8L5jzHXKhE-LTHCMCKB2gYiB1ktHH9QMXn_0n5tkd5ZPkK_R62E45Ym0FhpbKtZTnMFNtowKZ6oF_xNufYPKMJL822lnuaS3Q2wTc7xEB00ujB0ux_MToKZkwmyCxtwsblR6GY0AAo74VVHJYCYrVtoedjtkissBSTGA6zJa-HRk8UeF6xfdeyyqENZ0JGIvVleQrijGicFTtTW3Kwr4i3YGC0g1MeFqxAQcHN-Tkk989ufW1WI_eQfAZ59XAl6Adw"/>
+</div>
+</div>
+</header>
+<!-- Dashboard Canvas -->
+<div class="p-8 max-w-7xl mx-auto space-y-12">
+<!-- Hero CTA Section -->
+<div class="bg-amber-50 border border-amber-200 rounded-[1.5rem] p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4 animate-pulse-slow shadow-sm">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+<span class="material-symbols-outlined text-3xl">warning</span>
+</div>
+<div>
+<h4 class="text-lg font-bold text-amber-900 font-manrope">Active Alert</h4>
+<p class="text-amber-800 text-sm">Significant change in speech rate detected in your most recent recording.</p>
+</div>
+</div>
+<div class="flex items-center gap-3 w-full md:w-auto">
+<button class="flex-1 md:flex-none px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm shadow-amber-200">
+      View Analysis
+    </button>
+<button class="flex-1 md:flex-none px-6 py-2.5 bg-white hover:bg-amber-50 text-amber-700 text-sm font-bold border border-amber-200 rounded-xl transition-colors">
+      Contact Doctor
+    </button>
+</div>
+</div><section class="relative overflow-hidden rounded-[2rem] bg-slate-900 text-white p-10 flex flex-col md:flex-row items-center justify-between gap-8">
+<div class="relative z-10 space-y-4 max-w-lg">
+<div class="inline-flex items-center px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-semibold tracking-wider uppercase text-sky-300">
+                        Daily Requirement
+                    </div>
+<h2 class="text-4xl md:text-5xl font-extrabold font-manrope leading-tight">Your voice is your health's <span class="text-sky-400">signature.</span></h2>
+<p class="text-slate-400 text-lg">Consistent daily samples allow our AI to detect subtle shifts in your vocal biomarkers with 98% accuracy.</p>
+</div>
+<div class="relative z-10">
+<button class="group flex flex-col items-center justify-center w-48 h-48 rounded-full bg-primary hover:bg-primary-container transition-all duration-300 shadow-2xl shadow-primary/40 active:scale-90">
+<span class="material-symbols-outlined text-5xl mb-2 group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 1;">mic</span>
+<span class="font-bold tracking-tight text-center px-4 leading-tight">Record Daily<br/>Sample</span>
+</button>
+</div>
+<!-- Background visual -->
+<div class="absolute top-0 right-0 w-full h-full opacity-20 pointer-events-none">
+<img class="w-full h-full object-cover" data-alt="Abstract soft wave patterns in deep blue and teal colors representing sound waves and data flow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCf-5I_M1L1Xwg91WCiKyVd1E5OZri-2R6IHIAqKOI69W7-F-Gk2wN1E27ttbQSYY0gfm9fhnjnFdFYjs9naxnksjYubGvWbbf0lcmgJXZ2VSDENphYG6iLAxBm82PQ7XZjt8m3PAtwlPI1ija9xn4CRBIAJauWAoYOlnfBb6swagZoTxZVPuCb3f-SC8Hz7Xn4zDXhiPynB8tQ-pbrZE9oU_jM0XPCSvfN94uZCipeYK2299NmbCv2X8MqWOwYEB_KdGFR6fuAFKk"/>
+</div>
+</section>
+<!-- Status Cards Row (Bento Style) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Health Score -->
+<div class="bg-surface-container-lowest p-8 rounded-[1.5rem] flex flex-col justify-between min-h-[220px] shadow-sm group">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-primary text-3xl">favorite</span>
+<span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Live Pulse</span>
+</div>
+<div>
+<div class="flex items-baseline gap-1">
+<span class="text-6xl font-black font-manrope text-sky-900">92</span>
+<span class="text-2xl font-bold text-slate-400">%</span>
+</div>
+<p class="text-sm font-medium text-slate-600 mt-2">Overall Health Score</p>
+</div>
+<div class="mt-4 h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 92%"></div>
+</div>
+</div>
+<!-- Latest Analysis -->
+<div class="bg-secondary-container/30 p-8 rounded-[1.5rem] flex flex-col justify-between min-h-[220px] shadow-sm">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-secondary text-3xl">analytics</span>
+<span class="text-xs font-bold text-on-secondary-container uppercase tracking-widest">Last 24h</span>
+</div>
+<div class="space-y-2">
+<p class="text-sm font-semibold text-on-secondary-container">Vocal Clarity Stable</p>
+<p class="text-xs text-secondary/80 leading-relaxed">Your last recording shows 0.4% improvement in resonance. Keep maintaining hydration levels.</p>
+</div>
+<div class="mt-4">
+<button class="text-xs font-bold text-secondary flex items-center gap-1 hover:gap-2 transition-all">
+                            VIEW FULL REPORT <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Medication Adherence -->
+<div class="bg-surface-container-lowest p-8 rounded-[1.5rem] flex flex-col justify-between min-h-[220px] shadow-sm">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-tertiary text-3xl">medication</span>
+<span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Schedule</span>
+</div>
+<div>
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full border-4 border-tertiary-fixed border-t-tertiary flex items-center justify-center">
+<span class="text-sm font-bold text-tertiary">3/4</span>
+</div>
+<div class="space-y-0.5">
+<p class="text-sm font-bold text-sky-900">Adherence</p>
+<p class="text-xs text-slate-500">1 dose remaining today</p>
+</div>
+</div>
+</div>
+<div class="mt-4 grid grid-cols-4 gap-2">
+<div class="h-8 bg-tertiary rounded-lg"></div>
+<div class="h-8 bg-tertiary rounded-lg"></div>
+<div class="h-8 bg-tertiary rounded-lg"></div>
+<div class="h-8 bg-slate-100 rounded-lg"></div>
+</div>
+</div>
+</section>
+<!-- Daily Completion Calendar / Streak -->
+<div class="bg-amber-50 border border-amber-200 rounded-[1.5rem] p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4 animate-pulse-slow shadow-sm">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+<span class="material-symbols-outlined text-3xl">warning</span>
+</div>
+<div>
+<h4 class="text-lg font-bold text-amber-900 font-manrope">Active Alert</h4>
+<p class="text-amber-800 text-sm">Significant change in speech rate detected in your most recent recording.</p>
+</div>
+</div>
+<div class="flex items-center gap-3 w-full md:w-auto">
+<button class="flex-1 md:flex-none px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm shadow-amber-200">
+      View Analysis
+    </button>
+<button class="flex-1 md:flex-none px-6 py-2.5 bg-white hover:bg-amber-50 text-amber-700 text-sm font-bold border border-amber-200 rounded-xl transition-colors">
+      Contact Doctor
+    </button>
+</div>
+</div><section class="bg-surface-container-lowest rounded-[2rem] p-10 shadow-sm relative overflow-hidden">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+<div>
+<h3 class="text-2xl font-bold font-manrope text-sky-900">Recording Streak</h3>
+<p class="text-slate-500">You've successfully recorded samples for 14 consecutive days.</p>
+</div>
+<div class="flex items-center gap-3 bg-slate-50 px-6 py-3 rounded-2xl border border-slate-100">
+<span class="material-symbols-outlined text-orange-500 text-3xl" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<div>
+<p class="text-xs font-bold text-slate-400 uppercase leading-none">Current Streak</p>
+<p class="text-xl font-black text-sky-900">14 Days</p>
+</div>
+</div>
+</div>
+<!-- Calendar Visualization -->
+<div class="grid grid-cols-7 gap-4">
+<!-- Day Labels -->
+<div class="text-center text-xs font-bold text-slate-400 uppercase mb-2">Mon</div>
+<div class="text-center text-xs font-bold text-slate-400 uppercase mb-2">Tue</div>
+<div class="text-center text-xs font-bold text-slate-400 uppercase mb-2">Wed</div>
+<div class="text-center text-xs font-bold text-slate-400 uppercase mb-2">Thu</div>
+<div class="text-center text-xs font-bold text-slate-400 uppercase mb-2">Fri</div>
+<div class="text-center text-xs font-bold text-slate-400 uppercase mb-2">Sat</div>
+<div class="text-center text-xs font-bold text-slate-400 uppercase mb-2">Sun</div>
+<!-- Week 1 - Partial -->
+<div class="h-24 bg-slate-50 rounded-2xl flex items-center justify-center opacity-40 text-slate-300">28</div>
+<div class="h-24 bg-slate-50 rounded-2xl flex items-center justify-center opacity-40 text-slate-300">29</div>
+<div class="h-24 bg-slate-50 rounded-2xl flex items-center justify-center opacity-40 text-slate-300">30</div>
+<div class="h-24 bg-primary/10 border-2 border-primary/20 rounded-2xl flex flex-col items-center justify-center text-primary group hover:bg-primary transition-colors hover:text-white cursor-pointer relative">
+<span class="text-xs font-bold absolute top-3 left-4">1</span>
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div class="h-24 bg-primary/10 border-2 border-primary/20 rounded-2xl flex flex-col items-center justify-center text-primary relative">
+<span class="text-xs font-bold absolute top-3 left-4">2</span>
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div class="h-24 bg-primary/10 border-2 border-primary/20 rounded-2xl flex flex-col items-center justify-center text-primary relative">
+<span class="text-xs font-bold absolute top-3 left-4">3</span>
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div class="h-24 bg-primary/10 border-2 border-primary/20 rounded-2xl flex flex-col items-center justify-center text-primary relative">
+<span class="text-xs font-bold absolute top-3 left-4">4</span>
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<!-- Week 2 -->
+<div class="h-24 bg-primary/10 border-2 border-primary/20 rounded-2xl flex flex-col items-center justify-center text-primary relative">
+<span class="text-xs font-bold absolute top-3 left-4">5</span>
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div class="h-24 bg-primary/10 border-2 border-primary/20 rounded-2xl flex flex-col items-center justify-center text-primary relative">
+<span class="text-xs font-bold absolute top-3 left-4">6</span>
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div class="h-24 bg-primary/10 border-2 border-primary/20 rounded-2xl flex flex-col items-center justify-center text-primary relative">
+<span class="text-xs font-bold absolute top-3 left-4">7</span>
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div class="h-24 bg-primary/10 border-2 border-primary/20 rounded-2xl flex flex-col items-center justify-center text-primary relative">
+<span class="text-xs font-bold absolute top-3 left-4">8</span>
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div class="h-24 bg-primary/10 border-2 border-primary/20 rounded-2xl flex flex-col items-center justify-center text-primary relative">
+<span class="text-xs font-bold absolute top-3 left-4">9</span>
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div class="h-24 bg-primary/10 border-2 border-primary/20 rounded-2xl flex flex-col items-center justify-center text-primary relative">
+<span class="text-xs font-bold absolute top-3 left-4">10</span>
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div class="h-24 bg-primary/10 border-2 border-primary/20 rounded-2xl flex flex-col items-center justify-center text-primary relative">
+<span class="text-xs font-bold absolute top-3 left-4">11</span>
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<!-- Current Day -->
+<div class="h-24 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-slate-400 relative">
+<span class="text-xs font-bold absolute top-3 left-4">12</span>
+<span class="material-symbols-outlined animate-pulse text-sky-400">radio_button_checked</span>
+<span class="text-[10px] font-bold mt-1">TODAY</span>
+</div>
+<!-- Upcoming -->
+<div class="h-24 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-200 relative">
+<span class="text-xs font-bold absolute top-3 left-4">13</span>
+</div>
+<div class="h-24 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-200 relative">
+<span class="text-xs font-bold absolute top-3 left-4">14</span>
+</div>
+<div class="h-24 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-200 relative">
+<span class="text-xs font-bold absolute top-3 left-4">15</span>
+</div>
+<div class="h-24 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-200 relative">
+<span class="text-xs font-bold absolute top-3 left-4">16</span>
+</div>
+<div class="h-24 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-200 relative">
+<span class="text-xs font-bold absolute top-3 left-4">17</span>
+</div>
+<div class="h-24 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-200 relative">
+<span class="text-xs font-bold absolute top-3 left-4">18</span>
+</div>
+</div>
+</section>
+<!-- AI Insights Section (Glassmorphism) -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-8 pb-12">
+<div class="glass-card p-10 rounded-[2rem] border border-white/40 shadow-xl shadow-slate-200/50 flex flex-col gap-6">
+<div class="flex items-center gap-3">
+<div class="p-3 bg-secondary/10 rounded-2xl text-secondary">
+<span class="material-symbols-outlined">neurology</span>
+</div>
+<h4 class="text-xl font-bold font-manrope text-sky-900">Personalized Insights</h4>
+</div>
+<p class="text-slate-600 leading-relaxed">
+                        Based on your voice trends from the last 7 days, we suggest performing your daily recordings in a consistent, quiet environment. Ambient noise has been detected in 3 of your previous samples, which may slightly affect our high-frequency analysis.
+                    </p>
+<div class="bg-white/50 p-4 rounded-xl border border-slate-100">
+<div class="flex justify-between text-xs font-bold text-slate-400 uppercase mb-2">
+<span>Sample Quality</span>
+<span>88% Optimal</span>
+</div>
+<div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-secondary rounded-full" style="width: 88%"></div>
+</div>
+</div>
+</div>
+<div class="relative rounded-[2rem] overflow-hidden group">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A clinical but warm medical professional looking at a tablet with data visualizations, representing expert oversight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgxQM3B_QPFcRTr2HbNGD0WnQGPrqbaJKtNTJgPN9yydLbQJ4XDFOzjUs222N8wFgAL1YYW9xOmx2KWMi5xHOPuGvppogC6Sa_eO_s4MlacMVT64Xu0weF01TNup2AbY0juw8LmVF80bb5eBptgv64w3xmbJuuTRZBbenJn_s-_Mv50bOpA9Lr3j38TM3dWUNk1L8vE_lmiW8mc2yXy_AULS8t0u6IceSD39T-mUwS_aMkkPMFnG2qCr24lPKbCIdxSL38KIZbJ-Q"/>
+<div class="absolute inset-0 bg-gradient-to-t from-sky-950 via-sky-900/40 to-transparent p-10 flex flex-col justify-end">
+<h4 class="text-2xl font-bold font-manrope text-white mb-2">Connect with Specialist</h4>
+<p class="text-sky-100/80 text-sm mb-6 max-w-xs">Share your latest trends directly with your assigned physician for a deeper consultation.</p>
+<button class="bg-white text-sky-950 px-6 py-3 rounded-xl font-bold text-sm self-start hover:bg-sky-50 transition-colors">
+                            Request Review
+                        </button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- FAB Suppression Rule: Not rendering Global FAB as this is a dashboard with a primary large CTA button and a side CTA -->
+</body></html>

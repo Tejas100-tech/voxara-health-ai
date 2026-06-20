@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#d9dadb",
+                    "on-primary-fixed-variant": "#004b71",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed-variant": "#004f59",
+                    "secondary-container": "#a8ece9",
+                    "on-tertiary-fixed": "#001f24",
+                    "on-error": "#ffffff",
+                    "surface-container-low": "#f3f4f5",
+                    "on-primary-fixed": "#001e30",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface": "#191c1d",
+                    "on-secondary-fixed-variant": "#00504e",
+                    "secondary-fixed-dim": "#8fd2d0",
+                    "outline": "#707880",
+                    "surface-container": "#edeeef",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed-dim": "#83d3e1",
+                    "tertiary-fixed": "#9feffe",
+                    "on-background": "#191c1d",
+                    "surface": "#f8f9fa",
+                    "surface-bright": "#f8f9fa",
+                    "primary-container": "#006494",
+                    "surface-container-highest": "#e1e3e4",
+                    "secondary-fixed": "#abefec",
+                    "background": "#f8f9fa",
+                    "tertiary-container": "#006875",
+                    "on-tertiary-container": "#95e5f4",
+                    "tertiary": "#004e58",
+                    "secondary": "#206867",
+                    "error-container": "#ffdad6",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-container": "#266d6b",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#2e3132",
+                    "outline-variant": "#c0c7d0",
+                    "on-secondary-fixed": "#00201f",
+                    "inverse-primary": "#8ecdff",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-container-high": "#e7e8e9",
+                    "on-tertiary": "#ffffff",
+                    "primary-fixed-dim": "#8ecdff",
+                    "primary": "#004b71",
+                    "surface-tint": "#006494",
+                    "on-primary-container": "#b6ddff",
+                    "primary-fixed": "#cbe6ff",
+                    "on-surface-variant": "#40484f",
+                    "surface-variant": "#e1e3e4"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky bg-slate-50 dark:bg-slate-900 z-50">
+<div class="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
+<div class="text-xl font-bold tracking-tight text-sky-900 dark:text-sky-100">
+                Clinical Sanctuary AI
+            </div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="font-manrope text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors" href="#">Dashboard</a>
+<a class="font-manrope text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors" href="#">Patients</a>
+<a class="font-manrope text-sm font-medium text-sky-900 dark:text-sky-200 border-b-2 border-sky-900 dark:border-sky-400 pb-1" href="#">Reports</a>
+<a class="font-manrope text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-sky-700 dark:hover:text-sky-300 transition-colors" href="#">Analytics</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-slate-500 hover:text-sky-900 transition-colors">notifications</button>
+<button class="material-symbols-outlined text-slate-500 hover:text-sky-900 transition-colors">settings</button>
+<div class="w-10 h-10 rounded-full bg-surface-container overflow-hidden">
+<img alt="Medical Professional Avatar" class="w-full h-full object-cover" data-alt="professional medical doctor headshot in a clean white coat with a friendly expression and clinical background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXVJQaTVaOHvTT0OljTL4clu4ZH8REEq0l03rAoao6mnYkC1r3zeFiBG3GxEyL3PRZtn5xC_9B9c4XMh7GO4q-MIGO72sw5EPzZs2Twt9SXobFvDn-j_artErdAyGsS-dPx_5y6if2fg6AUuvXL2LHX0TiNc8rZWZIy0yq8Mn4i73p5Wcv3ESAdNZex_NHHUh4Qra8EroSKMMBedwNWYj2q8c4kDyo5qEx1qNeNTaUZEtsv7sciJoikAWYiJDE2X0MbNrukfJJDbU"/>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-grow max-w-7xl mx-auto w-full px-8 py-12">
+<!-- Header Section: Editorial Authority -->
+<section class="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="space-y-2">
+<span class="text-secondary font-semibold tracking-wider text-xs uppercase">Weekly Progress Report</span>
+<h1 class="text-5xl font-extrabold tracking-tight text-on-surface">Julian Vance</h1>
+<p class="text-on-surface-variant font-medium">Reporting Period: <span class="text-primary">Oct 14 - Oct 20, 2024</span></p>
+</div>
+<div class="flex gap-4">
+<button class="px-6 py-3 rounded-xl bg-surface-container-lowest text-on-surface-variant font-semibold hover:bg-surface-container-high transition-all flex items-center gap-2">
+<span class="material-symbols-outlined">share</span>
+                    Share with Doctor
+                </button>
+<button class="px-8 py-3 rounded-xl bg-gradient-to-r from-primary to-primary-container text-on-primary font-semibold shadow-lg shadow-primary/20 hover:scale-105 transition-transform">
+                    View Full Trends
+                </button>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Summary Section: AI Insights -->
+<div class="lg:col-span-8 space-y-8">
+<div class="bg-surface-container-lowest p-8 rounded-xl relative overflow-hidden">
+<div class="absolute top-0 right-0 p-6">
+<span class="px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                            Status: Stable
+                        </span>
+</div>
+<div class="flex items-start gap-4 mb-6">
+<div class="p-3 rounded-lg bg-primary-fixed text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<h2 class="text-2xl font-bold">AI Clinical Summary</h2>
+</div>
+<p class="text-on-surface-variant leading-relaxed text-lg font-light max-w-2xl">
+                        Julian's vocal performance remains consistent with previous weeks. The AI-detected biomarkers show a subtle positive trend in airway clearance, though pitch variability remains within the expected baseline for his condition. Consistency in morning recordings has significantly contributed to the high accuracy of this report.
+                    </p>
+</div>
+<!-- Key Biomarker Trends: Tonal Shifts for Distinction -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="bg-surface-container-low p-6 rounded-xl border-l-4 border-primary">
+<p class="text-sm font-semibold text-slate-500 mb-1">Vocal Tremor</p>
+<div class="flex items-baseline gap-2 mb-4">
+<h3 class="text-xl font-bold">Medium</h3>
+<span class="text-xs text-slate-500 italic">Stable</span>
+</div>
+<div class="h-16 w-full flex items-end gap-1 px-1">
+<div class="flex-1 bg-primary/20 h-8 rounded-sm"></div>
+<div class="flex-1 bg-primary/20 h-10 rounded-sm"></div>
+<div class="flex-1 bg-primary/20 h-9 rounded-sm"></div>
+<div class="flex-1 bg-primary/20 h-11 rounded-sm"></div>
+<div class="flex-1 bg-primary/40 h-10 rounded-sm"></div>
+<div class="flex-1 bg-primary/30 h-12 rounded-sm"></div>
+<div class="flex-1 bg-primary h-10 rounded-sm"></div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-low p-6 rounded-xl border-l-4 border-secondary">
+<p class="text-sm font-semibold text-slate-500 mb-1">Breathlessness</p>
+<div class="flex items-baseline gap-2 mb-4">
+<h3 class="text-xl font-bold">Low</h3>
+<span class="text-xs text-secondary font-medium">Improving</span>
+</div>
+<div class="h-16 w-full flex items-end gap-1 px-1">
+<div class="flex-1 bg-secondary/20 h-12 rounded-sm"></div>
+<div class="flex-1 bg-secondary/20 h-10 rounded-sm"></div>
+<div class="flex-1 bg-secondary/20 h-9 rounded-sm"></div>
+<div class="flex-1 bg-secondary/20 h-7 rounded-sm"></div>
+<div class="flex-1 bg-secondary/40 h-6 rounded-sm"></div>
+<div class="flex-1 bg-secondary/30 h-5 rounded-sm"></div>
+<div class="flex-1 bg-secondary h-4 rounded-sm"></div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-low p-6 rounded-xl border-l-4 border-tertiary">
+<p class="text-sm font-semibold text-slate-500 mb-1">Pitch Consistency</p>
+<div class="flex items-baseline gap-2 mb-4">
+<h3 class="text-xl font-bold">High</h3>
+<span class="text-xs text-slate-500 italic">Stable</span>
+</div>
+<div class="h-16 w-full flex items-end gap-1 px-1">
+<div class="flex-1 bg-tertiary/20 h-10 rounded-sm"></div>
+<div class="flex-1 bg-tertiary/20 h-11 rounded-sm"></div>
+<div class="flex-1 bg-tertiary/20 h-10 rounded-sm"></div>
+<div class="flex-1 bg-tertiary/20 h-11 rounded-sm"></div>
+<div class="flex-1 bg-tertiary/40 h-10 rounded-sm"></div>
+<div class="flex-1 bg-tertiary/30 h-11 rounded-sm"></div>
+<div class="flex-1 bg-tertiary h-10 rounded-sm"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Side Panels: Insights & Consistency -->
+<div class="lg:col-span-4 space-y-8">
+<!-- Recording Consistency -->
+<div class="bg-surface-container-lowest p-8 rounded-xl">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-lg font-bold">Consistency</h2>
+<span class="text-2xl font-black text-primary">6/7</span>
+</div>
+<div class="flex justify-between gap-2 mb-4">
+<div class="flex flex-col items-center gap-2">
+<span class="text-[10px] font-bold text-slate-400">MON</span>
+<div class="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-on-secondary">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-2">
+<span class="text-[10px] font-bold text-slate-400">TUE</span>
+<div class="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-on-secondary">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-2">
+<span class="text-[10px] font-bold text-slate-400">WED</span>
+<div class="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-on-secondary">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-2">
+<span class="text-[10px] font-bold text-slate-400">THU</span>
+<div class="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-on-secondary">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-2">
+<span class="text-[10px] font-bold text-slate-400">FRI</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container-high"></div>
+</div>
+<div class="flex flex-col items-center gap-2">
+<span class="text-[10px] font-bold text-slate-400">SAT</span>
+<div class="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-on-secondary">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-2">
+<span class="text-[10px] font-bold text-slate-400">SUN</span>
+<div class="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-on-secondary">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant italic">Great job on consistency this week! Missing only one day maintains data integrity.</p>
+</div>
+<!-- Personalized Insights -->
+<div class="bg-primary-container p-8 rounded-xl text-on-primary-container relative overflow-hidden">
+<div class="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+<h2 class="text-lg font-bold mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined">lightbulb</span>
+                        Health Insights
+                    </h2>
+<ul class="space-y-4">
+<li class="flex gap-3">
+<span class="material-symbols-outlined text-secondary-fixed">verified</span>
+<p class="text-sm">Recording at the same time every morning (approx. 8:00 AM) provides our AI with the cleanest baseline.</p>
+</li>
+<li class="flex gap-3">
+<span class="material-symbols-outlined text-secondary-fixed">waves</span>
+<p class="text-sm">Vocal clarity peaked on Wednesday. Hydration levels may have played a factor—aim to maintain similar water intake.</p>
+</li>
+<li class="flex gap-3">
+<span class="material-symbols-outlined text-secondary-fixed">mic_none</span>
+<p class="text-sm">Try increasing your phone distance by 2 inches for the "Sustained A" sound to reduce clipping.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Decorative Illustration/Context -->
+<section class="mt-20 flex flex-col items-center text-center max-w-3xl mx-auto space-y-6">
+<div class="w-full h-48 rounded-2xl overflow-hidden grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-700">
+<img alt="Medical Technology Visualization" class="w-full h-full object-cover" data-alt="close up of a digital sound wave interface on a high-tech medical monitor in a softly lit clinic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeJDANVfvnNm2-ZWSP1GZP4WNjz9WpvDB-G5H7F14AMvBfdxbUPjBzRqOtX1XMmVcW-wFP53KPjKfXI73BbLUNyZmvoKrEiJ3kiF5AHHHx7XLungRUN3MZc61-5k_41jzvq4Iq-MUBWS2DBSHrelwi17WA6iqex6fsrRwg69YXAC2bMPPrFJA5Jr455mvIiKw5UDEYjx-jDoEWyA5foGgLWngHETEGOFwQeVPX4Hjx8zrGOjIe-oGGdyuMU79uelSxw2-BarOL7YY"/>
+</div>
+<p class="text-slate-400 text-sm italic font-inter">Reports are generated automatically by Clinical Sanctuary AI and reviewed for anomalies by our HIPAA-compliant diagnostic engine.</p>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-auto py-8 bg-slate-100 dark:bg-slate-950">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-4">
+<div class="text-lg font-semibold text-slate-900 dark:text-slate-100">Clinical Sanctuary AI</div>
+<div class="flex gap-6">
+<a class="font-inter text-xs text-slate-500 dark:text-slate-400 hover:text-sky-900 dark:hover:text-sky-200 transition-opacity opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="font-inter text-xs text-slate-500 dark:text-slate-400 hover:text-sky-900 dark:hover:text-sky-200 transition-opacity opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="font-inter text-xs text-slate-500 dark:text-slate-400 hover:text-sky-900 dark:hover:text-sky-200 transition-opacity opacity-80 hover:opacity-100" href="#">Security Architecture</a>
+<a class="font-inter text-xs text-slate-500 dark:text-slate-400 hover:text-sky-900 dark:hover:text-sky-200 transition-opacity opacity-80 hover:opacity-100" href="#">Support</a>
+</div>
+<p class="font-inter text-xs text-slate-500 dark:text-slate-400">© 2024 Clinical Sanctuary AI. HIPAA Compliant &amp; Encrypted.</p>
+</div>
+</footer>
+</body></html>

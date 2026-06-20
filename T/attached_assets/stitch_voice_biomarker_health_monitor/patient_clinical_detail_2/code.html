@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Patient Clinical Detail - Clinical Sanctuary</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed": "#9feffe",
+                    "background": "#f8f9fa",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-primary-fixed": "#001e30",
+                    "error": "#ba1a1a",
+                    "on-primary-container": "#b6ddff",
+                    "surface-bright": "#f8f9fa",
+                    "surface-container-low": "#f3f4f5",
+                    "surface": "#f8f9fa",
+                    "outline": "#707880",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed-variant": "#004f59",
+                    "on-surface-variant": "#40484f",
+                    "primary-fixed-dim": "#8ecdff",
+                    "on-secondary-fixed": "#00201f",
+                    "tertiary-fixed-dim": "#83d3e1",
+                    "secondary": "#206867",
+                    "on-secondary-fixed-variant": "#00504e",
+                    "on-primary-fixed-variant": "#004b71",
+                    "tertiary-container": "#006875",
+                    "surface-tint": "#006494",
+                    "inverse-on-surface": "#f0f1f2",
+                    "primary-fixed": "#cbe6ff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed": "#001f24",
+                    "surface-container-high": "#e7e8e9",
+                    "secondary-fixed-dim": "#8fd2d0",
+                    "secondary-container": "#a8ece9",
+                    "on-error": "#ffffff",
+                    "tertiary": "#004e58",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "primary-container": "#006494",
+                    "surface-container": "#edeeef",
+                    "on-tertiary-container": "#95e5f4",
+                    "inverse-surface": "#2e3132",
+                    "surface-dim": "#d9dadb",
+                    "primary": "#004b71",
+                    "secondary-fixed": "#abefec",
+                    "on-background": "#191c1d",
+                    "inverse-primary": "#8ecdff",
+                    "on-tertiary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "on-secondary-container": "#266d6b",
+                    "surface-variant": "#e1e3e4",
+                    "outline-variant": "#c0c7d0",
+                    "on-surface": "#191c1d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .headline { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(192, 199, 208, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-8 h-16 w-full sticky top-0 z-50 bg-slate-50 dark:bg-slate-900 border-b-0 font-manrope text-sm font-medium tracking-tight">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold text-sky-900 dark:text-sky-100 tracking-tighter">Clinical Sanctuary</span>
+<nav class="hidden md:flex gap-6 items-center h-full">
+<a class="text-sky-900 dark:text-sky-100 border-b-2 border-sky-700 font-bold pb-2 h-full flex items-center mt-2" href="#">Patients</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-sky-700 transition-colors duration-200" href="#">Alerts</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-sky-700 transition-colors duration-200" href="#">Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined text-slate-500 group-hover:text-sky-700 cursor-pointer">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</div>
+<span class="material-symbols-outlined text-slate-500 cursor-pointer">account_circle</span>
+</div>
+</header>
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 flex flex-col py-6 bg-white dark:bg-slate-950 shadow-xl shadow-sky-900/5 z-40">
+<div class="px-6 mb-8 flex items-center gap-3">
+<img alt="Dr. Smith" class="w-10 h-10 rounded-full object-cover" data-alt="professional headshot of a middle-aged male doctor with a kind expression, soft hospital lighting, clean medical attire" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZSXkgiqHVnh_yJlfF2ZCj7LoErvkua5QQxn4yBAZ0aKQgom6_oLDXmUiQLFth0fG1fru8P1FoRHmUtb-2LHDp08QMp1siY8Z8nobNU3MxrBkXpQYTi0fguaxwB66y5aoRzlHo8yvgss0sSL-owZxHCjsDYX4wg0KCzXmxO2gvsFqSE8eETJz9V9QzED8LHf32J-YfwWBKUlgxOJjfgtGfhIk-o4_Wxw2-IIUDhlncggzhczUmd8Ra0HaU4ZH4dL0am8OkZgydUNo"/>
+<div>
+<p class="text-sky-800 dark:text-sky-300 font-semibold text-sm">Dr. Julian Smith</p>
+<p class="text-slate-500 text-xs">Cardiology Dept.</p>
+</div>
+</div>
+<div class="flex-1 space-y-1">
+<a class="bg-sky-50 dark:bg-sky-900/40 text-sky-900 dark:text-sky-100 font-semibold rounded-r-full py-3 px-6 flex items-center gap-3 scale-95 active:scale-100 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">assignment</span>
+<span>Patient Record</span>
+</a>
+<a class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 scale-95 active:scale-100 transition-transform" href="#">
+<span class="material-symbols-outlined">monitor_heart</span>
+<span>Vitals</span>
+</a>
+<a class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 scale-95 active:scale-100 transition-transform" href="#">
+<span class="material-symbols-outlined">biotech</span>
+<span>Lab Results</span>
+</a>
+<a class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 scale-95 active:scale-100 transition-transform" href="#">
+<span class="material-symbols-outlined">mic_external_on</span>
+<span>Transcription</span>
+</a>
+<a class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 scale-95 active:scale-100 transition-transform" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</div>
+<div class="px-6 py-4 mt-auto border-t border-slate-100 dark:border-slate-800">
+<button class="w-full py-3 px-4 bg-primary text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm">add</span>
+                    New Consultation
+                </button>
+<div class="mt-4 space-y-2">
+<a class="flex items-center gap-3 text-slate-500 text-sm px-2 py-1" href="#"><span class="material-symbols-outlined text-lg">help_outline</span> Help Center</a>
+<a class="flex items-center gap-3 text-slate-500 text-sm px-2 py-1" href="#"><span class="material-symbols-outlined text-lg">logout</span> Logout</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 p-8 bg-surface overflow-y-auto">
+<!-- Patient Header Bento -->
+<div class="grid grid-cols-12 gap-6 mb-8">
+<div class="col-span-12 lg:col-span-8 p-8 rounded-xl bg-surface-container-lowest flex items-end justify-between relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-9xl text-primary">clinical_notes</span>
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-4 mb-2">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold uppercase tracking-wider">Patient ID: #JV-2940</span>
+<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full text-xs font-bold">Stable</span>
+</div>
+<h1 class="text-4xl font-extrabold text-on-surface tracking-tighter mb-1">Julian Vance</h1>
+<p class="text-on-surface-variant font-medium">64 y/o Male • Type II Diabetes • Stage 1 Hypertension</p>
+</div>
+<div class="flex gap-3 relative z-10">
+<button class="px-4 py-2 bg-surface-container-high hover:bg-surface-container-highest transition-colors text-on-surface-variant rounded-lg text-sm font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">edit</span>
+                            Edit Bio
+                        </button>
+<button class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">calendar_month</span>
+                            Schedule Consult
+                        </button>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-4 p-8 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<h3 class="text-sm font-bold text-outline uppercase tracking-widest mb-4">Quick Stats</h3>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant text-sm">Last Contact</span>
+<span class="text-on-surface font-bold">48h ago</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant text-sm">Adherence Score</span>
+<span class="text-secondary font-extrabold">92%</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant text-sm">Bio-Trend</span>
+<span class="flex items-center text-error font-bold">
+<span class="material-symbols-outlined text-sm mr-1">trending_down</span> -4.2%
+                                </span>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-2 border border-outline-variant rounded-lg text-sm font-bold text-primary hover:bg-white transition-colors">View Timeline</button>
+</div>
+</div>
+<!-- Charts Section -->
+<div class="grid grid-cols-12 gap-6 mb-8">
+<!-- Longitudinal Vocal Biomarkers -->
+<div class="col-span-12 xl:col-span-8 bg-surface-container-lowest p-8 rounded-xl">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h2 class="text-xl font-bold text-on-surface">Vocal Biomarkers Longitudinal Analysis</h2>
+<p class="text-sm text-on-surface-variant">30-day window covering MFCC, Pitch variance, and Speech Rate</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="flex items-center gap-1 text-xs font-bold text-primary"><span class="w-3 h-3 rounded-full bg-primary"></span> MFCC</span>
+<span class="flex items-center gap-1 text-xs font-bold text-secondary ml-4"><span class="w-3 h-3 rounded-full bg-secondary"></span> Pitch</span>
+</div>
+</div>
+<div class="h-64 flex items-end justify-between gap-2 px-2 relative">
+<!-- Simulated Chart Grid -->
+<div class="absolute inset-0 flex flex-col justify-between opacity-5">
+<div class="border-b border-on-surface w-full"></div>
+<div class="border-b border-on-surface w-full"></div>
+<div class="border-b border-on-surface w-full"></div>
+<div class="border-b border-on-surface w-full"></div>
+</div>
+<!-- Simulated Bars (Asymmetric layout) -->
+<div class="flex-1 flex flex-col justify-end gap-1 group">
+<div class="w-full bg-primary-container h-32 rounded-t-sm opacity-60 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full bg-secondary-container h-16 rounded-t-sm opacity-60 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1 group">
+<div class="w-full bg-primary-container h-40 rounded-t-sm opacity-60 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full bg-secondary-container h-24 rounded-t-sm opacity-60 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1 group">
+<div class="w-full bg-primary-container h-28 rounded-t-sm opacity-60 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full bg-secondary-container h-12 rounded-t-sm opacity-60 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1 group">
+<div class="w-full bg-primary-container h-48 rounded-t-sm opacity-100 transition-opacity"></div>
+<div class="w-full bg-secondary-container h-32 rounded-t-sm opacity-100 transition-opacity"></div>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1 group">
+<div class="w-full bg-primary-container h-56 rounded-t-sm opacity-60 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full bg-secondary-container h-40 rounded-t-sm opacity-60 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1 group">
+<div class="w-full bg-primary-container h-36 rounded-t-sm opacity-60 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full bg-secondary-container h-20 rounded-t-sm opacity-60 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1 group">
+<div class="w-full bg-primary-container h-44 rounded-t-sm opacity-60 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full bg-secondary-container h-28 rounded-t-sm opacity-60 group-hover:opacity-100 transition-opacity"></div>
+</div>
+</div>
+<div class="mt-4 flex justify-between px-2 text-[10px] font-bold text-outline tracking-widest uppercase">
+<span>Wk 1</span>
+<span>Wk 2</span>
+<span>Wk 3</span>
+<span>Current</span>
+</div>
+</div>
+<!-- Medication Adherence -->
+<div class="col-span-12 xl:col-span-4 bg-primary text-white p-8 rounded-xl flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined p-2 bg-white/10 rounded-lg">pill</span>
+<h2 class="text-xl font-bold tracking-tight">Medication Adherence</h2>
+</div>
+<div class="text-5xl font-extrabold mb-2">92<span class="text-2xl font-normal opacity-60">%</span></div>
+<p class="text-primary-fixed text-sm mb-8 leading-relaxed">Julian has missed only 2 doses of Lisinopril in the last 30 days. Adherence remains high despite recent travel.</p>
+</div>
+<div class="space-y-3">
+<div class="h-2 w-full bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-white rounded-full w-[92%]"></div>
+</div>
+<div class="flex justify-between text-xs font-bold opacity-70">
+<span>Target: 95%</span>
+<span>Critical: &lt;80%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Narrative & Actions -->
+<div class="grid grid-cols-12 gap-6">
+<!-- AI Diagnostic Narrative -->
+<div class="col-span-12 lg:col-span-7">
+<div class="glass-panel p-8 rounded-xl">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<h3 class="text-lg font-bold text-on-surface">AI Diagnostic Narrative</h3>
+</div>
+<div class="space-y-6">
+<div class="flex gap-4">
+<div class="w-1 h-auto bg-secondary rounded-full"></div>
+<p class="text-on-surface-variant leading-relaxed italic">
+                                    "Significant variance in MFCC coefficients detected between Week 3 and Current. This correlate with a 12% decrease in daily speech rate. While medication adherence is high, these vocal markers may indicate early stages of cognitive fatigue or depressive shifting."
+                                </p>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container p-4 rounded-lg">
+<span class="text-[10px] font-bold text-outline uppercase block mb-1">Observation</span>
+<span class="text-sm font-semibold text-on-surface">Vocal Strain +4%</span>
+</div>
+<div class="bg-surface-container p-4 rounded-lg">
+<span class="text-[10px] font-bold text-outline uppercase block mb-1">Confidence</span>
+<span class="text-sm font-semibold text-secondary">High (89%)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Clinical Actions -->
+<div class="col-span-12 lg:col-span-5 flex flex-col gap-4">
+<h3 class="text-sm font-bold text-outline uppercase tracking-widest px-2">Clinical Actions</h3>
+<button class="group w-full p-6 bg-surface-container-lowest hover:bg-primary transition-all duration-300 rounded-xl text-left flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined p-3 bg-primary-fixed text-primary group-hover:bg-white/10 group-hover:text-white rounded-xl transition-colors">medication</span>
+<div>
+<span class="block font-bold text-on-surface group-hover:text-white transition-colors">Adjust Medication</span>
+<span class="text-xs text-on-surface-variant group-hover:text-white/70 transition-colors">Update dosage or frequency for JV-2940</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-white transition-colors">chevron_right</span>
+</button>
+<button class="group w-full p-6 bg-surface-container-lowest hover:bg-secondary transition-all duration-300 rounded-xl text-left flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined p-3 bg-secondary-container text-secondary group-hover:bg-white/10 group-hover:text-white rounded-xl transition-colors">description</span>
+<div>
+<span class="block font-bold text-on-surface group-hover:text-white transition-colors">Export Clinical Report</span>
+<span class="text-xs text-on-surface-variant group-hover:text-white/70 transition-colors">Generate PDF for insurance or referral</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-white transition-colors">download</span>
+</button>
+<button class="group w-full p-6 bg-surface-container-lowest hover:bg-tertiary transition-all duration-300 rounded-xl text-left flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined p-3 bg-tertiary-fixed text-tertiary group-hover:bg-white/10 group-hover:text-white rounded-xl transition-colors">forum</span>
+<div>
+<span class="block font-bold text-on-surface group-hover:text-white transition-colors">Direct Messaging</span>
+<span class="text-xs text-on-surface-variant group-hover:text-white/70 transition-colors">Contact Julian Vance directly via Patient App</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-white transition-colors">send</span>
+</button>
+</div>
+</div>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary": "#ffffff",
+                    "surface": "#f8f9fa",
+                    "on-surface": "#191c1d",
+                    "error-container": "#ffdad6",
+                    "surface-variant": "#e1e3e4",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed": "#00201f",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#f8f9fa",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-container": "#edeeef",
+                    "background": "#f8f9fa",
+                    "tertiary-fixed-dim": "#83d3e1",
+                    "on-background": "#191c1d",
+                    "secondary-fixed-dim": "#8fd2d0",
+                    "tertiary": "#004e58",
+                    "outline": "#707880",
+                    "surface-container-highest": "#e1e3e4",
+                    "secondary": "#206867",
+                    "secondary-container": "#a8ece9",
+                    "on-primary-fixed": "#001e30",
+                    "error": "#ba1a1a",
+                    "on-surface-variant": "#40484f",
+                    "primary-fixed": "#cbe6ff",
+                    "on-primary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "surface-container-low": "#f3f4f5",
+                    "primary-container": "#006494",
+                    "on-primary-fixed-variant": "#004b71",
+                    "on-error": "#ffffff",
+                    "surface-container-high": "#e7e8e9",
+                    "on-secondary-fixed-variant": "#00504e",
+                    "primary": "#004b71",
+                    "surface-dim": "#d9dadb",
+                    "outline-variant": "#c0c7d0",
+                    "inverse-surface": "#2e3132",
+                    "primary-fixed-dim": "#8ecdff",
+                    "tertiary-fixed": "#9feffe",
+                    "on-tertiary-fixed": "#001f24",
+                    "on-tertiary-fixed-variant": "#004f59",
+                    "on-tertiary-container": "#95e5f4",
+                    "secondary-fixed": "#abefec",
+                    "on-secondary-container": "#266d6b",
+                    "on-primary-container": "#b6ddff",
+                    "surface-tint": "#006494",
+                    "tertiary-container": "#006875",
+                    "inverse-primary": "#8ecdff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body { font-family: 'Inter', sans-serif; }
+      h1, h2, h3, h4, .font-headline { font-family: 'Manrope', sans-serif; }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(16px);
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-slate-50 dark:bg-slate-950 flex flex-col py-6 border-r border-slate-200/20 z-50">
+<div class="px-6 mb-8">
+<h1 class="text-lg font-black text-sky-900 dark:text-sky-50 leading-tight">Precision Care</h1>
+<p class="text-xs font-manrope font-semibold tracking-wide text-slate-500 uppercase">Clinical Sanctuary</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-slate-500 dark:text-slate-400 px-4 py-3 mx-2 flex items-center gap-3 font-manrope text-sm font-semibold tracking-wide hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="text-slate-500 dark:text-slate-400 px-4 py-3 mx-2 flex items-center gap-3 font-manrope text-sm font-semibold tracking-wide hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">mic</span>
+                My Recordings
+            </a>
+<a class="bg-white dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded-xl px-4 py-3 mx-2 flex items-center gap-3 font-manrope text-sm font-semibold tracking-wide shadow-sm" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+                Trends
+            </a>
+<a class="text-slate-500 dark:text-slate-400 px-4 py-3 mx-2 flex items-center gap-3 font-manrope text-sm font-semibold tracking-wide hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">insights</span>
+                Insights
+            </a>
+<a class="text-slate-500 dark:text-slate-400 px-4 py-3 mx-2 flex items-center gap-3 font-manrope text-sm font-semibold tracking-wide hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="mt-auto px-4">
+<button class="w-full py-3 px-4 bg-primary text-white rounded-xl font-manrope font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+                New Recording
+            </button>
+<a class="mt-4 text-slate-500 dark:text-slate-400 px-4 py-3 flex items-center gap-3 font-manrope text-sm font-semibold tracking-wide hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+                Help Center
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm dark:shadow-none flex justify-between items-center px-8 py-4">
+<div class="flex items-center gap-4">
+<h2 class="text-xl font-bold tracking-tight text-sky-900 dark:text-sky-50 font-headline">Analysis &amp; Biomarkers</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative flex items-center bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined text-slate-400 text-sm mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm font-manrope text-slate-600 dark:text-slate-300 w-48" placeholder="Search biomarkers..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<img class="w-10 h-10 rounded-full border-2 border-primary-fixed cursor-pointer" data-alt="close up headshot of middle aged male patient smiling gently soft natural light professional medical profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApsH-XMu_fQet4ObTWvB_6mzRDxXlDoMPKL3LOaEzBl46WB1yVf1C8h65aqZCjaqLwGb5THeHowo069OXkxHopGgkNZXLGcP2lcqfT_rAs3wmazZOXBgrMNtMIka3U7NGfxUPPetfnjgK7ak_mrDn2VIg7MaZlN_GW028ufrmLTi9j3JS-eHFYo3VnlUoP8w3cfOmRU4jh2vF3EFr4EdFoARLqRQKElDyCQv3uzdP7v6jXP54rTsByiDMDUhC-RLfb5VkGBVNLXi4"/>
+</div>
+</div>
+</header>
+<div class="px-8 py-8 space-y-8">
+<!-- Header Section -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="space-y-2">
+<div class="flex items-center gap-2 text-primary font-semibold text-sm tracking-wider uppercase">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">analytics</span>
+                        Session ID: #REC-48291
+                    </div>
+<h3 class="text-4xl font-extrabold text-on-surface font-headline leading-tight">Biometric Profile <span class="text-secondary">Analysis</span></h3>
+<p class="text-on-surface-variant max-w-2xl font-body">Recording captured on Oct 24, 2023. AI engine V4.2 processed 128 neurological vocal signatures to identify physiological variations.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-5 py-2.5 bg-surface-container-high text-on-surface-variant rounded-xl font-manrope font-bold text-sm hover:bg-surface-container-highest transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">download</span>
+                        Export PDF
+                    </button>
+<button class="px-5 py-2.5 bg-primary text-on-primary rounded-xl font-manrope font-bold text-sm hover:shadow-lg transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">share</span>
+                        Share with MD
+                    </button>
+</div>
+</section>
+<!-- Main Biomarker Cards (Bento Grid Style) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1: Vocal Tremors -->
+<div class="bg-surface-container-lowest p-6 rounded-[2rem] flex flex-col justify-between group hover:shadow-xl transition-all duration-300">
+<div>
+<div class="flex justify-between items-start mb-6">
+<div class="p-3 bg-secondary-container rounded-2xl text-on-secondary-container">
+<span class="material-symbols-outlined text-2xl">graphic_eq</span>
+</div>
+<span class="px-3 py-1 bg-surface-container-high rounded-full text-xs font-bold text-on-surface-variant">7-DAY TREND</span>
+</div>
+<h4 class="text-on-surface-variant font-manrope font-bold text-sm uppercase tracking-widest mb-1">Vocal Tremors</h4>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-black text-on-surface font-headline">Medium</span>
+</div>
+</div>
+<div class="mt-8">
+<!-- Sparkline Placeholder -->
+<div class="h-16 flex items-end gap-1.5 px-1">
+<div class="w-full bg-slate-100 rounded-sm h-1/2"></div>
+<div class="w-full bg-slate-100 rounded-sm h-3/4"></div>
+<div class="w-full bg-slate-100 rounded-sm h-1/4"></div>
+<div class="w-full bg-slate-100 rounded-sm h-1/2"></div>
+<div class="w-full bg-slate-200 rounded-sm h-2/3"></div>
+<div class="w-full bg-secondary-container rounded-sm h-5/6"></div>
+<div class="w-full bg-secondary rounded-sm h-full"></div>
+</div>
+<div class="flex justify-between mt-3 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+<span>Oct 18</span>
+<span>Today</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Breathlessness Index -->
+<div class="bg-surface-container-lowest p-6 rounded-[2rem] flex flex-col justify-between group hover:shadow-xl transition-all duration-300 border-t-4 border-primary">
+<div>
+<div class="flex justify-between items-start mb-6">
+<div class="p-3 bg-primary-fixed rounded-2xl text-on-primary-fixed">
+<span class="material-symbols-outlined text-2xl">air</span>
+</div>
+<span class="flex items-center gap-1 text-primary font-bold text-xs">
+<span class="material-symbols-outlined text-sm">trending_down</span>
+                                12% Improved
+                            </span>
+</div>
+<h4 class="text-on-surface-variant font-manrope font-bold text-sm uppercase tracking-widest mb-1">Breathlessness Index</h4>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-black text-on-surface font-headline">4.2</span>
+<span class="text-slate-400 font-bold text-lg">/ 10</span>
+</div>
+</div>
+<div class="mt-8">
+<!-- Sparkline Placeholder -->
+<div class="h-16 flex items-end gap-1.5 px-1">
+<div class="w-full bg-slate-100 rounded-sm h-full"></div>
+<div class="w-full bg-slate-100 rounded-sm h-5/6"></div>
+<div class="w-full bg-slate-100 rounded-sm h-3/4"></div>
+<div class="w-full bg-slate-100 rounded-sm h-2/3"></div>
+<div class="w-full bg-primary-fixed rounded-sm h-1/2"></div>
+<div class="w-full bg-primary-fixed rounded-sm h-1/3"></div>
+<div class="w-full bg-primary rounded-sm h-1/4"></div>
+</div>
+<div class="flex justify-between mt-3 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+<span>Oct 18</span>
+<span>Today</span>
+</div>
+</div>
+</div>
+<!-- Card 3: Pitch Consistency -->
+<div class="bg-surface-container-lowest p-6 rounded-[2rem] flex flex-col justify-between group hover:shadow-xl transition-all duration-300">
+<div>
+<div class="flex justify-between items-start mb-6">
+<div class="p-3 bg-tertiary-fixed rounded-2xl text-on-tertiary-fixed">
+<span class="material-symbols-outlined text-2xl">music_note</span>
+</div>
+<div class="w-12 h-12 relative">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#edeeef" stroke-width="3"></path>
+<path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#004e58" stroke-dasharray="88, 100" stroke-width="3"></path>
+</svg>
+<span class="absolute inset-0 flex items-center justify-center text-[10px] font-black">88%</span>
+</div>
+</div>
+<h4 class="text-on-surface-variant font-manrope font-bold text-sm uppercase tracking-widest mb-1">Pitch Consistency</h4>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-black text-on-surface font-headline">Stable</span>
+</div>
+</div>
+<div class="mt-8">
+<!-- Sparkline Placeholder -->
+<div class="h-16 flex items-end gap-1.5 px-1">
+<div class="w-full bg-tertiary-fixed-dim/30 rounded-sm h-3/4"></div>
+<div class="w-full bg-tertiary-fixed-dim/30 rounded-sm h-3/4"></div>
+<div class="w-full bg-tertiary-fixed-dim/30 rounded-sm h-4/5"></div>
+<div class="w-full bg-tertiary-fixed-dim/30 rounded-sm h-3/4"></div>
+<div class="w-full bg-tertiary-fixed-dim/30 rounded-sm h-4/5"></div>
+<div class="w-full bg-tertiary-fixed-dim/30 rounded-sm h-5/6"></div>
+<div class="w-full bg-tertiary rounded-sm h-3/4"></div>
+</div>
+<div class="flex justify-between mt-3 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+<span>Oct 18</span>
+<span>Today</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Row: AI Summary and Data Details -->
+<section class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+<!-- AI Doctor's Summary -->
+<div class="lg:col-span-3 glass-card p-8 rounded-[2.5rem] border border-white/50 shadow-2xl shadow-sky-900/5 flex flex-col gap-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">auto_awesome</span>
+</div>
+<div>
+<h4 class="font-headline font-bold text-xl text-sky-900">Doctor's AI Summary</h4>
+<p class="text-xs text-on-surface-variant font-body">Synthesized interpretation of today's neurological vocal signatures.</p>
+</div>
+</div>
+<div class="space-y-4 text-on-surface/90 leading-relaxed font-body">
+<p>The analysis of recording <span class="font-bold text-primary">#REC-48291</span> indicates a positive trend in respiratory control. While <span class="font-bold">vocal tremors</span> remain in the medium range, the <span class="font-bold">Breathlessness Index</span> has decreased by 0.6 points since your previous baseline, suggesting improved diaphragmatic stability.</p>
+<p class="p-4 bg-primary/5 rounded-2xl border-l-4 border-primary italic">"Clinical Insight: Your pitch consistency remains remarkably stable at 88%. This level of stability often correlates with effective neurological regulation of the laryngeal muscles. Maintain the current morning vocal warm-up routine."</p>
+<p>Recommend monitoring the tremor frequency over the next three sessions. If the medium-range tremor persists or increases in duration during vowel elongation, we will escalate this data for a formal clinical review with your primary specialist.</p>
+</div>
+<div class="pt-4 flex items-center gap-4 border-t border-slate-100">
+<div class="flex -space-x-2">
+<img class="w-8 h-8 rounded-full border-2 border-white" data-alt="professional portrait of female neurologist wearing lab coat soft lighting hospital setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBw44N-AzU6rwAsP8IhG9XDkp8DH_3G4pTI4RZseUHmNmPNk64Rt4z4PISO6QKWBs9CkLq9hSIm8uIB3-jtCAfi21l8gKrC1wLHTFMvyyhIWlwP3xfj-Q8T8iGBi4Tv4qd3VJv3gzVNLfVKMLPTYJO7QUIMnmS_TTP_a40_fr2pQ1WNjL0PS-yu238-0GUqIpdp7IFYzyHfUCNWXV7XqTdv_t-WT6ahFk2SEFs15CXK1hIi16IpWiX-8GJ-SP5usNle_kXa-OpwBBw"/>
+<img class="w-8 h-8 rounded-full border-2 border-white" data-alt="professional portrait of male speech therapist in blue scrubs warm clinical background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYUGWVLr1G87b4BVkMzLtGdAccmgtXYDBMfo81rMTcUQ_oM5VbSdJTrRRXZT_Kd8fnoTj3jNSm-vujz7sO_X5zWCkpjKvW-hvi4UKVDZGNqHdf6CXd5MXYIRHBhB_NDgdsIw-czSxe8AEPWcynEp_jGFhSJ-ADsg01gq1rJjiSCfXqpX-fy6L0xwbnSMar1kcokHLTXTKdfizTO1O8gR9tdszdsumWNItEZycLawYnxdwXXUNSAnFJpyJfkuW8TEq6uoA2aSpvMLg"/>
+</div>
+<span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Verified by Clinical Team (2)</span>
+</div>
+</div>
+<!-- Specialized Metrics Grid -->
+<div class="lg:col-span-2 space-y-6">
+<div class="bg-surface-container-low p-6 rounded-[2rem] space-y-4">
+<h4 class="font-headline font-bold text-lg text-sky-900 px-2">Sub-Metric Breakdown</h4>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-3 bg-white rounded-2xl shadow-sm">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">waves</span>
+<span class="text-sm font-semibold text-on-surface-variant">Jitter (Local)</span>
+</div>
+<span class="text-sm font-black text-on-surface">1.24%</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-white rounded-2xl shadow-sm">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">graphic_eq</span>
+<span class="text-sm font-semibold text-on-surface-variant">Shimmer (APQ)</span>
+</div>
+<span class="text-sm font-black text-on-surface">3.12%</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-white rounded-2xl shadow-sm">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">equalizer</span>
+<span class="text-sm font-semibold text-on-surface-variant">HNR Index</span>
+</div>
+<span class="text-sm font-black text-on-surface">18.4 dB</span>
+</div>
+</div>
+</div>
+<div class="relative overflow-hidden bg-gradient-to-br from-secondary to-primary p-6 rounded-[2rem] text-white shadow-xl shadow-secondary/20">
+<div class="relative z-10 space-y-3">
+<h4 class="font-headline font-bold text-lg">Next Review</h4>
+<p class="text-sm opacity-90 leading-relaxed">Your data is synced. Dr. Aris will review these biomarkers during your tele-consultation scheduled for:</p>
+<div class="bg-white/20 backdrop-blur-md rounded-xl p-3 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-sm font-bold">Oct 28, 10:30 AM</span>
+</div>
+<span class="material-symbols-outlined text-sm">arrow_forward_ios</span>
+</div>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined text-[8rem]" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>

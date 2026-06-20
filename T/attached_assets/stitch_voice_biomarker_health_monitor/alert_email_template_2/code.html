@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#abefec",
+                        "surface-container-high": "#e7e8e9",
+                        "on-primary-fixed-variant": "#004b71",
+                        "on-surface-variant": "#40484f",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#206867",
+                        "on-primary-container": "#b6ddff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#006875",
+                        "on-surface": "#191c1d",
+                        "primary-container": "#006494",
+                        "primary-fixed-dim": "#8ecdff",
+                        "surface-tint": "#006494",
+                        "inverse-surface": "#2e3132",
+                        "error-container": "#ffdad6",
+                        "inverse-primary": "#8ecdff",
+                        "surface-dim": "#d9dadb",
+                        "surface-container": "#edeeef",
+                        "surface": "#f8f9fa",
+                        "on-primary-fixed": "#001e30",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#9feffe",
+                        "on-tertiary-fixed": "#001f24",
+                        "outline": "#707880",
+                        "on-primary": "#ffffff",
+                        "on-background": "#191c1d",
+                        "surface-container-low": "#f3f4f5",
+                        "on-secondary-fixed-variant": "#00504e",
+                        "surface-variant": "#e1e3e4",
+                        "primary-fixed": "#cbe6ff",
+                        "inverse-on-surface": "#f0f1f2",
+                        "error": "#ba1a1a",
+                        "tertiary": "#004e58",
+                        "secondary-fixed-dim": "#8fd2d0",
+                        "on-tertiary-fixed-variant": "#004f59",
+                        "on-error-container": "#93000a",
+                        "background": "#f8f9fa",
+                        "surface-bright": "#f8f9fa",
+                        "on-secondary-fixed": "#00201f",
+                        "outline-variant": "#c0c7d0",
+                        "on-tertiary-container": "#95e5f4",
+                        "on-secondary-container": "#266d6b",
+                        "secondary-container": "#a8ece9",
+                        "primary": "#004b71",
+                        "tertiary-fixed-dim": "#83d3e1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased p-4 md:p-8">
+<div class="max-w-2xl mx-auto space-y-6">
+<!-- Header from Shared Components JSON logic -->
+<header class="bg-white dark:bg-slate-900 w-full top-0 px-6 py-4 flex justify-between items-center max-w-4xl mx-auto">
+<div class="text-xl font-bold text-sky-900 dark:text-sky-100 tracking-tight font-headline">
+                Clinical Sanctuary
+            </div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-sky-900 dark:text-sky-400">notifications</span>
+<span class="material-symbols-outlined text-sky-900 dark:text-sky-400">account_circle</span>
+</div>
+</header>
+<!-- Main Alert Content Canvas -->
+<main class="space-y-8 mt-4">
+<!-- Subject Title Section -->
+<div class="pl-4 border-l-4 border-error">
+<h1 class="font-headline text-3xl font-extrabold tracking-tight text-on-surface leading-tight">
+                    Urgent: Significant Change in Vocal Biomarkers Detected
+                </h1>
+<p class="font-body text-sm text-outline mt-2">Internal Ref: CS-ALERT-VOICE-882</p>
+</div>
+<!-- Critical Status Card -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden relative" style="box-shadow: 0 12px 40px rgba(0, 30, 48, 0.06);">
+<div class="bg-error px-6 py-3 flex items-center justify-between">
+<div class="flex items-center gap-2 text-on-error font-headline font-bold uppercase tracking-wider text-xs">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">warning</span>
+                        Critical Alert State
+                    </div>
+<div class="text-on-error/80 text-xs font-medium">Detected 2m ago</div>
+</div>
+<div class="p-8">
+<p class="font-body text-on-surface leading-relaxed text-lg">
+                        Dear <span class="font-semibold">Dr. Julian Vance</span>,
+                    </p>
+<p class="font-body text-on-surface-variant mt-4 leading-relaxed">
+                        Our AI analysis has detected a <span class="text-error font-semibold">significant shift</span> in vocal tremor stability (+15% deviation) from the established baseline for Patient <span class="font-mono bg-surface-container px-2 py-0.5 rounded text-sm">REC-48291</span>.
+                    </p>
+</div>
+</div>
+<!-- Bento-style Data Snapshot -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Anomaly Card -->
+<div class="bg-surface-container-low p-6 rounded-xl space-y-4">
+<h3 class="font-headline text-sm font-bold text-secondary flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">analytics</span>
+                        Vocal Tremor Analysis
+                    </h3>
+<div class="flex justify-between items-end">
+<div class="space-y-1">
+<span class="text-xs text-outline uppercase font-bold tracking-widest">Baseline</span>
+<div class="text-2xl font-headline font-bold text-on-surface">Medium</div>
+</div>
+<div class="text-error flex flex-col items-end">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="text-2xl font-headline font-bold">High</span>
+</div>
+</div>
+<!-- AI Confidence Meter -->
+<div class="space-y-1.5 pt-2">
+<div class="flex justify-between text-[10px] font-bold uppercase text-outline">
+<span>AI Confidence</span>
+<span>98.4%</span>
+</div>
+<div class="h-2 w-full bg-tertiary-fixed-dim rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-[98%] rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Waveform Visualizer Section -->
+<div class="bg-surface-container-low p-6 rounded-xl space-y-4">
+<h3 class="font-headline text-sm font-bold text-secondary flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">graphic_eq</span>
+                        Anomaly Waveform
+                    </h3>
+<div class="flex items-center gap-1 h-12">
+<div class="bg-secondary/40 w-1.5 h-4 rounded-full"></div>
+<div class="bg-secondary/60 w-1.5 h-8 rounded-full"></div>
+<div class="bg-secondary/80 w-1.5 h-10 rounded-full"></div>
+<div class="bg-error w-1.5 h-12 rounded-full"></div>
+<div class="bg-error w-1.5 h-10 rounded-full"></div>
+<div class="bg-error w-1.5 h-6 rounded-full"></div>
+<div class="bg-secondary/80 w-1.5 h-9 rounded-full"></div>
+<div class="bg-secondary/60 w-1.5 h-11 rounded-full"></div>
+<div class="bg-secondary/40 w-1.5 h-5 rounded-full"></div>
+<div class="bg-secondary/20 w-1.5 h-3 rounded-full"></div>
+</div>
+<p class="text-[11px] text-on-surface-variant leading-tight">
+                        Atypical jitter detected in phonation onset during 15-second voice sample.
+                    </p>
+</div>
+</div>
+<!-- Call to Action -->
+<div class="text-center py-6">
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary px-10 py-4 rounded-xl font-headline font-bold text-lg shadow-lg shadow-primary/20 transition-transform active:scale-95">
+                    View Clinical Analysis
+                </button>
+<p class="mt-6 text-xs text-outline italic max-w-sm mx-auto">
+                    Note: This is an automated alert based on the latest 15-second voice sample recorded at 09:14 AM EST.
+                </p>
+</div>
+<!-- Context Section with Image -->
+<div class="rounded-xl overflow-hidden bg-surface-container relative">
+<div class="absolute inset-0 opacity-10 mix-blend-overlay">
+<img alt="Medical background" class="w-full h-full object-cover" data-alt="abstract medical scientific visualization of audio waveforms and cellular structures in deep navy and teal tones with soft focus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0fPiIaHhHrILyl_-2QpGs9rWj7j_mXTv4K3dEbn41QAZN4_3nlvdEVJ7RKPPhN2edEqDeHmc1yqXTk9LnruZn5MLwyQ4jJSIHPD0D8pyvnlJsMoWOomwepOxT2XXttS2RlB7ojZ34-dmaTI9sqLBkEg30BEsm3LCFhB_fXY4toIXFHw_JsPq1vIiYIKOqD2fRIoTCiE8qb_vsp-fV_c2RyYCQqUz2eWz1_46_ytldqumFfiwSzgNBXDPgyVHcLHRWMEU_u1puFL4"/>
+</div>
+<div class="relative p-6 glass-panel border border-white/20">
+<div class="flex gap-4 items-start">
+<div class="bg-primary/10 p-2 rounded-lg">
+<span class="material-symbols-outlined text-primary">info</span>
+</div>
+<div>
+<h4 class="font-headline font-bold text-on-surface">Precision Context</h4>
+<p class="text-sm text-on-surface-variant mt-1 leading-relaxed">
+                                Our AI vocal tracking model compares real-time acoustic features against a historical longitudinal baseline. A deviation of 15% is statistically significant for Patient REC-48291's current medication cycle.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer from Shared Components JSON logic -->
+<footer class="bg-slate-50 dark:bg-slate-950 w-full border-t border-slate-100 dark:border-slate-800 mt-12 py-8 max-w-4xl mx-auto px-6 text-center">
+<div class="text-sm font-semibold text-slate-700 dark:text-slate-300 font-headline mb-4">Clinical Sanctuary</div>
+<p class="font-inter text-xs text-slate-500 leading-relaxed mb-6">
+                © 2024 Clinical Sanctuary. Medical AI Insights Division.
+            </p>
+<div class="flex justify-center gap-6">
+<a class="text-slate-500 hover:text-sky-700 dark:hover:text-sky-300 transition-opacity opacity-80 hover:opacity-100 text-xs" href="#">Privacy Policy</a>
+<a class="text-slate-500 hover:text-sky-700 dark:hover:text-sky-300 transition-opacity opacity-80 hover:opacity-100 text-xs" href="#">Clinical Guidelines</a>
+<a class="text-slate-500 hover:text-sky-700 dark:hover:text-sky-300 transition-opacity opacity-80 hover:opacity-100 text-xs" href="#">Contact Support</a>
+</div>
+</footer>
+</div>
+</body></html>

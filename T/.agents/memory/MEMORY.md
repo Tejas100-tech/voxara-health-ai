@@ -1,0 +1,3 @@
+- [Voxara tuples-as-ReactNode](voxara-tuples.md) — icon+label tuples need String() cast on label/value in JSX; React 18 doesn't accept ComponentType as ReactNode.
+- [Voxara API unknown types](voxara-api-types.md) — fetchAppointments/fetchDoctors return unknown[]; cast at call site with `as Appointment[]` / `as Doctor[]`.
+- [Voxara app structure](voxara-structure.md) — appointments route at /appointments, video call at /call/:id; ThemeProvider wraps AuthProvider in App.tsx.

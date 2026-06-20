@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Patient Overview | Clinical Sanctuary</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed": "#9feffe",
+                    "background": "#f8f9fa",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-primary-fixed": "#001e30",
+                    "error": "#ba1a1a",
+                    "on-primary-container": "#b6ddff",
+                    "surface-bright": "#f8f9fa",
+                    "surface-container-low": "#f3f4f5",
+                    "surface": "#f8f9fa",
+                    "outline": "#707880",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed-variant": "#004f59",
+                    "on-surface-variant": "#40484f",
+                    "primary-fixed-dim": "#8ecdff",
+                    "on-secondary-fixed": "#00201f",
+                    "tertiary-fixed-dim": "#83d3e1",
+                    "secondary": "#206867",
+                    "on-secondary-fixed-variant": "#00504e",
+                    "on-primary-fixed-variant": "#004b71",
+                    "tertiary-container": "#006875",
+                    "surface-tint": "#006494",
+                    "inverse-on-surface": "#f0f1f2",
+                    "primary-fixed": "#cbe6ff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed": "#001f24",
+                    "surface-container-high": "#e7e8e9",
+                    "secondary-fixed-dim": "#8fd2d0",
+                    "secondary-container": "#a8ece9",
+                    "on-error": "#ffffff",
+                    "tertiary": "#004e58",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "primary-container": "#006494",
+                    "surface-container": "#edeeef",
+                    "on-tertiary-container": "#95e5f4",
+                    "inverse-surface": "#2e3132",
+                    "surface-dim": "#d9dadb",
+                    "primary": "#004b71",
+                    "secondary-fixed": "#abefec",
+                    "on-background": "#191c1d",
+                    "inverse-primary": "#8ecdff",
+                    "on-tertiary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "on-secondary-container": "#266d6b",
+                    "surface-variant": "#e1e3e4",
+                    "outline-variant": "#c0c7d0",
+                    "on-surface": "#191c1d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-8 h-16 w-full sticky top-0 z-50 bg-slate-50 dark:bg-slate-900 duration-200 ease-in-out border-b-0">
+<div class="flex items-center gap-12">
+<span class="text-xl font-bold text-sky-900 dark:text-sky-100 tracking-tighter">Clinical Sanctuary</span>
+<nav class="hidden md:flex gap-8 items-center h-16">
+<a class="text-sky-900 dark:text-sky-100 border-b-2 border-sky-700 font-bold pb-2 font-manrope text-sm tracking-tight transition-colors" href="#">Patients</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-sky-700 font-manrope text-sm font-medium tracking-tight transition-colors" href="#">Alerts</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-sky-700 font-manrope text-sm font-medium tracking-tight transition-colors" href="#">Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-sky-50 dark:hover:bg-sky-900/30 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-sky-50 dark:hover:bg-sky-900/30 rounded-full transition-colors">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<div class="flex min-h-[calc(100vh-64px)]">
+<!-- SideNavBar -->
+<aside class="hidden lg:flex flex-col py-6 fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-white dark:bg-slate-950 shadow-xl shadow-sky-900/5 z-40">
+<div class="px-6 mb-8 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-fixed overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Professional headshot of a male doctor in his 40s wearing a white lab coat, clean studio lighting, calm professional atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzVAF0Zib-pp7U0IZxrM8H_c9Kg2EdsO7JNaos9QGUD9zpATGp7_W1h60ahluILgEa3apIVXH8C23ypWPIpplvlRxjTbNCMlV6yAPZqxnWsm9da2of05A7WhUMzVOudXDixXdSNXCo77f8Yv_rEFsPYFuO5OPBKwHXB7lVxQmR2c_BUcQLkYOCDpbmmUyMm2rlLUlh0i0sGAFv-bwsXav4gkBB2RoFaiVURSIS6X581t2EnXMMmSrcaonOMnZWOb08RH0OFBerpoQ"/>
+</div>
+<div>
+<p class="font-manrope text-sm font-bold text-sky-800 dark:text-sky-300">Dr. Julian Smith</p>
+<p class="text-xs text-slate-500">Cardiology Dept.</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 bg-sky-50 dark:bg-sky-900/40 text-sky-900 dark:text-sky-100 font-semibold rounded-r-full py-3 px-6 transition-transform scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-manrope text-sm">Patient Record</span>
+</a>
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 py-3 px-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-transform scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">monitor_heart</span>
+<span class="font-manrope text-sm">Vitals</span>
+</a>
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 py-3 px-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-transform scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">biotech</span>
+<span class="font-manrope text-sm">Lab Results</span>
+</a>
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 py-3 px-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-transform scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">mic_external_on</span>
+<span class="font-manrope text-sm">Transcription</span>
+</a>
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 py-3 px-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-transform scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-manrope text-sm">Settings</span>
+</a>
+</nav>
+<div class="px-4 mt-auto mb-6">
+<button class="w-full bg-primary text-on-primary py-3 rounded-xl font-manrope font-semibold text-sm shadow-lg shadow-primary/20 hover:opacity-90 transition-all">
+                    New Consultation
+                </button>
+</div>
+<div class="border-t border-slate-100 dark:border-slate-800 pt-4 pb-2">
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 py-2 px-6 hover:bg-slate-50 transition-colors" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+<span class="font-manrope text-sm">Help Center</span>
+</a>
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 py-2 px-6 hover:bg-slate-50 transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-manrope text-sm">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 lg:ml-64 p-8 max-w-[1600px]">
+<!-- Hero Header -->
+<header class="mb-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<span class="text-secondary font-semibold tracking-widest text-xs uppercase mb-2 block">Provider Dashboard</span>
+<h1 class="text-4xl md:text-5xl font-extrabold text-on-surface tracking-tight leading-tight">Patient Overview</h1>
+<p class="text-on-surface-variant mt-2 max-w-2xl font-body">Real-time analysis of clinical trajectories and vocal biomarkers powered by Clinical Sanctuary AI.</p>
+</div>
+<div class="flex gap-4">
+<div class="bg-surface-container-lowest p-4 px-6 rounded-xl text-center">
+<p class="text-2xl font-extrabold text-primary">94%</p>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">Overall Adherence</p>
+</div>
+<div class="bg-surface-container-lowest p-4 px-6 rounded-xl text-center">
+<p class="text-2xl font-extrabold text-error">12</p>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">Active Alerts</p>
+</div>
+</div>
+</div>
+</header>
+<!-- Risk Stratification Bento -->
+<section class="mb-12">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Urgent Attention Card -->
+<div class="lg:col-span-2 bg-gradient-to-br from-primary to-primary-container p-8 rounded-xl text-white relative overflow-hidden">
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-error bg-white rounded-full p-1 text-sm">priority_high</span>
+<h2 class="text-xl font-bold font-manrope">Risk Stratification: High Priority</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/10">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Senior woman with gray hair, gentle smile, focused portrait for medical app patient profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJ3GOzgH3ePCxmel5P9OmG6AyUda8g_Y0cr5udno0Iat8DcYHF5mGU1P2v1Ztd1yuIZaeHXc6gz2WzIEeWx8luVr3LM1Wos5p62hF9Bn5-_ZJb2zdkTevnAnpccL0Can_2ZiBD2I9ZqTrry1vpkcAlJjJ_1k8-vTiUkm2oZqy3yZkgDh8JMMlKpQVz4expN3t_7MXnzrIwhBLox-obTpne9ihnygScurmXLAMwLEXFeuL-oVurd-gACwx8eXGGyqrMhfKhOJSbT9g"/>
+</div>
+<div>
+<p class="font-bold text-sm">Elena Rodriguez</p>
+<p class="text-xs text-white/70">ID: #44921</p>
+</div>
+</div>
+<span class="bg-error text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter">Critical</span>
+</div>
+<p class="text-xs font-semibold mb-2 flex items-center gap-1"><span class="material-symbols-outlined text-sm">warning</span> Recent Tremor Spike</p>
+<div class="h-1.5 w-full bg-white/20 rounded-full overflow-hidden">
+<div class="h-full bg-error" style="width: 88%"></div>
+</div>
+</div>
+<div class="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/10">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Middle-aged man with beard and glasses looking thoughtful, medical patient portrait style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0zAfOxSQ_EbBJAjj6a_Cm9YP1ptM4i60GwZnN_V2rNw5VjeQONuiOwrH3EIAvjZXYNUouIqa_JgeEGsJJJM3So6Ld6OU-IJaxHKvM5GqUpXVgJXPisBq_dn-_KcvV39hCOOtsJT73NqMFpvaAhkDeAqHHfbfZm8cfMZ01ofmsALY1uRBpkPvxoZucxMHaoE2-dPkMPC2CgrHLcvnWo3oCZlwMdGCRYI96FH4SpvKgOb4NhBbFbdpDdYcnDFZE1MT6ZC-oPMt1gTo"/>
+</div>
+<div>
+<p class="font-bold text-sm">Marcus Chen</p>
+<p class="text-xs text-white/70">ID: #44805</p>
+</div>
+</div>
+<span class="bg-error text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter">Critical</span>
+</div>
+<p class="text-xs font-semibold mb-2 flex items-center gap-1"><span class="material-symbols-outlined text-sm">air</span> Breathlessness Alert</p>
+<div class="h-1.5 w-full bg-white/20 rounded-full overflow-hidden">
+<div class="h-full bg-error" style="width: 72%"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute -right-12 -bottom-12 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+</div>
+<!-- AI Confidence Insight -->
+<div class="bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-tertiary">psychology</span>
+<h3 class="font-bold text-lg text-on-surface">Vocal Analysis Health</h3>
+</div>
+<p class="text-sm text-on-surface-variant mb-6 leading-relaxed">Current fleet-wide AI confidence in anomaly detection is performing above baseline.</p>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-xs font-bold text-on-surface-variant uppercase mb-1">
+<span>Stability Score</span>
+<span>92%</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-tertiary" style="width: 92%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs font-bold text-on-surface-variant uppercase mb-1">
+<span>Analysis Depth</span>
+<span>78%</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary" style="width: 78%"></div>
+</div>
+</div>
+</div>
+</div>
+<button class="mt-8 text-primary font-bold text-sm flex items-center gap-2 hover:gap-3 transition-all">
+                            Full Clinic Report <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Patient Grid -->
+<section>
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-2xl font-bold text-on-surface">All Assigned Patients</h2>
+<div class="flex gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full text-sm focus:ring-2 focus:ring-primary w-64" placeholder="Search patients..." type="text"/>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-high rounded-full text-sm font-semibold text-on-surface-variant hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-sm">tune</span> Filter
+                        </button>
+</div>
+</div>
+<!-- Patient List Cards (Asymmetric Grid) -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+<!-- Patient Row 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl hover:shadow-md transition-shadow group">
+<div class="flex flex-col md:flex-row gap-6">
+<div class="flex items-center gap-4 min-w-[200px]">
+<img class="w-14 h-14 rounded-full object-cover" data-alt="Portrait of a mature man with salt and pepper hair, looking professional and calm for patient profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFYozfhitgBKmQ8i5uJJt0z88tgU78lIB7d3aVT_OdyCk7zIXj8hA0jO30utvdVcbSBRE9Di1irB18IU-nSIgRpz4HVl_2FW0Uk_QMsE2zNbXOEzRz98oSk7PF4JY49OLnoXFHFwKwehqLd7WH_O3oMlJqCfXo3quIPqJTh9F0ROvEaieI_0c-DyNASODpnAAEudWaaFdXI9DkTEU1U46s1DzsxgNb4xTWoRLhdiX_turDTNKmfBYTvk1jXtqFMgiShGh2ikt-Tt0"/>
+<div>
+<p class="font-extrabold text-on-surface">Thomas Wright</p>
+<p class="text-xs text-on-surface-variant">Last Check: 2h ago</p>
+</div>
+</div>
+<div class="flex-1 grid grid-cols-3 gap-4">
+<div class="text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter mb-1">Stability</p>
+<div class="flex items-center justify-center gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-sm font-bold">Stable</span>
+</div>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter mb-1">Tremor</p>
+<p class="text-sm font-bold text-on-surface-variant">Trace</p>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter mb-1">Breath</p>
+<p class="text-sm font-bold text-on-surface-variant">Normal</p>
+</div>
+</div>
+<div class="flex items-center justify-end">
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight">Improving</span>
+</div>
+</div>
+</div>
+<!-- Patient Row 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl hover:shadow-md transition-shadow group">
+<div class="flex flex-col md:flex-row gap-6">
+<div class="flex items-center gap-4 min-w-[200px]">
+<img class="w-14 h-14 rounded-full object-cover" data-alt="A woman in her 30s with a warm and genuine expression, medical software patient profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgBW-hWVLzIY_Yp6joa6pIZ8wIJ_q9kPTN9GKb7IUj8Lzd_SMDDgn9X036g3VvxkLfpUuPY-aqEa6-XigDS7RNdlEaCHGGIH6zjp_sZ1BAt_cBYdKxl7NMhSI20fa0TDl3rAYEdNRQXaT5P0QOsmpNP4AYB5KIuBIFE6tBX4t_REcyYgdWA79bGxjcO384Qhu0TOrMyMdphfqMEKqT8Vohi-QuXvPoK1a8hN60m3CK4Q8rGILoMrXmd64VLRWMl3oEcLJxNi5lJ8s"/>
+<div>
+<p class="font-extrabold text-on-surface">Sarah Jennings</p>
+<p class="text-xs text-on-surface-variant">Last Check: 4h ago</p>
+</div>
+</div>
+<div class="flex-1 grid grid-cols-3 gap-4">
+<div class="text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter mb-1">Stability</p>
+<div class="flex items-center justify-center gap-1">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="text-sm font-bold">Anomaly</span>
+</div>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter mb-1">Tremor</p>
+<p class="text-sm font-bold text-error">Moderate</p>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter mb-1">Breath</p>
+<p class="text-sm font-bold text-on-surface-variant">Elevated</p>
+</div>
+</div>
+<div class="flex items-center justify-end">
+<span class="bg-error-container text-on-error-container px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight">Critical</span>
+</div>
+</div>
+</div>
+<!-- Patient Row 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl hover:shadow-md transition-shadow group">
+<div class="flex flex-col md:flex-row gap-6">
+<div class="flex items-center gap-4 min-w-[200px]">
+<img class="w-14 h-14 rounded-full object-cover" data-alt="Portrait of a young man with a friendly, energetic look for a healthcare app patient dashboard" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtUn6HZhfYqsR5NhJcw2vE65DWgEZcIkxEXY7lyRI7U3ekMcZoYdai9d-orgbEA3p6-AOxwYml4zIXUt4hKBWjNot8VoWpTBmtnZrqbus8u84F68oMzf4dMIcV_OfGs3ELkbYYvc20amifg9tRTCzmU6q5VXi5MPLGDmF6N8QEAK6Zk1Ha4tlNhoo4vBV6QXCawFT7X4iJdXiYOrYbGhCBqqJCM9p4ZT2sBp1D7yp7uD5g7oRnuzLnG7-38z2l8PH8ipr_NXzwm7s"/>
+<div>
+<p class="font-extrabold text-on-surface">David Okafor</p>
+<p class="text-xs text-on-surface-variant">Last Check: 10m ago</p>
+</div>
+</div>
+<div class="flex-1 grid grid-cols-3 gap-4">
+<div class="text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter mb-1">Stability</p>
+<div class="flex items-center justify-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="text-sm font-bold">Optimal</span>
+</div>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter mb-1">Tremor</p>
+<p class="text-sm font-bold text-on-surface-variant">None</p>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter mb-1">Breath</p>
+<p class="text-sm font-bold text-on-surface-variant">Optimal</p>
+</div>
+</div>
+<div class="flex items-center justify-end">
+<span class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight">Stable</span>
+</div>
+</div>
+</div>
+<!-- Patient Row 4 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl hover:shadow-md transition-shadow group">
+<div class="flex flex-col md:flex-row gap-6">
+<div class="flex items-center gap-4 min-w-[200px]">
+<img class="w-14 h-14 rounded-full object-cover" data-alt="Older man with glasses and a wise expression, clean medical lighting for patient record" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyPDxzBHOYxpfFeOEFp76RoPcTLQhAXGHVZz94oJFgkGpXRINRmAihZBPC7P29RM0Xp4kOvWgKbdx-E_L51mj5hpygLgK69AMHetc7TLoJlH4bjAPog0ITOJLxu9XtzPMDd7KpLRjg1e8f_JNIVTQ4GOHMqEwOrEfKyZx6hckbZe67y_Ktgnj-xYBDyHD4Y6cHzgETNpAD_fskGm33pqn6zq91ypRKBpcro_J64adqeFZlDAUgxuQlmJPk8FniT_yG1q9Aa5W7S_M"/>
+<div>
+<p class="font-extrabold text-on-surface">James Wilson</p>
+<p class="text-xs text-on-surface-variant">Last Check: 1d ago</p>
+</div>
+</div>
+<div class="flex-1 grid grid-cols-3 gap-4">
+<div class="text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter mb-1">Stability</p>
+<div class="flex items-center justify-center gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-sm font-bold">Steady</span>
+</div>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter mb-1">Tremor</p>
+<p class="text-sm font-bold text-on-surface-variant">Trace</p>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter mb-1">Breath</p>
+<p class="text-sm font-bold text-on-surface-variant">Mild</p>
+</div>
+</div>
+<div class="flex items-center justify-end">
+<span class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight">Stable</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Contextual FAB (Mobile/Tablet Focused) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-2xl lg:hidden z-50">
+<span class="material-symbols-outlined">add</span>
+</button>
+</body></html>

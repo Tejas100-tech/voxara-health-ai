@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+        h1, h2, h3, .font-manrope {
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f8f9fa",
+                        "on-surface": "#191c1d",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e1e3e4",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed": "#00201f",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-bright": "#f8f9fa",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-container": "#edeeef",
+                        "background": "#f8f9fa",
+                        "tertiary-fixed-dim": "#83d3e1",
+                        "on-background": "#191c1d",
+                        "secondary-fixed-dim": "#8fd2d0",
+                        "tertiary": "#004e58",
+                        "outline": "#707880",
+                        "surface-container-highest": "#e1e3e4",
+                        "secondary": "#206867",
+                        "secondary-container": "#a8ece9",
+                        "on-primary-fixed": "#001e30",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#40484f",
+                        "primary-fixed": "#cbe6ff",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f3f4f5",
+                        "primary-container": "#006494",
+                        "on-primary-fixed-variant": "#004b71",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e7e8e9",
+                        "on-secondary-fixed-variant": "#00504e",
+                        "primary": "#004b71",
+                        "surface-dim": "#d9dadb",
+                        "outline-variant": "#c0c7d0",
+                        "inverse-surface": "#2e3132",
+                        "primary-fixed-dim": "#8ecdff",
+                        "tertiary-fixed": "#9feffe",
+                        "on-tertiary-fixed": "#001f24",
+                        "on-tertiary-fixed-variant": "#004f59",
+                        "on-tertiary-container": "#95e5f4",
+                        "secondary-fixed": "#abefec",
+                        "on-secondary-container": "#266d6b",
+                        "on-primary-container": "#b6ddff",
+                        "surface-tint": "#006494",
+                        "tertiary-container": "#006875",
+                        "inverse-primary": "#8ecdff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- SideNavBar (Authority: JSON/Hierarchy) -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-slate-50 dark:bg-slate-950 flex flex-col py-6 border-r border-slate-200/20 font-manrope text-sm font-semibold tracking-wide">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+</div>
+<div>
+<div class="text-lg font-black text-sky-900 dark:text-sky-50 leading-none">Precision Care</div>
+<div class="text-[10px] text-slate-500 uppercase tracking-[0.2em] mt-1">Clinical Sanctuary</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Dashboard -->
+<a class="text-slate-500 dark:text-slate-400 px-4 py-3 mx-2 flex items-center gap-3 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<!-- My Recordings -->
+<a class="text-slate-500 dark:text-slate-400 px-4 py-3 mx-2 flex items-center gap-3 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">mic</span>
+                My Recordings
+            </a>
+<!-- Trends (Active Tab) -->
+<a class="bg-white dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded-xl px-4 py-3 mx-2 flex items-center gap-3 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+                Trends
+            </a>
+<!-- Insights -->
+<a class="text-slate-500 dark:text-slate-400 px-4 py-3 mx-2 flex items-center gap-3 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">insights</span>
+                Insights
+            </a>
+<!-- Settings -->
+<a class="text-slate-500 dark:text-slate-400 px-4 py-3 mx-2 flex items-center gap-3 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="px-4 mt-auto">
+<button class="w-full bg-primary text-white rounded-xl py-3 flex items-center justify-center gap-2 shadow-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">add</span>
+                New Recording
+            </button>
+<a class="mt-4 text-slate-500 dark:text-slate-400 px-4 py-3 flex items-center gap-3 hover:bg-slate-200/50 rounded-xl" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+                Help Center
+            </a>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl z-30 shadow-sm dark:shadow-none flex justify-between items-center px-6 py-3 ml-auto" style="width: calc(100% - 16rem); margin-left: 16rem;">
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="pl-10 pr-4 py-2 bg-slate-100 border-none rounded-full text-sm focus:ring-2 focus:ring-primary-container w-64" placeholder="Search data trends..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-8 w-[1px] bg-slate-200 mx-2"></div>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<div class="text-sm font-semibold text-sky-900 leading-none">Dr. Aris Thorne</div>
+<div class="text-[11px] text-slate-500">Neurology Dept.</div>
+</div>
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of a medical professional with a kind expression in a bright clinic setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBINNZVy1eTXepCwIhPbHsy3_5djOl7kRIm1kwqoEMYg75JwgRtYpEKITj9mg1AGcxI6YK1_DWKrsDpJLlfrubE7c4z3gmGJF8i85Htq1o2FIDh3nrHtKqIwXkRt6UMFLBpEAwuciZVYDzfxDIs29153fAp1xuKoX2BpztNRLZUlXQV7N04YYT5t6jFc6z7Fy_Ru979YmfTbqnoKOdyYtoQ2eFzBMRbnaH21AIN1uGOiPNpA0ehxek6CeVpnbEpxnbJzdn0odn1wDA"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-64 p-8 min-h-screen">
+<div class="max-w-6xl mx-auto space-y-8">
+<!-- Header Section -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h1 class="text-4xl font-extrabold text-primary tracking-tight font-headline">Health Trends</h1>
+<p class="text-on-surface-variant mt-2 max-w-lg font-body">Long-term longitudinal analysis of vocal biomarkers and neuromotor stability metrics over the previous quarter.</p>
+</div>
+<div class="flex bg-surface-container p-1 rounded-xl">
+<button class="px-4 py-2 text-sm font-semibold rounded-lg transition-all text-on-surface-variant hover:text-primary">1M</button>
+<button class="px-4 py-2 text-sm font-semibold rounded-lg bg-surface-container-lowest shadow-sm text-primary">3M</button>
+<button class="px-4 py-2 text-sm font-semibold rounded-lg transition-all text-on-surface-variant hover:text-primary">6M</button>
+<button class="px-4 py-2 text-sm font-semibold rounded-lg transition-all text-on-surface-variant hover:text-primary">1Y</button>
+</div>
+</section>
+<!-- Main Interactive Chart Section -->
+<section class="bg-surface-container-lowest rounded-[2rem] p-8 shadow-sm relative overflow-hidden">
+<div class="flex flex-wrap items-start justify-between gap-6 mb-12">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<h2 class="text-lg font-bold text-on-surface font-headline">Global Wellness Score</h2>
+</div>
+<div class="text-4xl font-black text-primary">84.2<span class="text-lg font-medium text-secondary ml-2">+4.1%</span></div>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-white text-sm font-bold shadow-md shadow-primary/20">
+<span class="material-symbols-outlined text-sm">show_chart</span>
+                            Wellness Score
+                        </button>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-surface-container text-on-surface-variant text-sm font-bold hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-sm">vibration</span>
+                            Tremors
+                        </button>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-surface-container text-on-surface-variant text-sm font-bold hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-sm">graphic_eq</span>
+                            Pitch
+                        </button>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-surface-container text-on-surface-variant text-sm font-bold hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-sm">speed</span>
+                            Speech Rate
+                        </button>
+</div>
+</div>
+<!-- Abstract Line Chart Visualization -->
+<div class="h-80 w-full flex items-end justify-between px-2 relative group">
+<!-- Chart Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between py-2">
+<div class="w-full border-t border-surface-container"></div>
+<div class="w-full border-t border-surface-container"></div>
+<div class="w-full border-t border-surface-container"></div>
+<div class="w-full border-t border-surface-container"></div>
+<div class="w-full border-t border-surface-container-high border-dashed"></div>
+</div>
+<!-- SVG Path for Graph -->
+<svg class="absolute inset-0 w-full h-full" preserveaspectratio="none" viewbox="0 0 1000 100">
+<defs>
+<lineargradient id="gradient" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#006494" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#006494" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,80 Q100,75 200,60 T400,40 T600,65 T800,30 T1000,20 L1000,100 L0,100 Z" fill="url(#gradient)"></path>
+<path d="M0,80 Q100,75 200,60 T400,40 T600,65 T800,30 T1000,20" fill="none" stroke="#004b71" stroke-linecap="round" stroke-width="3"></path>
+<!-- Data Points -->
+<circle cx="200" cy="60" fill="white" r="4" stroke="#004b71" stroke-width="2"></circle>
+<circle cx="400" cy="40" fill="white" r="4" stroke="#004b71" stroke-width="2"></circle>
+<circle cx="600" cy="65" fill="white" r="4" stroke="#004b71" stroke-width="2"></circle>
+<circle cx="800" cy="30" fill="white" r="4" stroke="#004b71" stroke-width="2"></circle>
+</svg>
+<!-- Interactive Tooltip Simulation -->
+<div class="absolute left-[40%] bottom-[65%] bg-primary-container text-on-primary-container p-3 rounded-xl shadow-xl backdrop-blur-md border border-white/20 transform -translate-x-1/2">
+<div class="text-[10px] uppercase tracking-wider font-bold opacity-80">Aug 12, 2023</div>
+<div class="text-lg font-black">88.4</div>
+<div class="text-[10px] flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[12px]">trending_up</span> Peak Stability
+                        </div>
+</div>
+</div>
+<!-- X-Axis Labels -->
+<div class="flex justify-between mt-6 px-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+<span>July</span>
+<span>August</span>
+<span>September</span>
+</div>
+</section>
+<!-- Medication Overlay Section -->
+<section class="space-y-6">
+<div class="flex items-center justify-between">
+<h3 class="text-xl font-bold text-on-surface font-headline">Medication Overlay</h3>
+<div class="flex gap-2">
+<span class="flex items-center gap-1.5 text-xs font-semibold text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Increase
+                        </span>
+<span class="flex items-center gap-1.5 text-xs font-semibold text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-error"></span> Decrease
+                        </span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Medication Event 1 -->
+<div class="bg-surface-container-low rounded-2xl p-6 border-l-4 border-secondary hover:bg-surface-container transition-colors">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="text-[10px] font-bold text-secondary uppercase tracking-widest block mb-1">Aug 04</span>
+<h4 class="font-bold text-on-surface">Levodopa Complex</h4>
+</div>
+<span class="material-symbols-outlined text-secondary">arrow_upward</span>
+</div>
+<div class="flex items-center gap-2 mb-4">
+<span class="text-sm font-medium text-on-surface-variant">250mg</span>
+<span class="material-symbols-outlined text-slate-300 text-sm">trending_flat</span>
+<span class="text-sm font-bold text-primary">350mg</span>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">Corresponding 12% improvement in vocal tremor stability 48 hours post-adjustment.</p>
+</div>
+<!-- Medication Event 2 -->
+<div class="bg-surface-container-low rounded-2xl p-6 border-l-4 border-slate-300 hover:bg-surface-container transition-colors">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Sep 15</span>
+<h4 class="font-bold text-on-surface">Pramipexole</h4>
+</div>
+<span class="material-symbols-outlined text-slate-400">remove</span>
+</div>
+<div class="flex items-center gap-2 mb-4">
+<span class="text-sm font-medium text-on-surface-variant">0.75mg</span>
+<span class="material-symbols-outlined text-slate-300 text-sm">trending_flat</span>
+<span class="text-sm font-bold text-primary">0.75mg</span>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">Dosage maintained. Monitored for potential interaction with sleep hygiene score.</p>
+</div>
+<!-- Medication Event 3 -->
+<div class="bg-surface-container-low rounded-2xl p-6 border-l-4 border-error hover:bg-surface-container transition-colors">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="text-[10px] font-bold text-error uppercase tracking-widest block mb-1">Oct 02</span>
+<h4 class="font-bold text-on-surface">Amantadine</h4>
+</div>
+<span class="material-symbols-outlined text-error">arrow_downward</span>
+</div>
+<div class="flex items-center gap-2 mb-4">
+<span class="text-sm font-medium text-on-surface-variant">100mg</span>
+<span class="material-symbols-outlined text-slate-300 text-sm">trending_flat</span>
+<span class="text-sm font-bold text-primary">50mg</span>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">Reduced to mitigate reported dyskinesia. Tracking impact on motor fluency.</p>
+</div>
+</div>
+</section>
+<!-- Secondary Insights Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<!-- Bento Item 1: Summary -->
+<div class="md:col-span-2 bg-secondary text-white rounded-[2rem] p-8 flex flex-col justify-between">
+<div>
+<span class="material-symbols-outlined bg-white/20 p-3 rounded-2xl mb-6">psychology</span>
+<h3 class="text-2xl font-bold font-headline mb-2">Neurological Resilience</h3>
+<p class="text-white/80 text-sm leading-relaxed">Your data indicates a strong positive correlation between evening medication adherence and morning vocal clarity.</p>
+</div>
+<div class="mt-8 flex items-center gap-4">
+<div class="w-full bg-white/10 h-2 rounded-full overflow-hidden">
+<div class="bg-white h-full w-[88%]"></div>
+</div>
+<span class="text-sm font-bold">88%</span>
+</div>
+</div>
+<!-- Bento Item 2: Small metric -->
+<div class="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-50">
+<div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Avg. Speech Rate</div>
+<div class="text-3xl font-black text-primary mb-2">142<span class="text-xs font-medium text-on-surface-variant ml-1">wpm</span></div>
+<div class="h-16 w-full flex items-end gap-1">
+<div class="flex-1 bg-primary-fixed-dim rounded-t-sm h-[40%]"></div>
+<div class="flex-1 bg-primary-fixed-dim rounded-t-sm h-[60%]"></div>
+<div class="flex-1 bg-primary-fixed-dim rounded-t-sm h-[55%]"></div>
+<div class="flex-1 bg-primary h-[90%]"></div>
+<div class="flex-1 bg-primary-fixed-dim rounded-t-sm h-[70%]"></div>
+<div class="flex-1 bg-primary-fixed-dim rounded-t-sm h-[75%]"></div>
+</div>
+</div>
+<!-- Bento Item 3: Small metric -->
+<div class="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-50">
+<div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Pitch Variance</div>
+<div class="text-3xl font-black text-primary mb-2">14.2<span class="text-xs font-medium text-on-surface-variant ml-1">Hz</span></div>
+<div class="mt-4 flex flex-col gap-2">
+<div class="flex items-center justify-between text-[10px] font-bold uppercase">
+<span>Stability</span>
+<span class="text-secondary">Optimal</span>
+</div>
+<div class="w-full bg-slate-100 h-1 rounded-full">
+<div class="bg-secondary h-full w-[72%]"></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- FAB (Suppressed on Details/Trends as per Shell Logic) -->
+<!-- Not rendering FAB here to prioritize the large data canvas -->
+</body></html>

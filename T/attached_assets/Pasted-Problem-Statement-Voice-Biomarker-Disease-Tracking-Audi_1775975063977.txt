@@ -1,0 +1,50 @@
+Problem Statement: Voice Biomarker Disease Tracking (Audio AI)
+The Challenge: Patients with conditions such as asthma, cardiovascular issues, neurological disorders, post-brain stroke, Parkinson’s, or depression typically only consult doctors every three months. Consequently, pharmaceutical companies lack continuous data on patient health between visits.
+Background:
+Patients suffering from chronic conditions such as:
+•
+Asthma
+•
+Cardiovascular diseases
+•
+Neurological disorders
+•
+Post-stroke complications
+•
+Parkinson’s disease
+•
+Depression
+Typically consult doctors only once every few months. This creates a significant gap in continuous health monitoring, making it difficult for doctors and pharmaceutical companies to:
+•
+Track disease progression
+•
+Monitor treatment effectiveness
+•
+Detect early warning signs
+Problem: There is currently no scalable, non-invasive, and continuous monitoring system that can track a patient’s condition on a daily basis between clinical visits.
+Objective:
+Build an AI-powered Voice Diary Application that enables patients to:
+• Record a 15-second daily voice sample
+• Automatically analyze their voice using AI/ML models
+• Track changes in health conditions over time
+The AI Solution: Develop a daily "Voice Diary" application. The patient speaks into the app for 15 seconds, and the AI analyzes "Vocal Biomarkers" such as tremors, breathlessness, and pitch to track disease progression or the efficacy of prescribed medication.
+Participants are required to develop a system that:
+• Captures short voice recordings from users
+• Extracts vocal biomarkers, such as:
+➢ Voice tremors
+➢ Breathlessness
+➢ Pitch variation
+➢ Speech rate
+➢ Pause patterns
+• Uses AI/ML models to:
+➢ Detect anomalies
+➢ Track disease progression
+➢ Evaluate medication effectiveness
+Features to Implement:
+• Voice Recording Module (15 sec input)
+• Audio Preprocessing (noise reduction, normalization)
+• Feature Extraction (MFCC, pitch, frequency, etc.)
+• AI/ML Model for analysis
+• Progress Tracking Dashboard
+• Alert system for abnormal patterns (optional)
+Suggested
