@@ -1,14 +1,20 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Activity, Mic, TrendingUp, BrainCircuit, Bell, FileText,
   HeartPulse, User, Radio, History, LogOut, Moon, Sun, X, Menu, Calendar,
+  Stethoscope, Siren, Leaf, Pill,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatTime, useLiveVitals } from "@/lib/realtime";
 import { fetchUnreadCount } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
+import { useAyushMode } from "@/lib/ayush-mode";
+import { SosButton } from "@/components/sos-button";
+import { FloatingChatbot } from "@/components/floating-chatbot";
+import { getTranslations, type SupportedLanguage } from "@/lib/medikiosk-i18n";
 
 interface LayoutProps {
   children: ReactNode;
@@ -57,8 +63,16 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
   const unreadCount = useUnreadNotifications();
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { mode, toggleMode } = useAyushMode();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sparkHistory, setSparkHistory] = useState<number[]>([70, 75, 80, 78, 82, 85, live.signalQuality]);
+  const [lang, setLang] = useState<SupportedLanguage>(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("medikiosk.language") as SupportedLanguage) || "en";
+    }
+    return "en";
+  });
+  const tr = getTranslations();
 
   useEffect(() => {
     setSparkHistory((prev) => [...prev.slice(-11), live.signalQuality]);
@@ -67,35 +81,37 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
   const effectiveRole = user?.role ?? userType;
 
   const patientNav = [
-    { name: "Dashboard", href: "/", icon: Activity },
-    { name: "Record Live", href: "/record", icon: Mic },
-    { name: "History", href: "/history", icon: History },
-    { name: "Trends", href: "/trends", icon: TrendingUp },
-    { name: "AI Analysis", href: "/analysis", icon: BrainCircuit },
-    { name: "ML Insights", href: "/ml", icon: Radio },
-    { name: "Appointments", href: "/appointments", icon: HeartPulse },
+    { name: tr.navDashboard, href: "/", icon: Activity },
+    { name: mode === "ayush" ? tr.navAyurVoxara : tr.navMediKiosk, href: mode === "ayush" ? "/patient/ayush" : "/medikiosk", icon: mode === "ayush" ? Leaf : Stethoscope },
+    { name: tr.navRecordLive, href: "/record", icon: Mic },
+    { name: tr.navHistory, href: "/history", icon: History },
+    { name: tr.navTrends, href: "/trends", icon: TrendingUp },
+    { name: tr.navAIAnalysis, href: "/analysis", icon: BrainCircuit },
+    { name: tr.navMLInsights, href: "/ml", icon: Radio },
+    { name: tr.navAppointments, href: "/appointments", icon: HeartPulse },
   ];
 
   const clinicianNav = [
-    { name: "Command Center", href: "/clinician", icon: User },
-    { name: "Appointments", href: "/appointments", icon: Calendar },
-    { name: "Live Alerts", href: "/alerts", icon: Bell },
-    { name: "Medication Flow", href: "/medication", icon: FileText },
+    { name: tr.navDashboard, href: "/clinician", icon: User },
+    { name: tr.navSOS, href: "/sos", icon: Siren },
+    { name: mode === "ayush" ? tr.navAYUSHDashboard : tr.navIntakeReview, href: mode === "ayush" ? "/practitioner/ayush" : "/medikiosk/clinician-review", icon: mode === "ayush" ? Leaf : Stethoscope },
+    { name: tr.navAppointments, href: "/appointments", icon: Calendar },
+    { name: tr.navLiveAlerts, href: "/alerts", icon: Bell },
+    { name: tr.navMedication, href: "/medication", icon: FileText },
   ];
 
   const nav = effectiveRole === "clinician" ? clinicianNav : patientNav;
   const currentPage = nav.find((n) => n.href === location || (location.startsWith(n.href) && n.href !== "/"))?.name ?? "Dashboard";
 
   const Sidebar = () => (
-    <div className="flex flex-col h-full">
-      <div className="shrink-0 p-6 flex items-center justify-between">
+    <div className="flex flex-col h-full">        <div className="shrink-0 p-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-secondary text-white flex items-center justify-center shadow-lg shadow-primary/30">
-            <HeartPulse size={22} />
+            {mode === "ayush" ? <Leaf size={22} /> : <HeartPulse size={22} />}
           </div>
           <div>
-            <h2 className="font-extrabold text-primary text-base leading-tight tracking-tight font-[Manrope]">Voxara</h2>
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">Health AI Live</p>
+            <h2 className="font-extrabold text-primary text-base leading-tight tracking-tight font-[Manrope]">{mode === "ayush" ? "AyurVoxara" : "Voxara"}</h2>
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">{mode === "ayush" ? "Ayurveda AI" : "Health AI Live"}</p>
           </div>
         </div>
         <button
@@ -174,11 +190,43 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
       </nav>
 
       <div className="shrink-0 p-4 border-t space-y-2">
+        {/* Allopathic / AYUSH Mode Toggle */}
+        <button
+          onClick={toggleMode}
+          className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all border ${
+            mode === "ayush"
+              ? "bg-gradient-to-r from-green-900/20 to-amber-500/20 border-amber-500/30 text-amber-700 dark:text-amber-300"
+              : "bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20 text-primary"
+          }`}
+        >
+          <AnimatePresence mode="wait">
+            {mode === "ayush" ? (
+              <motion.span key="leaf" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                <Leaf size={18} />
+              </motion.span>
+            ) : (
+              <motion.span key="pill" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                <Pill size={18} />
+              </motion.span>
+            )}
+          </AnimatePresence>
+          <span className="flex-1 text-left">
+            {mode === "ayush" ? tr.switchToAllopathic : tr.switchToAYUSH}
+          </span>
+          <span className={`text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-wider ${
+            mode === "ayush"
+              ? "bg-amber-500/20 text-amber-600"
+              : "bg-primary/15 text-primary"
+          }`}>
+            {mode === "ayush" ? "AYUSH" : "MD"}
+          </span>
+        </button>
+
         {effectiveRole === "patient" && (
           <Link href="/record" onClick={() => setMobileOpen(false)}>
             <Button className="w-full rounded-xl py-6 shadow-lg shadow-primary/20 glow-pulse" size="lg">
               <Mic className="mr-2" size={18} />
-              New Live Sample
+              {tr.newLiveSample}
             </Button>
           </Link>
         )}
@@ -187,7 +235,7 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
           className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/5 rounded-xl font-semibold transition-all"
         >
           <LogOut size={16} />
-          Sign Out
+          {tr.signOut}
         </button>
       </div>
     </div>
@@ -227,7 +275,7 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2 rounded-full bg-secondary/10 px-4 py-2 text-xs font-black uppercase tracking-wider text-secondary border border-secondary/20">
               <span className="h-2 w-2 rounded-full bg-secondary animate-pulse" />
-              Realtime Active
+              {tr.realtimeActive}
             </div>
 
             <button
@@ -263,6 +311,10 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
           {children}
         </div>
       </main>
+      {/* Floating AyurBot Chatbot — available on all pages */}
+      <FloatingChatbot />
+      {/* SOS Emergency Button — shown for patients only */}
+      {effectiveRole === "patient" && <SosButton />}
     </div>
   );
 }

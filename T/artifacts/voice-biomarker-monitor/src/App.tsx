@@ -20,6 +20,16 @@ import PatientDetailPage from "@/pages/patient-detail";
 import AppointmentsPage from "@/pages/appointments";
 import VideoCallPage from "@/pages/video-call";
 import MLDashboard from "@/pages/ml-dashboard";
+import MedikioskHub from "@/pages/medikiosk-hub";
+import MedikioskIntake from "@/pages/medikiosk-intake";
+import MedikioskScan from "@/pages/medikiosk-scan";
+import MedikioskSummary from "@/pages/medikiosk-summary";
+import MedikioskClinicianReview from "@/pages/medikiosk-clinician-review";
+import SosDashboard from "@/pages/sos-dashboard";
+import AyushHub from "@/pages/ayush-hub";
+import AyushChat from "@/pages/ayush-chat";
+import AyushAssessment from "@/pages/ayush-assessment";
+import AyushPractitioner from "@/pages/ayush-practitioner";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +68,16 @@ function Router() {
       <Route path="/clinician/patient/:patientId" component={() => <ProtectedRoute component={PatientDetailPage} roles={["clinician"]} />} />
       <Route path="/alerts" component={() => <ProtectedRoute component={AlertsHistory} />} />
       <Route path="/medication" component={() => <ProtectedRoute component={MedicationWorkflow} />} />
+      <Route path="/medikiosk" component={() => <ProtectedRoute component={MedikioskHub} />} />
+      <Route path="/medikiosk/intake" component={() => <ProtectedRoute component={MedikioskIntake} />} />
+      <Route path="/medikiosk/scan" component={() => <ProtectedRoute component={MedikioskScan} />} />
+      <Route path="/medikiosk/summary" component={() => <ProtectedRoute component={MedikioskSummary} />} />
+      <Route path="/medikiosk/clinician-review" component={() => <ProtectedRoute component={MedikioskClinicianReview} roles={["clinician"]} />} />
+      <Route path="/sos" component={() => <ProtectedRoute component={SosDashboard} roles={["clinician"]} />} />
+      <Route path="/patient/ayush" component={() => <ProtectedRoute component={AyushHub} />} />
+      <Route path="/patient/ayush/chat" component={() => <ProtectedRoute component={AyushChat} />} />
+      <Route path="/patient/ayush/assessment" component={() => <ProtectedRoute component={AyushAssessment} />} />
+      <Route path="/practitioner/ayush" component={() => <ProtectedRoute component={AyushPractitioner} roles={["clinician"]} />} />
       <Route component={NotFound} />
     </Switch>
   );

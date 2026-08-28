@@ -169,6 +169,88 @@
   --chart-5: 0 0% 96%;
 }
 
+/* ═══════════════════════════════════════════════════
+   AYUSH — Traditional Ayurvedic Theme
+   Deep forest green + saffron/marigold accents
+   ═══════════════════════════════════════════════════ */
+.ayush {
+  --primary: 142 40% 22%;
+  --primary-foreground: 38 90% 90%;
+  --secondary: 38 85% 50%;
+  --secondary-foreground: 0 0% 100%;
+  --background: 142 15% 97%;
+  --foreground: 142 20% 10%;
+  --card: 0 0% 100%;
+  --card-foreground: 142 20% 10%;
+  --card-border: 142 12% 88%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 142 20% 10%;
+  --popover-border: 142 12% 88%;
+  --muted: 142 10% 90%;
+  --muted-foreground: 142 10% 42%;
+  --accent: 38 85% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 75% 42%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 142 12% 88%;
+  --input: 142 12% 88%;
+  --ring: 142 40% 22%;
+
+  --sidebar: 142 18% 12%;
+  --sidebar-foreground: 38 50% 85%;
+  --sidebar-border: 142 15% 20%;
+  --sidebar-primary: 38 85% 50%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 142 20% 18%;
+  --sidebar-accent-foreground: 38 50% 85%;
+  --sidebar-ring: 38 85% 50%;
+
+  --chart-1: 142 40% 22%;
+  --chart-2: 38 85% 50%;
+  --chart-3: 0 75% 42%;
+  --chart-4: 142 10% 42%;
+  --chart-5: 38 60% 35%;
+}
+
+.ayush.dark {
+  --primary: 142 50% 35%;
+  --primary-foreground: 38 60% 90%;
+  --secondary: 38 80% 55%;
+  --secondary-foreground: 0 0% 100%;
+  --background: 150 20% 6%;
+  --foreground: 38 30% 92%;
+  --card: 150 18% 10%;
+  --card-foreground: 38 30% 92%;
+  --card-border: 150 15% 18%;
+  --popover: 150 18% 10%;
+  --popover-foreground: 38 30% 92%;
+  --popover-border: 150 15% 18%;
+  --muted: 150 15% 14%;
+  --muted-foreground: 150 10% 55%;
+  --accent: 150 15% 14%;
+  --accent-foreground: 38 30% 92%;
+  --destructive: 0 78% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 150 15% 18%;
+  --input: 150 15% 18%;
+  --ring: 142 50% 35%;
+
+  --sidebar: 150 22% 5%;
+  --sidebar-foreground: 38 40% 80%;
+  --sidebar-border: 150 15% 14%;
+  --sidebar-primary: 38 80% 55%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 150 15% 14%;
+  --sidebar-accent-foreground: 38 40% 80%;
+  --sidebar-ring: 38 80% 55%;
+
+  --chart-1: 142 50% 35%;
+  --chart-2: 38 80% 55%;
+  --chart-3: 0 78% 52%;
+  --chart-4: 150 10% 55%;
+  --chart-5: 38 40% 40%;
+}
+
 @layer base {
   * {
     @apply border-border;

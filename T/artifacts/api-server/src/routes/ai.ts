@@ -60,7 +60,7 @@ Respond ONLY with a valid JSON object matching the clinical schemas.`;
       const userMessage = `BIOMARKERS: Clarity: ${clarity}%, Tremor: ${tremor}%, Breathlessness: ${breathlessness}/10, Pitch: ${pitchConsistency}%. Transcript: "${transcript || ''}"`;
 
       const response = await openai.chat.completions.create({
-        model: "llama-3.1-8b-instant",
+        model: "openai/gpt-oss-20b",
         max_completion_tokens: 1500,
         messages: [
           { role: "system", content: systemPrompt },

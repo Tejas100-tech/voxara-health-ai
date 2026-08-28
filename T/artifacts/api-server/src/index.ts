@@ -1,4 +1,8 @@
 import dotenv from "dotenv";
+import { resolve } from "path";
+// Load .env.local from project root (Freebuff injects env vars here)
+const rootEnvPath = resolve(process.cwd(), "..", "..", "..", ".env.local");
+dotenv.config({ path: rootEnvPath, override: true });
 dotenv.config({ override: true });
 import http from "http";
 import app from "./app";
