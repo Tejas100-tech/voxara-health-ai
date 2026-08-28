@@ -1,13 +1,21 @@
 import { Router } from "express";
+import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import { logger } from "../lib/logger";
 
 const router = Router();
 
-function getOpenAIClient() {
+function getClaudeClient() {
+  const apiKey = process.env["ANTHROPIC_API_KEY"];
+  if (!apiKey) return null;
+  return new Anthropic({ apiKey });
+}
+
+function getWhisperClient() {
+  // Groq still used for Whisper transcription (Claude has no STT)
   const baseURL = process.env["GROQ_BASE_URL"] || "https://api.groq.com/openai/v1";
   const apiKey = process.env["GROQ_API_KEY"];
-  if (!apiKey) throw new Error("Groq integration env var not set (GROQ_API_KEY)");
+  if (!apiKey) return null;
   return new OpenAI({ baseURL, apiKey });
 }
 
@@ -53,27 +61,32 @@ router.post("/ai/analyze", async (req, res) => {
 
     let analysis;
     try {
-      const openai = getOpenAIClient();
+      const claude = getClaudeClient();
+      if (!claude) throw new Error("No ANTHROPIC_API_KEY");
       const systemPrompt = `You are Voxara Clinical AI, an expert medical analysis system specializing in voice biomarker analysis.
 Respond ONLY with a valid JSON object matching the clinical schemas.`;
       
       const userMessage = `BIOMARKERS: Clarity: ${clarity}%, Tremor: ${tremor}%, Breathlessness: ${breathlessness}/10, Pitch: ${pitchConsistency}%. Transcript: "${transcript || ''}"`;
 
-      const response = await openai.chat.completions.create({
-        model: "openai/gpt-oss-20b",
-        max_completion_tokens: 1500,
+      const response = await claude.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1500,
+        system: systemPrompt,
         messages: [
-          { role: "system", content: systemPrompt },
           { role: "user", content: userMessage },
         ],
-        response_format: { type: "json_object" },
       });
 
-      const content = response.choices[0]?.message?.content;
-      if (content) analysis = JSON.parse(content);
-      else analysis = generateFallbackAnalysis();
+      const text = response.content[0]?.type === "text" ? response.content[0].text : null;
+      if (text) {
+        // Extract JSON from Claude response (may have markdown wrapper)
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) analysis = JSON.parse(jsonMatch[0]);
+        else analysis = generateFallbackAnalysis();
+      } else {
+        analysis = generateFallbackAnalysis();
+      }
     } catch (apiError: any) {
-      // If Groq/OpenAI fails (no key, quota, disconnected), seamlessly use free standard AI!
       logger.info({ err: apiError.message }, "Cloud AI failed, using Free Local AI Model");
       analysis = generateFallbackAnalysis();
     }
@@ -87,7 +100,11 @@ Respond ONLY with a valid JSON object matching the clinical schemas.`;
 
 router.post("/ai/transcribe", async (req, res) => {
   try {
-    const openai = getOpenAIClient();
+    const whisper = getWhisperClient();
+    if (!whisper) {
+      res.status(503).json({ error: "Transcription unavailable — GROQ_API_KEY not configured" });
+      return;
+    }
     const { audioBase64, mimeType } = req.body;
     if (!audioBase64) {
       res.status(400).json({ error: "audioBase64 is required" });
@@ -98,7 +115,7 @@ router.post("/ai/transcribe", async (req, res) => {
     const ext = mimeType?.includes("ogg") ? "ogg" : "webm";
     const file = new File([audioBuffer], `recording.${ext}`, { type: mimeType || "audio/webm" });
 
-    const transcription = await openai.audio.transcriptions.create({
+    const transcription = await whisper.audio.transcriptions.create({
       file,
       model: "whisper-large-v3",
       response_format: "json",

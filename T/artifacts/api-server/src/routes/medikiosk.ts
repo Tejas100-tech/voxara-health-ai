@@ -176,7 +176,10 @@ router.post("/medikiosk/intake/start", async (req, res) => {
       startedAt: new Date().toISOString(),
     };
 
-    // Try PostgreSQL first
+    // Always save to in-memory Map for current-process lookups
+    intakeSessions.set(sessionId, sessionData);
+
+    // Also persist to PostgreSQL for durability
     try {
       const db = await getDb();
       if (db) {
@@ -196,12 +199,9 @@ router.post("/medikiosk/intake/start", async (req, res) => {
           startedAt: new Date(sessionData.startedAt),
         });
         logger.info({ sessionId }, "Intake session saved to PostgreSQL");
-      } else {
-        intakeSessions.set(sessionId, sessionData);
       }
     } catch (pgErr) {
-      logger.warn({ err: pgErr }, "PostgreSQL unavailable, using in-memory");
-      intakeSessions.set(sessionId, sessionData);
+      logger.warn({ err: pgErr }, "PostgreSQL save failed, using in-memory only");
     }
 
     res.json({

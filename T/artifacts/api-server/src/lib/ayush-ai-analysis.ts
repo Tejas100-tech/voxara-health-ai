@@ -1,14 +1,13 @@
 import { logger } from "./logger";
 
-// ─── AI Client Helper ──────────────────────────────────────────────────────
+// ─── AI Client Helper (Anthropic Claude) ─────────────────────────────────
 
-async function getAI() {
+async function getClaude() {
   try {
-    const OpenAI = (await import("openai")).default;
-    const baseURL = process.env["GROQ_BASE_URL"] || "https://api.groq.com/openai/v1";
-    const apiKey = process.env["GROQ_API_KEY"];
+    const Anthropic = (await import("@anthropic-ai/sdk")).default;
+    const apiKey = process.env["ANTHROPIC_API_KEY"];
     if (!apiKey) return null;
-    return new OpenAI({ baseURL, apiKey });
+    return new Anthropic({ apiKey });
   } catch {
     return null;
   }
@@ -56,11 +55,11 @@ export interface AyushAnalysisResult {
 // ─── AI-Powered Analysis ───────────────────────────────────────────────────
 
 export async function generateAyushAnalysis(input: AyushAnalysisInput): Promise<AyushAnalysisResult> {
-  const ai = await getAI();
+  const claude = await getClaude();
 
-  if (ai) {
+  if (claude) {
     try {
-      return await generateWithAI(ai, input);
+      return await generateWithAI(claude, input);
     } catch (err) {
       logger.warn({ err: (err as Error).message }, "AI AYUSH analysis failed, using template fallback");
     }
@@ -71,7 +70,7 @@ export async function generateAyushAnalysis(input: AyushAnalysisInput): Promise<
 
 async function generateWithAI(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ai: any,
+  claude: any,
   input: AyushAnalysisInput,
 ): Promise<AyushAnalysisResult> {
   const systemPrompt = `You are an expert Ayurvedic clinical analysis system. Analyze the patient's AYUSH assessment data and generate a structured clinical brief for a qualified Ayurvedic practitioner.
@@ -99,18 +98,19 @@ Respond ONLY with valid JSON matching this schema:
 
   const dataSummary = buildDataSummary(input);
 
-  const response = await ai.chat.completions.create({
-    model: "openai/gpt-oss-20b",
-    max_completion_tokens: 2000,
+  const response = await claude.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 2000,
+    system: systemPrompt,
     messages: [
-      { role: "system", content: systemPrompt },
       { role: "user", content: `Analyze this AYUSH patient assessment:\n\n${dataSummary}` },
     ],
-    response_format: { type: "json_object" },
   });
 
-  const content = response.choices[0]?.message?.content;
-  if (!content) throw new Error("Empty AI response");
+  const text = response.content[0]?.type === "text" ? response.content[0].text : null;
+  if (!text) throw new Error("Empty AI response");
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  const content = jsonMatch ? jsonMatch[0] : text;
 
   const parsed = JSON.parse(content) as Omit<AyushAnalysisResult, "aiGenerated" | "disclaimer">;
   return {
@@ -394,11 +394,11 @@ export async function generateEnhancedChatResponse(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   extractedData: Record<string, any>,
 ): Promise<{ message: string; extractedData?: Record<string, unknown>; category?: string; suggestedActions?: string[] }> {
-  const ai = await getAI();
+  const claude = await getClaude();
 
-  if (ai && mode === "pre_consultation") {
+  if (claude && mode === "pre_consultation") {
     try {
-      return await generateAIChatResponse(ai, userMessage, language, assessmentProgress, extractedData);
+      return await generateAIChatResponse(claude, userMessage, language, assessmentProgress, extractedData);
     } catch (err) {
       logger.warn({ err: (err as Error).message }, "AI chat response failed, using template");
     }
@@ -410,7 +410,7 @@ export async function generateEnhancedChatResponse(
 
 async function generateAIChatResponse(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ai: any,
+  claude: any,
   userMessage: string,
   language: string,
   _assessmentProgress: number,
@@ -442,18 +442,17 @@ Respond ONLY with valid JSON:
   "suggestedActions": ["action buttons to show"]
 }`;
 
-  const response = await ai.chat.completions.create({
-    model: "openai/gpt-oss-20b",
-    max_completion_tokens: 500,
+  const response = await claude.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 500,
+    system: systemPrompt,
     messages: [
-      { role: "system", content: systemPrompt },
       { role: "user", content: userMessage },
     ],
-    response_format: { type: "json_object" },
   });
 
-  const content = response.choices[0]?.message?.content;
-  if (!content) throw new Error("Empty AI response");
-
-  return JSON.parse(content);
+  const text = response.content[0]?.type === "text" ? response.content[0].text : null;
+  if (!text) throw new Error("Empty AI response");
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  return JSON.parse(jsonMatch ? jsonMatch[0] : text);
 }

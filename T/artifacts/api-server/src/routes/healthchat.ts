@@ -110,15 +110,14 @@ const GENERAL_RESPONSES: Record<string, Record<string, string>> = {
   },
 };
 
-// ─── AI Client ─────────────────────────────────────────────────────────────
+// ─── AI Client (Anthropic Claude) ─────────────────────────────────────────
 
-async function getAI() {
+async function getClaude() {
   try {
-    const OpenAI = (await import("openai")).default;
-    const baseURL = process.env["GROQ_BASE_URL"] || "https://api.groq.com/openai/v1";
-    const apiKey = process.env["GROQ_API_KEY"];
+    const Anthropic = (await import("@anthropic-ai/sdk")).default;
+    const apiKey = process.env["ANTHROPIC_API_KEY"];
     if (!apiKey) return null;
-    return new OpenAI({ baseURL, apiKey });
+    return new Anthropic({ apiKey });
   } catch {
     return null;
   }
@@ -141,18 +140,12 @@ async function generateHealthResponse(
     };
   }
 
-  // Try AI first
-  const ai = await getAI();
-  if (ai) {
+  // Try Claude AI first
+  const claude = await getClaude();
+  if (claude) {
     try {
       const langName = language === "hi" ? "Hindi" : "English";
-      const response = await ai.chat.completions.create({
-        model: "openai/gpt-oss-20b",
-        max_completion_tokens: 800,
-        messages: [
-          {
-            role: "system",
-            content: `You are a helpful healthcare assistant for MediKiosk. You provide general health information, symptom guidance, and wellness tips. Respond in ${langName}.
+      const systemPrompt = `You are a helpful healthcare assistant for MediKiosk. You provide general health information, symptom guidance, and wellness tips. Respond in ${langName}.
 
 RULES:
 - Be warm, professional, and empathetic
@@ -161,17 +154,25 @@ RULES:
 - Always recommend consulting a doctor for serious concerns
 - Keep responses concise (3-5 sentences)
 - For emergencies, immediately tell the user to seek medical help
-- Include a brief disclaimer when giving health advice`,
-          },
-          ...conversationHistory.slice(-6),
+- Include a brief disclaimer when giving health advice`;
+
+      const response = await claude.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 800,
+        system: systemPrompt,
+        messages: [
+          ...conversationHistory.slice(-6).map((m) => ({
+            role: m.role as "user" | "assistant",
+            content: m.content,
+          })),
           { role: "user", content: userMessage },
         ],
       });
 
-      const content = response.choices[0]?.message?.content;
-      if (content) {
+      const text = response.content[0]?.type === "text" ? response.content[0].text : null;
+      if (text) {
         return {
-          message: content + (GENERAL_RESPONSES.disclaimer[language as keyof typeof GENERAL_RESPONSES.disclaimer] || ""),
+          message: text + (GENERAL_RESPONSES.disclaimer[language as keyof typeof GENERAL_RESPONSES.disclaimer] || ""),
           category: "health_info",
           suggestedActions: ["Ask Another Question", "Symptom Checker", "Health Tips"],
         };
