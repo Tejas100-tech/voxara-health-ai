@@ -358,7 +358,7 @@ export default function PatientDetailPage() {
                     })}
                   </div>
                   {lastSession.waveform?.length > 0 && (
-                    <div className="h-16 flex items-end gap-1.5 rounded-2xl bg-slate-950 p-4 mb-4 overflow-hidden">
+                    <div className="h-16 flex items-end gap-1.5 rounded-2xl bg-[#011C40] p-4 mb-4 overflow-hidden">
                       {lastSession.waveform.map((bar, i) => (
                         <div key={i} className="flex-1 bg-gradient-to-t from-secondary to-cyan-300 rounded-full" style={{ height: `${Math.max(8, bar)}%` }} />
                       ))}
@@ -487,7 +487,7 @@ export default function PatientDetailPage() {
                   {expanded && (
                     <div className="border-t px-6 pb-6 pt-5 bg-muted/20 space-y-4">
                       {s.waveform?.length > 0 && (
-                        <div className="h-16 flex items-end gap-1.5 rounded-2xl bg-slate-950 p-4 overflow-hidden">
+                        <div className="h-16 flex items-end gap-1.5 rounded-2xl bg-[#011C40] p-4 overflow-hidden">
                           {s.waveform.map((bar: number, i: number) => (
                             <div key={i} className="flex-1 bg-gradient-to-t from-secondary to-cyan-300 rounded-full" style={{ height: `${Math.max(8, bar)}%` }} />
                           ))}

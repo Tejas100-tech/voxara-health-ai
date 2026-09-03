@@ -86,7 +86,7 @@ export default function ClinicianAppointments() {
         {/* Stats */}
         <div className="grid grid-cols-4 gap-3">
           <div className="bg-card border rounded-xl p-4 text-center">
-            <div className="text-2xl font-black text-emerald-600">{scheduledCount}</div>
+            <div className="text-2xl font-black text-cyan-600">{scheduledCount}</div>
             <div className="text-[10px] text-muted-foreground font-bold uppercase">Scheduled</div>
           </div>
           <div className="bg-card border rounded-xl p-4 text-center">
@@ -111,7 +111,7 @@ export default function ClinicianAppointments() {
               onClick={() => setFilter(f)}
               className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
                 filter === f
-                  ? "bg-emerald-600 text-white"
+                  ? "bg-cyan-600 text-white"
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
               }`}
             >
@@ -170,7 +170,7 @@ export default function ClinicianAppointments() {
                   <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white font-bold text-lg ${
                     apt.urgency === "emergency" ? "bg-gradient-to-br from-red-500 to-red-600" :
                     apt.urgency === "urgent" ? "bg-gradient-to-br from-amber-500 to-orange-500" :
-                    "bg-gradient-to-br from-teal-500 to-emerald-400"
+                    "bg-gradient-to-br from-sky-500 to-cyan-400"
                   }`}>
                     {apt.patientName.charAt(0)}
                   </div>
@@ -182,11 +182,11 @@ export default function ClinicianAppointments() {
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                         apt.urgency === "emergency" ? "bg-red-100 text-red-700" :
                         apt.urgency === "urgent" ? "bg-amber-100 text-amber-700" :
-                        "bg-emerald-100 text-emerald-700"
+                        "bg-cyan-100 text-cyan-700"
                       }`}>{apt.urgency}</span>
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                         apt.status === "active" ? "bg-blue-100 text-blue-700" :
-                        apt.status === "completed" ? "bg-emerald-100 text-emerald-700" :
+                        apt.status === "completed" ? "bg-cyan-100 text-cyan-700" :
                         apt.status === "cancelled" ? "bg-slate-100 text-slate-600" :
                         "bg-amber-100 text-amber-700"
                       }`}>{apt.status}</span>
@@ -206,7 +206,7 @@ export default function ClinicianAppointments() {
                         <Button
                           onClick={() => handleAccept(apt)}
                           disabled={actionLoading === apt.id}
-                          className="rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700"
+                          className="rounded-xl font-bold bg-cyan-600 hover:bg-cyan-700"
                         >
                           {actionLoading === apt.id ? <Loader2 size={16} className="animate-spin mr-2" /> : <Video size={16} className="mr-2" />}
                           Accept & Call

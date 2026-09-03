@@ -116,7 +116,7 @@ export default function MedikioskHub() {
         <section className={`relative overflow-hidden rounded-[2rem] text-white p-8 md:p-10 shadow-2xl ${
           globalMode === "ayush"
             ? "bg-gradient-to-br from-green-950 via-green-900 to-amber-950 shadow-green-900/30"
-            : "bg-slate-950 shadow-primary/10"
+            : "bg-[#011C40] shadow-primary/10"
         }`}>
           {/* AYUSH decorative elements */}
           {globalMode === "ayush" && (

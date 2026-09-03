@@ -300,7 +300,7 @@ export default function HistoryPage() {
                       <div className="border-t px-6 pb-6 pt-5 space-y-6 bg-muted/20">
                         {/* Mini waveform */}
                         {session.waveform && session.waveform.length > 0 && (
-                          <div className="h-20 flex items-end gap-1.5 rounded-2xl bg-slate-950 p-4 overflow-hidden">
+                          <div className="h-20 flex items-end gap-1.5 rounded-2xl bg-[#011C40] p-4 overflow-hidden">
                             {session.waveform.map((bar: number, i: number) => (
                               <div key={i} className="flex-1 bg-gradient-to-t from-secondary to-cyan-300 rounded-full" style={{ height: `${Math.max(8, bar)}%` }} />
                             ))}

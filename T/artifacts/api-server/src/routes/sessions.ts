@@ -183,7 +183,7 @@ router.post("/sessions", async (req, res) => {
         transcript: data.transcript,
         waveform: data.waveform,
       },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     );
 
     const notifCount = await generateNotifications(session);

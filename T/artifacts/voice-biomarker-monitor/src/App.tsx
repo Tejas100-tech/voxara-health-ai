@@ -35,7 +35,7 @@ function ProtectedRoute({
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-500 animate-pulse" />
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-600 to-sky-500 animate-pulse" />
           <p className="text-muted-foreground font-semibold">Loading MediKiosk...</p>
         </div>
       </div>
@@ -51,7 +51,7 @@ function RootRoute() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-500 animate-pulse" />
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-600 to-sky-500 animate-pulse" />
       </div>
     );
   }

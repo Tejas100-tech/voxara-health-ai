@@ -135,22 +135,22 @@ export default function AyushHub() {
             </button>
             <button
               onClick={() => setSelectedMode("education")}
-              className={`p-6 rounded-2xl border text-left transition-all ${selectedMode === "education" ? "bg-emerald-50 border-emerald-500/30 shadow-md ring-2 ring-emerald-500/10" : "bg-muted/20 border hover:border-emerald-500/20"}`}
+              className={`p-6 rounded-2xl border text-left transition-all ${selectedMode === "education" ? "bg-cyan-50 border-cyan-500/30 shadow-md ring-2 ring-cyan-500/10" : "bg-muted/20 border hover:border-cyan-500/20"}`}
             >
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                  <BookOpen size={22} className={selectedMode === "education" ? "text-emerald-700" : "text-muted-foreground"} />
+                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
+                  <BookOpen size={22} className={selectedMode === "education" ? "text-cyan-700" : "text-muted-foreground"} />
                 </div>
                 <div>
                   <h4 className="font-bold">Learn About Ayurveda</h4>
-                  <p className="text-[10px] text-emerald-700/70 uppercase tracking-wider font-bold">Education Mode</p>
+                  <p className="text-[10px] text-cyan-700/70 uppercase tracking-wider font-bold">Education Mode</p>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Ask questions about Prakriti, Vikriti, Agni, Dinacharya, Panchakarma, and other Ayurvedic concepts. Get simple, culturally appropriate explanations.
               </p>
               {selectedMode === "education" && (
-                <div className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-emerald-700">
+                <div className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-cyan-700">
                   ✓ Selected
                 </div>
               )}
@@ -161,7 +161,7 @@ export default function AyushHub() {
               size="lg"
               onClick={handleStartChat}
               disabled={loading}
-              className="px-10 py-6 rounded-2xl text-lg font-bold shadow-lg shadow-green-700/20 bg-gradient-to-r from-green-700 to-emerald-600 hover:from-green-800 hover:to-emerald-700"
+              className="px-10 py-6 rounded-2xl text-lg font-bold shadow-lg shadow-green-700/20 bg-gradient-to-r from-green-700 to-cyan-600 hover:from-green-800 hover:to-cyan-700"
             >
               {loading ? <Loader2 className="animate-spin mr-2" size={20} /> : <MessageCircle className="mr-2" size={20} />}
               {loading ? "Starting..." : "Open AyurBot"}

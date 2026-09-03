@@ -402,7 +402,7 @@ export default function RecordSession() {
                 </button>
 
                 {/* Waveform */}
-                <div className="w-full h-24 flex items-end gap-1 mb-6 px-2 rounded-2xl bg-slate-950 dark:bg-black/60 p-3 overflow-hidden shadow-inner">
+                <div className="w-full h-24 flex items-end gap-1 mb-6 px-2 rounded-2xl bg-[#011C40] dark:bg-black/60 p-3 overflow-hidden shadow-inner">
                   {bars.map((bar, i) => (
                     <div
                       key={i}

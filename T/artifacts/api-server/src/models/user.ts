@@ -90,7 +90,7 @@ export async function seedUsers() {
     await User.findOneAndUpdate(
       { email: u.email },
       { $setOnInsert: u },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     );
   }
 }

@@ -131,17 +131,17 @@ export default function Analysis() {
     { label: t("analysis.breath"), value: Math.max(0, 100 - session.breathlessness * 10), color: "hsl(var(--secondary))" },
   ];
 
-  const progressionColor = aiAnalysis?.diseaseProgression?.status === "improving" ? "text-emerald-600"
+  const progressionColor = aiAnalysis?.diseaseProgression?.status === "improving" ? "text-cyan-600"
     : aiAnalysis?.diseaseProgression?.status === "declining" ? "text-destructive" : "text-primary";
 
   const progressionIcon = aiAnalysis?.diseaseProgression?.status === "improving"
-    ? <TrendingDown className="text-emerald-600" size={20} />
+    ? <TrendingDown className="text-cyan-600" size={20} />
     : aiAnalysis?.diseaseProgression?.status === "declining"
     ? <TrendingUp className="text-destructive" size={20} />
     : <Activity className="text-primary" size={20} />;
 
   const priorityColors = {
-    routine: "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400",
+    routine: "bg-cyan-100 text-cyan-700 border-cyan-200 dark:bg-cyan-900/30 dark:text-cyan-400",
     soon: "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400",
     urgent: "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400",
   };
@@ -287,7 +287,7 @@ export default function Analysis() {
                     <p className="text-2xl font-black font-[Manrope] mb-1 text-secondary">{aiAnalysis.medicationEffectiveness.score}/100</p>
                     <div className="flex items-center gap-2 mb-3">
                       <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                        <div className={`h-full rounded-full ${aiAnalysis.medicationEffectiveness.score >= 70 ? "bg-emerald-500" : aiAnalysis.medicationEffectiveness.score >= 45 ? "bg-amber-400" : "bg-red-400"}`}
+                        <div className={`h-full rounded-full ${aiAnalysis.medicationEffectiveness.score >= 70 ? "bg-cyan-500" : aiAnalysis.medicationEffectiveness.score >= 45 ? "bg-amber-400" : "bg-red-400"}`}
                           style={{ width: `${aiAnalysis.medicationEffectiveness.score}%` }} />
                       </div>
                       <span className="text-xs font-bold text-muted-foreground capitalize">{aiAnalysis.medicationEffectiveness.assessment.replace(/_/g, " ")}</span>

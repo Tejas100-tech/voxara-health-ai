@@ -46,11 +46,11 @@ export default function SignupPage() {
         </div>
 
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-500 to-sky-400 flex items-center justify-center shadow-lg shadow-cyan-500/30">
             <Stethoscope size={24} className="text-white" />
           </div>
           <div>
-            <h1 className="font-extrabold text-emerald-700 dark:text-emerald-400 text-xl font-[Manrope]">{t("app.name")}</h1>
+            <h1 className="font-extrabold text-cyan-700 dark:text-cyan-400 text-xl font-[Manrope]">{t("app.name")}</h1>
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">{t("app.tagline")}</p>
           </div>
         </div>
@@ -62,11 +62,11 @@ export default function SignupPage() {
           <div className="flex gap-3">
             <button type="button" onClick={() => setRole("patient")}
               className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm border transition-all ${
-                role === "patient" ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400" : "bg-muted/50 border-border text-muted-foreground hover:bg-muted"
+                role === "patient" ? "bg-cyan-50 dark:bg-cyan-950/40 border-cyan-300 dark:border-cyan-700 text-cyan-700 dark:text-cyan-400" : "bg-muted/50 border-border text-muted-foreground hover:bg-muted"
               }`}><User size={18} /> {t("login.patient")}</button>
             <button type="button" onClick={() => setRole("clinician")}
               className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm border transition-all ${
-                role === "clinician" ? "bg-teal-50 dark:bg-teal-950/40 border-teal-300 dark:border-teal-700 text-teal-700 dark:text-teal-400" : "bg-muted/50 border-border text-muted-foreground hover:bg-muted"
+                role === "clinician" ? "bg-sky-50 dark:bg-sky-950/40 border-sky-300 dark:border-sky-700 text-sky-700 dark:text-sky-400" : "bg-muted/50 border-border text-muted-foreground hover:bg-muted"
               }`}><Stethoscope size={18} /> {t("login.clinician")}</button>
           </div>
 
@@ -92,7 +92,7 @@ export default function SignupPage() {
           {role === "patient" && (
             <div>
               <label className="text-sm font-bold text-foreground uppercase tracking-wider mb-2 block flex items-center gap-2">
-                <ShieldCheck size={14} className="text-emerald-600" /> {t("signup.abhaId")}
+                <ShieldCheck size={14} className="text-cyan-600" /> {t("signup.abhaId")}
               </label>
               <Input placeholder="XX-XXXX-XXXX-XXXX" value={abhaId} onChange={(e) => setAbhaId(e.target.value)} className="h-12 rounded-xl" />
             </div>
@@ -104,7 +104,7 @@ export default function SignupPage() {
             </div>
           )}
 
-          <Button type="submit" className="w-full h-12 rounded-xl text-base font-bold bg-emerald-600 hover:bg-emerald-700" disabled={loading}>
+          <Button type="submit" className="w-full h-12 rounded-xl text-base font-bold bg-cyan-600 hover:bg-cyan-700" disabled={loading}>
             {loading ? <Loader2 size={18} className="animate-spin mr-2" /> : null}
             {loading ? "..." : t("signup.createAccountBtn")}
           </Button>
@@ -112,7 +112,7 @@ export default function SignupPage() {
 
         <p className="text-center text-sm text-muted-foreground mt-6">
           {t("signup.alreadyHaveAccount")}{" "}
-          <Link href="/login" className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline">{t("signup.signIn")}</Link>
+          <Link href="/login" className="text-cyan-600 dark:text-cyan-400 font-bold hover:underline">{t("signup.signIn")}</Link>
         </p>
       </div>
     </div>

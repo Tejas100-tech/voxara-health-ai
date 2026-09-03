@@ -371,9 +371,9 @@ export default function IntakeFlow() {
                 <div
                   className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
                     isActive
-                      ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400"
+                      ? "bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-400"
                       : isDone
-                      ? "text-emerald-600 dark:text-emerald-400"
+                      ? "text-cyan-600 dark:text-cyan-400"
                       : "text-muted-foreground"
                   }`}
                 >
@@ -381,7 +381,7 @@ export default function IntakeFlow() {
                   <span className="text-xs font-bold hidden sm:inline">{t(s.labelKey).split(' ').slice(0, 2).join(' ')}</span>
                 </div>
                 {i < STEPS_CONFIG.length - 1 && (
-                  <div className={`flex-1 h-0.5 mx-2 rounded-full ${isDone ? "bg-emerald-400" : "bg-muted"}`} />
+                  <div className={`flex-1 h-0.5 mx-2 rounded-full ${isDone ? "bg-cyan-400" : "bg-muted"}`} />
                 )}
               </div>
             );
@@ -392,7 +392,7 @@ export default function IntakeFlow() {
         {step === "identity" && (
           <div className="bg-card border rounded-[2rem] p-8 space-y-6">
             <div className="text-center mb-6">
-              <ShieldCheck size={44} className="text-emerald-600 mx-auto mb-3" />
+              <ShieldCheck size={44} className="text-cyan-600 mx-auto mb-3" />
               <h2 className="text-2xl font-extrabold font-[Manrope] mb-2">{t("identity.title")}</h2>
               <p className="text-muted-foreground">{t("identity.description")}</p>
             </div>
@@ -413,11 +413,11 @@ export default function IntakeFlow() {
                       onClick={() => { setLanguage(code as LanguageCode); setUILanguage(code as LanguageCode); }}
                       className={`flex flex-col items-center justify-center min-h-[4.5rem] p-3 rounded-2xl border-2 transition-all ${
                         isSelected
-                          ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 shadow-md ring-2 ring-emerald-200 dark:ring-emerald-800"
-                          : "border-border hover:border-emerald-300 hover:bg-muted/30"
+                          ? "border-cyan-500 bg-cyan-50 dark:bg-cyan-950/40 shadow-md ring-2 ring-cyan-200 dark:ring-cyan-800"
+                          : "border-border hover:border-cyan-300 hover:bg-muted/30"
                       }`}
                     >
-                      <span className={`text-base font-black leading-tight ${isSelected ? "text-emerald-700 dark:text-emerald-400" : "text-foreground"}`}>
+                      <span className={`text-base font-black leading-tight ${isSelected ? "text-cyan-700 dark:text-cyan-400" : "text-foreground"}`}>
                         {lang.nativeName}
                       </span>
                       <span className="text-[9px] text-muted-foreground mt-0.5">{lang.name}</span>
@@ -439,7 +439,7 @@ export default function IntakeFlow() {
             {/* ABHA ID */}
             <div>
               <label className="text-sm font-bold uppercase tracking-wider mb-2 block flex items-center gap-2">
-                <ShieldCheck size={14} className="text-emerald-600" /> {t("identity.abhaId")}
+                <ShieldCheck size={14} className="text-cyan-600" /> {t("identity.abhaId")}
               </label>
               <Input placeholder={t("identity.abhaPlaceholder")} value={abhaId} onChange={(e) => setAbhaId(e.target.value)} className="h-14 rounded-xl text-base" />
             </div>
@@ -452,11 +452,11 @@ export default function IntakeFlow() {
                   onClick={() => setMode("allopathic")}
                   className={`flex flex-col items-center gap-2 p-5 min-h-[7rem] rounded-2xl border-2 transition-all ${
                     mode === "allopathic"
-                      ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 shadow-md"
-                      : "border-border hover:border-emerald-300"
+                      ? "border-cyan-500 bg-cyan-50 dark:bg-cyan-950/40 shadow-md"
+                      : "border-border hover:border-cyan-300"
                   }`}
                 >
-                  <Stethoscope size={28} className={mode === "allopathic" ? "text-emerald-600" : "text-muted-foreground"} />
+                  <Stethoscope size={28} className={mode === "allopathic" ? "text-cyan-600" : "text-muted-foreground"} />
                   <span className="font-bold text-sm">{t("identity.mode.clinical")}</span>
                   <span className="text-[10px] text-muted-foreground text-center leading-tight">{t("identity.mode.clinicalDesc")}</span>
                 </button>
@@ -497,11 +497,11 @@ export default function IntakeFlow() {
                   onClick={() => setTrack("full")}
                   className={`flex flex-col items-center gap-2 p-5 min-h-[7rem] rounded-2xl border-2 transition-all ${
                     track === "full"
-                      ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 shadow-md"
-                      : "border-border hover:border-emerald-300"
+                      ? "border-cyan-500 bg-cyan-50 dark:bg-cyan-950/40 shadow-md"
+                      : "border-border hover:border-cyan-300"
                   }`}
                 >
-                  <ClipboardList size={24} className={track === "full" ? "text-emerald-600" : "text-muted-foreground"} />
+                  <ClipboardList size={24} className={track === "full" ? "text-cyan-600" : "text-muted-foreground"} />
                   <span className="font-bold text-sm">📋 {t("track.full")}</span>
                   <span className="text-[10px] text-muted-foreground text-center leading-tight">{t("track.fullDesc")}</span>
                 </button>
@@ -509,7 +509,7 @@ export default function IntakeFlow() {
             </div>
 
             {/* Continue Button — Extra large for kiosk */}
-            <Button onClick={handleIdentitySubmit} className="w-full h-16 rounded-2xl font-black text-lg bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/20" size="lg">
+            <Button onClick={handleIdentitySubmit} className="w-full h-16 rounded-2xl font-black text-lg bg-cyan-600 hover:bg-cyan-700 shadow-lg shadow-cyan-500/20" size="lg">
               {t("identity.continue")} <ArrowRight size={20} className="ml-2" />
             </Button>
           </div>
@@ -519,14 +519,14 @@ export default function IntakeFlow() {
         {step === "consent" && consentText && (
           <div className="bg-card border rounded-[2rem] p-8 space-y-6">
             <div className="text-center mb-8">
-              <ShieldCheck size={40} className="text-emerald-600 mx-auto mb-4" />
+              <ShieldCheck size={40} className="text-cyan-600 mx-auto mb-4" />
               <h2 className="text-2xl font-extrabold font-[Manrope] mb-2">{consentText.title}</h2>
             </div>
 
             <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
               {consentText.sections.map((section: any, i: number) => (
                 <div key={i} className="bg-muted/30 rounded-xl p-5">
-                  <h4 className="font-bold text-sm mb-2 text-emerald-700 dark:text-emerald-400">{section.heading}</h4>
+                  <h4 className="font-bold text-sm mb-2 text-cyan-700 dark:text-cyan-400">{section.heading}</h4>
                   <p className="text-sm text-muted-foreground leading-relaxed">{section.text}</p>
                 </div>
               ))}
@@ -535,7 +535,7 @@ export default function IntakeFlow() {
             <div className="border-t pt-6">
               <label className="flex items-start gap-3 cursor-pointer">
                 <input type="checkbox" checked={consentChecked} onChange={(e) => setConsentChecked(e.target.checked)}
-                  className="mt-1 w-5 h-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" />
+                  className="mt-1 w-5 h-5 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500" />
                 <span className="text-sm font-semibold leading-relaxed">{consentText.consentStatement}</span>
               </label>
             </div>
@@ -545,7 +545,7 @@ export default function IntakeFlow() {
                 <ArrowLeft size={16} className="mr-2" /> Back
               </Button>
               <Button onClick={handleConsentSubmit} disabled={!consentChecked}
-                className="flex-1 h-12 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700" size="lg">
+                className="flex-1 h-12 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-700" size="lg">
                 <CheckCircle2 size={18} className="mr-2" /> {t("consent.agreeBtn")}
               </Button>
             </div>
@@ -556,7 +556,7 @@ export default function IntakeFlow() {
         {step === "history" && (
           <div className="bg-card border rounded-[2rem] p-8 space-y-6">
             <div className="text-center mb-6">
-              {mode === "ayush" ? <Leaf size={40} className="text-amber-500 mx-auto mb-4" /> : track === "rapid" ? <Zap size={40} className="text-amber-500 mx-auto mb-4" /> : <Mic size={40} className="text-emerald-600 mx-auto mb-4" />}
+              {mode === "ayush" ? <Leaf size={40} className="text-amber-500 mx-auto mb-4" /> : track === "rapid" ? <Zap size={40} className="text-amber-500 mx-auto mb-4" /> : <Mic size={40} className="text-cyan-600 mx-auto mb-4" />}
               <h2 className="text-2xl font-extrabold font-[Manrope] mb-2">
                 {mode === "ayush" ? t("history.title.ayush") : track === "rapid" ? `⚡ ${t("history.rapidTitle")}` : t("history.title.clinical")}
               </h2>
@@ -585,16 +585,16 @@ export default function IntakeFlow() {
                   </div>
                 )}
                 {noiseLevel === "low" && (
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/40 rounded-full">
-                    <Mic size={12} className="text-emerald-600" />
-                    <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400">{t("noise.low")}</span>
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-100 dark:bg-cyan-900/40 rounded-full">
+                    <Mic size={12} className="text-cyan-600" />
+                    <span className="text-[10px] font-bold text-cyan-700 dark:text-cyan-400">{t("noise.low")}</span>
                   </div>
                 )}
                 <button
                   onClick={() => setTouchFallback(!touchFallback)}
                   className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[10px] font-bold transition-all ${
                     touchFallback
-                      ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400"
+                      ? "bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-400"
                       : "bg-muted/50 text-muted-foreground hover:bg-muted"
                   }`}
                 >
@@ -607,10 +607,10 @@ export default function IntakeFlow() {
             <div className="bg-muted/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{currentCategory}</span>
-                <span className={`text-xs font-bold ${mode === "ayush" ? "text-amber-600" : "text-emerald-600"}`}>{t("history.progress")} {historyProgress}%</span>
+                <span className={`text-xs font-bold ${mode === "ayush" ? "text-amber-600" : "text-cyan-600"}`}>{t("history.progress")} {historyProgress}%</span>
               </div>
               <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                <div className={`h-full rounded-full transition-all duration-500 ${mode === "ayush" ? "bg-gradient-to-r from-amber-500 to-yellow-400" : "bg-gradient-to-r from-emerald-500 to-teal-400"}`}
+                <div className={`h-full rounded-full transition-all duration-500 ${mode === "ayush" ? "bg-gradient-to-r from-amber-500 to-yellow-400" : "bg-gradient-to-r from-cyan-500 to-sky-400"}`}
                   style={{ width: `${historyProgress}%` }} />
               </div>
             </div>
@@ -622,7 +622,7 @@ export default function IntakeFlow() {
                   <div className={`rounded-xl px-4 py-2 text-xs font-semibold ${
                     mode === "ayush"
                       ? "bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400"
-                      : "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400"
+                      : "bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800 text-cyan-700 dark:text-cyan-400"
                   }`}>
                     {a.category}: {a.question}
                   </div>
@@ -637,9 +637,9 @@ export default function IntakeFlow() {
                 <div className={`rounded-xl px-5 py-4 border ${
                   mode === "ayush"
                     ? "bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800"
-                    : "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800"
+                    : "bg-cyan-50 dark:bg-cyan-950/40 border-cyan-200 dark:border-cyan-800"
                 }`}>
-                  <p className={`text-xs font-bold mb-1 ${mode === "ayush" ? "text-amber-700 dark:text-amber-400" : "text-emerald-700 dark:text-emerald-400"}`}>
+                  <p className={`text-xs font-bold mb-1 ${mode === "ayush" ? "text-amber-700 dark:text-amber-400" : "text-cyan-700 dark:text-cyan-400"}`}>
                     {currentCategory}
                   </p>
                   <p className="text-foreground font-semibold">{currentQuestion}</p>
@@ -663,7 +663,7 @@ export default function IntakeFlow() {
                         ? "bg-amber-100 dark:bg-amber-900/40 text-amber-600"
                         : mode === "ayush"
                         ? "bg-amber-100 dark:bg-amber-900/40 text-amber-600 hover:bg-amber-200"
-                        : "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 hover:bg-emerald-200"
+                        : "bg-cyan-100 dark:bg-cyan-900/40 text-cyan-600 hover:bg-cyan-200"
                     }`}
                     title={isRecording ? "Stop recording" : "Start voice input"}
                     disabled={isTranscribing}
@@ -693,8 +693,8 @@ export default function IntakeFlow() {
                           }}
                           className={`min-h-[3.5rem] px-3 py-2 rounded-xl font-semibold text-sm text-left border-2 transition-all leading-tight ${
                             currentAnswer === opt
-                              ? mode === "ayush" ? "border-amber-500 bg-amber-100 dark:bg-amber-900/40 shadow-md" : "border-emerald-500 bg-emerald-100 dark:bg-emerald-900/40 shadow-md"
-                              : "border-border hover:border-emerald-300 hover:bg-muted/30"
+                              ? mode === "ayush" ? "border-amber-500 bg-amber-100 dark:bg-amber-900/40 shadow-md" : "border-cyan-500 bg-cyan-100 dark:bg-cyan-900/40 shadow-md"
+                              : "border-border hover:border-cyan-300 hover:bg-muted/30"
                           }`}
                         >
                           {opt}
@@ -703,7 +703,7 @@ export default function IntakeFlow() {
                     </div>
                     <button
                       onClick={() => { setShowCustomInput(true); setCurrentAnswer(""); }}
-                      className="w-full py-2.5 rounded-xl border-2 border-dashed border-muted-foreground/30 text-sm font-semibold text-muted-foreground hover:border-emerald-400 hover:text-emerald-600 transition-all"
+                      className="w-full py-2.5 rounded-xl border-2 border-dashed border-muted-foreground/30 text-sm font-semibold text-muted-foreground hover:border-cyan-400 hover:text-cyan-600 transition-all"
                     >
                       ✏️ {t("history.customInput")}
                     </button>
@@ -716,7 +716,7 @@ export default function IntakeFlow() {
                     {allMcqs[answers.length] && (
                       <button
                         onClick={() => { setShowCustomInput(false); setCurrentAnswer(""); }}
-                        className="text-xs font-semibold text-emerald-600 hover:underline flex items-center gap-1"
+                        className="text-xs font-semibold text-cyan-600 hover:underline flex items-center gap-1"
                       >
                         {t("history.backToOptions")}
                       </button>
@@ -725,7 +725,7 @@ export default function IntakeFlow() {
                 )}
 
                 <Button onClick={handleAnswerSubmit} disabled={!currentAnswer.trim() || isSubmitting || isTranscribing}
-                  className={`w-full h-12 rounded-xl font-bold ${mode === "ayush" ? "bg-amber-500 hover:bg-amber-600" : "bg-emerald-600 hover:bg-emerald-700"}`}>
+                  className={`w-full h-12 rounded-xl font-bold ${mode === "ayush" ? "bg-amber-500 hover:bg-amber-600" : "bg-cyan-600 hover:bg-cyan-700"}`}>
                   {isSubmitting ? <Loader2 size={18} className="animate-spin mr-2" /> : <ArrowRight size={18} className="mr-2" />}
                   {t("history.submit")}
                 </Button>
@@ -734,8 +734,8 @@ export default function IntakeFlow() {
 
             {historyComplete && (
               <div className="text-center py-8">
-                <CheckCircle2 size={48} className="text-emerald-500 mx-auto mb-4" />
-                <p className="text-lg font-bold text-emerald-700 dark:text-emerald-400">
+                <CheckCircle2 size={48} className="text-cyan-500 mx-auto mb-4" />
+                <p className="text-lg font-bold text-cyan-700 dark:text-cyan-400">
                   {mode === "ayush" ? t("history.complete.ayush") : t("history.complete.clinical")}
                 </p>
                 <p className="text-muted-foreground text-sm mt-1">{t("history.movingTo")}</p>
@@ -748,7 +748,7 @@ export default function IntakeFlow() {
         {step === "documents" && (
           <div className="bg-card border rounded-[2rem] p-8 space-y-6">
             <div className="text-center mb-6">
-              <ScanLine size={40} className="text-teal-600 mx-auto mb-4" />
+              <ScanLine size={40} className="text-sky-600 mx-auto mb-4" />
               <h2 className="text-2xl font-extrabold font-[Manrope] mb-2">{t("documents.title")}</h2>
               <p className="text-muted-foreground text-sm">{t("documents.description")}</p>
             </div>
@@ -758,7 +758,7 @@ export default function IntakeFlow() {
               onDragLeave={() => setDragOver(false)}
               onDrop={handleDrop}
               className={`border-2 border-dashed rounded-2xl p-10 text-center transition-all cursor-pointer ${
-                dragOver ? "border-emerald-400 bg-emerald-50 dark:bg-emerald-950/40" : "border-border hover:border-emerald-300"
+                dragOver ? "border-cyan-400 bg-cyan-50 dark:bg-cyan-950/40" : "border-border hover:border-cyan-300"
               }`}
               onClick={() => fileInputRef.current?.click()}
             >
@@ -768,7 +768,7 @@ export default function IntakeFlow() {
               <p className="font-bold text-foreground mb-1">{t("documents.dropzone")}</p>
               <p className="text-sm text-muted-foreground">{t("documents.formats")}</p>
               {uploading && (
-                <div className="flex items-center justify-center gap-2 mt-4 text-emerald-600">
+                <div className="flex items-center justify-center gap-2 mt-4 text-cyan-600">
                   <Loader2 size={18} className="animate-spin" /> Processing...
                 </div>
               )}
@@ -781,14 +781,14 @@ export default function IntakeFlow() {
                 </p>
                 {uploadedDocs.map((doc) => (
                   <div key={doc.id} className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl border">
-                    <FileText size={20} className="text-teal-600 shrink-0" />
+                    <FileText size={20} className="text-sky-600 shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-sm truncate">{doc.filename}</p>
                       <p className="text-xs text-muted-foreground">{doc.type} · {doc.date} · {doc.facility || "Unknown"}</p>
                       {doc.extractedEntities?.diagnoses?.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-1.5">
                           {doc.extractedEntities.diagnoses.map((d: string, i: number) => (
-                            <span key={i} className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-400">{d}</span>
+                            <span key={i} className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-400">{d}</span>
                           ))}
                         </div>
                       )}
@@ -805,7 +805,7 @@ export default function IntakeFlow() {
                     )}
                     {doc.ocrConfidence !== undefined && doc.ocrConfidence >= 85 && (
                       <div className="shrink-0">
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">{doc.ocrConfidence}% ✓</span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-700">{doc.ocrConfidence}% ✓</span>
                       </div>
                     )}
                     {doc.abnormalFlags && doc.abnormalFlags.length > 0 && <AlertTriangle size={16} className="text-amber-500 shrink-0" />}
@@ -819,7 +819,7 @@ export default function IntakeFlow() {
                 <ArrowLeft size={16} className="mr-2" /> Back
               </Button>
               <Button onClick={() => advanceStep("summary")}
-                className="flex-1 h-12 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700" size="lg">
+                className="flex-1 h-12 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-700" size="lg">
                 {uploadedDocs.length > 0 ? t("documents.continue") : t("documents.skip")} <ArrowRight size={18} className="ml-2" />
               </Button>
             </div>
@@ -830,7 +830,7 @@ export default function IntakeFlow() {
         {step === "summary" && (
           <div className="bg-card border rounded-[2rem] p-8 space-y-6">
             <div className="text-center mb-6">
-              {mode === "ayush" ? <Leaf size={40} className="text-amber-500 mx-auto mb-4" /> : <BrainCircuit size={40} className="text-emerald-600 mx-auto mb-4" />}
+              {mode === "ayush" ? <Leaf size={40} className="text-amber-500 mx-auto mb-4" /> : <BrainCircuit size={40} className="text-cyan-600 mx-auto mb-4" />}
               <h2 className="text-2xl font-extrabold font-[Manrope] mb-2">
                 {mode === "ayush" ? t("summary.title.ayush") : t("summary.title.clinical")}
               </h2>
@@ -846,7 +846,7 @@ export default function IntakeFlow() {
                   {uploadedDocs.length > 0 ? ` ${t("summary.and")} ${uploadedDocs.length} ${t("summary.documents")}` : ""}.
                 </p>
                 <Button onClick={handleGenerateSummary}
-                  className={`h-12 px-8 rounded-xl font-bold ${mode === "ayush" ? "bg-amber-500 hover:bg-amber-600" : "bg-emerald-600 hover:bg-emerald-700"}`} size="lg">
+                  className={`h-12 px-8 rounded-xl font-bold ${mode === "ayush" ? "bg-amber-500 hover:bg-amber-600" : "bg-cyan-600 hover:bg-cyan-700"}`} size="lg">
                   <BrainCircuit size={18} className="mr-2" />
                   {t("summary.generate")} {mode === "ayush" ? t("summary.ayushSummary") : t("summary.clinicalSummary")}
                 </Button>
@@ -855,7 +855,7 @@ export default function IntakeFlow() {
 
             {generatingSummary && (
               <div className="text-center py-12">
-                <Loader2 size={40} className={`animate-spin mx-auto mb-4 ${mode === "ayush" ? "text-amber-500" : "text-emerald-500"}`} />
+                <Loader2 size={40} className={`animate-spin mx-auto mb-4 ${mode === "ayush" ? "text-amber-500" : "text-cyan-500"}`} />
                 <p className="font-bold mb-1">{t("summary.generating")}</p>
                 <p className="text-sm text-muted-foreground">
                   {mode === "ayush" ? t("summary.analyzing.ayush") : t("summary.analyzing.clinical")}
@@ -866,10 +866,10 @@ export default function IntakeFlow() {
             {summary && (
               <div className="space-y-4">
                 {/* Header */}
-                <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl p-5">
+                <div className="bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800 rounded-xl p-5">
                   <div className="flex items-center gap-2 mb-3">
-                    <CheckCircle2 size={18} className="text-emerald-600" />
-                    <span className="font-bold text-emerald-700 dark:text-emerald-400">{t("summary.readyForReview")}</span>
+                    <CheckCircle2 size={18} className="text-cyan-600" />
+                    <span className="font-bold text-cyan-700 dark:text-cyan-400">{t("summary.readyForReview")}</span>
                     {mode === "ayush" && <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400">AYUSH</span>}
                   </div>
                   <div className="grid grid-cols-2 gap-3 text-xs text-muted-foreground">
@@ -986,23 +986,23 @@ export default function IntakeFlow() {
                         onClick={() => handleAssignDoctor(doc.doctorId)}
                         className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all text-center ${
                           selectedDoctor === doc.doctorId
-                            ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 shadow-md"
-                            : "border-border hover:border-emerald-300"
+                            ? "border-cyan-500 bg-cyan-50 dark:bg-cyan-950/40 shadow-md"
+                            : "border-border hover:border-cyan-300"
                         }`}
                       >
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-emerald-400 flex items-center justify-center text-white font-bold text-sm">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm">
                           {doc.name.split(" ").map((n) => n[0]).join("")}
                         </div>
                         <div>
                           <div className="font-bold text-xs">{doc.name}</div>
                           <div className="text-[10px] text-muted-foreground">{doc.specialty}</div>
                         </div>
-                        {selectedDoctor === doc.doctorId && <Check size={14} className="text-emerald-600" />}
+                        {selectedDoctor === doc.doctorId && <Check size={14} className="text-cyan-600" />}
                       </button>
                     ))}
                   </div>
                   {doctorAssigned && (
-                    <div className="flex items-center gap-2 text-emerald-600 text-sm font-bold">
+                    <div className="flex items-center gap-2 text-cyan-600 text-sm font-bold">
                       <CheckCircle2 size={14} /> {t("doctor.sent")} {doctors.find((d) => d.doctorId === selectedDoctor)?.name}
                     </div>
                   )}
@@ -1020,7 +1020,7 @@ export default function IntakeFlow() {
                     <FileText size={16} className="mr-2" /> {t("summary.download")}
                   </Button>
                   <Button onClick={() => setLocation("/records")}
-                    className="flex-1 h-12 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700" size="lg">
+                    className="flex-1 h-12 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-700" size="lg">
                     <CheckCircle2 size={18} className="mr-2" /> {t("summary.submitComplete")}
                   </Button>
                 </div>
@@ -1036,9 +1036,9 @@ export default function IntakeFlow() {
 function SummarySection({ title, content, accent }: { title: string; content: string; accent?: boolean }) {
   return (
     <div className={`rounded-xl p-5 ${
-      accent ? "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800" : "bg-muted/30 border"
+      accent ? "bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800" : "bg-muted/30 border"
     }`}>
-      <h4 className={`font-bold text-sm mb-2 ${accent ? "text-emerald-700 dark:text-emerald-400" : "text-foreground"}`}>{title}</h4>
+      <h4 className={`font-bold text-sm mb-2 ${accent ? "text-cyan-700 dark:text-cyan-400" : "text-foreground"}`}>{title}</h4>
       <p className="text-sm text-muted-foreground leading-relaxed">{content || "Not documented"}</p>
     </div>
   );

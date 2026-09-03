@@ -80,7 +80,7 @@ export default function ClinicianReviews() {
               <div className="flex items-center gap-2">
                 {s.mode === "ayush" && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700">AYUSH</span>}
                 <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${
-                  s.status === "confirmed" ? "bg-emerald-100 text-emerald-700" :
+                  s.status === "confirmed" ? "bg-cyan-100 text-cyan-700" :
                   s.status === "reviewed" ? "bg-blue-100 text-blue-700" :
                   "bg-amber-100 text-amber-700"
                 }`}>{s.status}</span>
@@ -202,7 +202,7 @@ export default function ClinicianReviews() {
 
                   {/* ═══ ATTACHED DOCUMENTS — Doctor can VIEW actual images ═══ */}
                   {s.documents && s.documents.length > 0 && (
-                    <div className="bg-slate-50 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 rounded-xl p-4">
+                    <div className="bg-slate-50 dark:bg-[#011C40]/40 border border-slate-200 dark:border-slate-800 rounded-xl p-4">
                       <h4 className="font-bold text-xs text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
                         📎 {s.documents.length} Patient Document{s.documents.length > 1 ? "s" : ""}
                       </h4>
@@ -229,7 +229,7 @@ export default function ClinicianReviews() {
                                 {doc.url && (
                                   <button
                                     onClick={() => setViewingDoc(doc)}
-                                    className="flex items-center gap-1 px-2 py-1 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 rounded text-[10px] font-bold hover:bg-teal-100 transition-colors"
+                                    className="flex items-center gap-1 px-2 py-1 bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 rounded text-[10px] font-bold hover:bg-sky-100 transition-colors"
                                   >
                                     <Eye size={12} /> View
                                   </button>
@@ -273,10 +273,10 @@ export default function ClinicianReviews() {
                             {/* Extracted Diagnoses */}
                             {doc.extractedEntities?.diagnoses?.length > 0 && (
                               <div className="p-3 border-b">
-                                <div className="text-[10px] font-black uppercase tracking-wider text-emerald-600 mb-2">Diagnoses</div>
+                                <div className="text-[10px] font-black uppercase tracking-wider text-cyan-600 mb-2">Diagnoses</div>
                                 <div className="flex flex-wrap gap-1">
                                   {doc.extractedEntities.diagnoses.map((d: string, j: number) => (
-                                    <span key={j} className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400">{d}</span>
+                                    <span key={j} className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-400">{d}</span>
                                   ))}
                                 </div>
                               </div>
@@ -333,8 +333,8 @@ export default function ClinicianReviews() {
               )}
 
               {/* AI Assessment */}
-              <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4">
-                <h4 className="font-bold text-xs text-emerald-700 dark:text-emerald-400 mb-1 flex items-center gap-2">
+              <div className="bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800 rounded-xl p-4">
+                <h4 className="font-bold text-xs text-cyan-700 dark:text-cyan-400 mb-1 flex items-center gap-2">
                   <BrainCircuit size={14} /> AI Assessment
                 </h4>
                 <p className="text-xs text-muted-foreground leading-relaxed">{s.aiAssessment}</p>
@@ -352,7 +352,7 @@ export default function ClinicianReviews() {
                 value={physicianNotes}
                 onChange={(e) => setPhysicianNotes(e.target.value)}
                 placeholder={t("reviews.notesPlaceholder")}
-                className="w-full h-24 rounded-xl border bg-muted/30 p-4 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full h-24 rounded-xl border bg-muted/30 p-4 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-sky-500"
               />
             </div>
             <div className="flex gap-3">
@@ -368,14 +368,14 @@ export default function ClinicianReviews() {
               <Button
                 onClick={() => handleReview(s.sessionId, "confirmed")}
                 disabled={saving}
-                className="flex-1 h-12 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700"
+                className="flex-1 h-12 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-700"
               >
                 <CheckCircle2 size={18} className="mr-2" />
                 {t("reviews.confirmApprove")}
               </Button>
             </div>
             {saved && (
-              <div className="flex items-center gap-2 text-emerald-600 text-sm font-bold">
+              <div className="flex items-center gap-2 text-cyan-600 text-sm font-bold">
                 <CheckCircle2 size={16} /> {t("reviews.saved")}
               </div>
             )}
@@ -402,7 +402,7 @@ export default function ClinicianReviews() {
                       href={viewingDoc.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1 px-3 py-1.5 bg-teal-50 text-teal-700 rounded-lg text-xs font-bold hover:bg-teal-100 transition-colors"
+                      className="flex items-center gap-1 px-3 py-1.5 bg-sky-50 text-sky-700 rounded-lg text-xs font-bold hover:bg-sky-100 transition-colors"
                     >
                       <ExternalLink size={12} /> Open Full
                     </a>
@@ -462,11 +462,11 @@ export default function ClinicianReviews() {
                       </div>
                     )}
                     {viewingDoc.extractedEntities.diagnoses?.length > 0 && (
-                      <div className="p-3 bg-emerald-50 dark:bg-emerald-950/20 rounded-xl">
-                        <h4 className="text-xs font-bold text-emerald-700 dark:text-emerald-400 mb-2">Diagnoses</h4>
+                      <div className="p-3 bg-cyan-50 dark:bg-cyan-950/20 rounded-xl">
+                        <h4 className="text-xs font-bold text-cyan-700 dark:text-cyan-400 mb-2">Diagnoses</h4>
                         <div className="flex flex-wrap gap-1">
                           {viewingDoc.extractedEntities.diagnoses.map((d: string, j: number) => (
-                            <span key={j} className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">{d}</span>
+                            <span key={j} className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-700">{d}</span>
                           ))}
                         </div>
                       </div>
@@ -521,10 +521,10 @@ export default function ClinicianReviews() {
               <button
                 key={s.sessionId}
                 onClick={() => setSelectedSummary(s)}
-                className="w-full text-left bg-card border rounded-2xl p-5 hover:shadow-lg transition-all hover:border-teal-200 dark:hover:border-teal-800"
+                className="w-full text-left bg-card border rounded-2xl p-5 hover:shadow-lg transition-all hover:border-sky-200 dark:hover:border-sky-800"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center text-white font-bold text-lg shrink-0 shadow-md">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-sky-500 to-cyan-400 flex items-center justify-center text-white font-bold text-lg shrink-0 shadow-md">
                     {s.patientName.charAt(0)}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -533,7 +533,7 @@ export default function ClinicianReviews() {
                       <span className="text-xs text-muted-foreground">{s.patientId}</span>
                       {s.mode === "ayush" && <span className="px-2 py-0.5 bg-orange-100 text-orange-700 rounded-full text-[10px] font-bold">AYUSH</span>}
                       {s.documents && s.documents.length > 0 && (
-                        <span className="px-2 py-0.5 bg-teal-100 text-teal-700 rounded-full text-[10px] font-bold flex items-center gap-1">
+                        <span className="px-2 py-0.5 bg-sky-100 text-sky-700 rounded-full text-[10px] font-bold flex items-center gap-1">
                           📎 {s.documents.length} doc{s.documents.length > 1 ? "s" : ""}
                         </span>
                       )}
@@ -549,7 +549,7 @@ export default function ClinicianReviews() {
                     </div>
                   </div>
                   <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shrink-0 ${
-                    s.status === "confirmed" ? "bg-emerald-100 text-emerald-700" :
+                    s.status === "confirmed" ? "bg-cyan-100 text-cyan-700" :
                     s.status === "reviewed" ? "bg-blue-100 text-blue-700" :
                     "bg-amber-100 text-amber-700"
                   }`}>{s.status}</span>

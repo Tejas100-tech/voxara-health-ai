@@ -190,7 +190,7 @@ export default function AyushPractitioner() {
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white font-black text-sm">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-cyan-600 flex items-center justify-center text-white font-black text-sm">
                           {patient.patientName.charAt(0)}
                         </div>
                         <div>
@@ -234,7 +234,7 @@ export default function AyushPractitioner() {
             <div className="bg-card border rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white font-black text-lg">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-cyan-600 flex items-center justify-center text-white font-black text-lg">
                     {selectedPatient.assessment?.patientName?.toString().charAt(0) || "?"}
                   </div>
                   <div>

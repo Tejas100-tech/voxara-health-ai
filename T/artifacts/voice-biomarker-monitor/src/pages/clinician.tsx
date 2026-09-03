@@ -25,10 +25,10 @@ export default function ClinicianDashboard() {
     <AppLayout userType="clinician">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Hero */}
-        <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-teal-950 to-slate-950 text-white p-8 md:p-10 flex flex-col md:flex-row items-stretch justify-between gap-8 shadow-2xl shadow-teal-500/10">
+        <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-950 via-sky-950 to-slate-950 text-white p-8 md:p-10 flex flex-col md:flex-row items-stretch justify-between gap-8 shadow-2xl shadow-sky-500/10">
           <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_85%_15%,rgba(20,184,166,.28),transparent_38%)]" />
           <div className="relative z-10 space-y-4 max-w-xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-full text-xs font-bold tracking-wider uppercase text-teal-300 border border-white/10">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-full text-xs font-bold tracking-wider uppercase text-sky-300 border border-white/10">
               <Stethoscope size={13} /> {t("nav.clinician")}
             </div>
             <h1 className="text-3xl md:text-4xl font-black font-[Manrope] leading-tight">
@@ -38,7 +38,7 @@ export default function ClinicianDashboard() {
           </div>
           <div className="relative z-10 flex items-center gap-6">
             <div className="text-center">
-              <div className="text-4xl font-black text-teal-400">{sessions.length}</div>
+              <div className="text-4xl font-black text-sky-400">{sessions.length}</div>
               <div className="text-xs text-white/50 uppercase tracking-wider mt-1">{t("common.patients")}</div>
             </div>
             <div className="text-center">
@@ -56,7 +56,7 @@ export default function ClinicianDashboard() {
                 <AlertTriangle size={18} className="text-amber-500" />
                 {t("clinician.clinicalSummaries")}
               </h2>
-              <Link href="/clinician/reviews" className="text-sm text-teal-600 font-bold hover:underline flex items-center gap-1">
+              <Link href="/clinician/reviews" className="text-sm text-sky-600 font-bold hover:underline flex items-center gap-1">
                 {t("nav.reviews")} <ArrowRight size={14} />
               </Link>
             </div>
@@ -103,7 +103,7 @@ export default function ClinicianDashboard() {
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white ${
                       session.mode === "ayush"
                         ? "bg-gradient-to-br from-orange-500 to-amber-400"
-                        : "bg-gradient-to-br from-emerald-500 to-teal-400"
+                        : "bg-gradient-to-br from-cyan-500 to-sky-400"
                     }`}>
                       {session.mode === "ayush" ? <Stethoscope size={18} /> : <FileText size={18} />}
                     </div>
@@ -119,7 +119,7 @@ export default function ClinicianDashboard() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-bold text-emerald-600">{session.answers?.length || 0} answers</div>
+                    <div className="text-sm font-bold text-cyan-600">{session.answers?.length || 0} answers</div>
                     <div className="text-xs text-muted-foreground">{session.status}</div>
                   </div>
                 </div>
@@ -132,14 +132,14 @@ export default function ClinicianDashboard() {
         <div className="grid grid-cols-2 gap-4">
           <Link href="/clinician/queue" className="block">
             <div className="bg-card border rounded-2xl p-6 hover:shadow-lg transition-all text-center">
-              <Users size={28} className="mx-auto text-teal-600 mb-3" />
+              <Users size={28} className="mx-auto text-sky-600 mb-3" />
               <div className="font-bold">{t("nav.queue")}</div>
               <div className="text-xs text-muted-foreground mt-1">{sessions.length} {t("common.patients")}</div>
             </div>
           </Link>
           <Link href="/clinician/reviews" className="block">
             <div className="bg-card border rounded-2xl p-6 hover:shadow-lg transition-all text-center">
-              <CheckCircle2 size={28} className="mx-auto text-emerald-600 mb-3" />
+              <CheckCircle2 size={28} className="mx-auto text-cyan-600 mb-3" />
               <div className="font-bold">{t("nav.reviews")}</div>
               <div className="text-xs text-muted-foreground mt-1">{pendingReview.length} {t("clinician.pendingReview")}</div>
             </div>

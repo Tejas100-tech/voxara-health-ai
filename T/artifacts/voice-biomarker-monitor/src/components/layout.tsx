@@ -52,14 +52,14 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
     <div className="flex flex-col h-full">
       <div className="shrink-0 p-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-600 to-sky-500 text-white flex items-center justify-center shadow-lg shadow-cyan-500/30">
             <Stethoscope size={22} />
           </div>
           <div>
-            <h2 className="font-extrabold text-emerald-700 dark:text-emerald-400 text-base leading-tight tracking-tight font-[Manrope]">
+            <h2 className="font-extrabold text-white text-base leading-tight tracking-tight font-[Manrope]">
               {t("app.name")}
             </h2>
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
+            <p className="text-[10px] uppercase tracking-widest text-cyan-300/60 font-bold">
               {t("app.tagline")}
             </p>
           </div>
@@ -70,20 +70,20 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
       </div>
 
       {user && (
-        <div className="shrink-0 mx-4 mb-4 rounded-2xl bg-muted/50 border p-4">
+        <div className="shrink-0 mx-4 mb-4 rounded-2xl bg-white/5 border border-white/10 p-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-500 flex items-center justify-center text-white font-black text-sm shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-600 to-sky-500 flex items-center justify-center text-white font-black text-sm shrink-0">
               {user.name.charAt(0)}
             </div>
             <div className="min-w-0">
               <p className="font-bold text-sm truncate leading-tight">{user.name}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
+              <p className="text-[10px] text-cyan-300/60 uppercase tracking-widest font-bold">
                 {user.role} · {user.patientId}
               </p>
             </div>
           </div>
           {user.abhaId && (
-            <div className="mt-2 flex items-center gap-1.5 text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+            <div className="mt-2 flex items-center gap-1.5 text-[10px] text-cyan-300 font-bold">
               <ShieldCheck size={12} /> ABHA: {user.abhaId}
             </div>
           )}
@@ -98,8 +98,8 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
             <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
                 isActive
-                  ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 shadow-sm border border-emerald-200 dark:border-emerald-800"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  ? "bg-white/10 text-cyan-300 shadow-sm border border-cyan-500/30"
+                  : "text-cyan-100/60 hover:bg-white/5 hover:text-white"
               }`}>
               <Icon size={18} />{item.name}
             </Link>
@@ -110,13 +110,13 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
       <div className="shrink-0 p-4 border-t space-y-2">
         {effectiveRole === "patient" && (
           <Link href="/intake" onClick={() => setMobileOpen(false)}>
-            <Button className="w-full rounded-xl py-6 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 shadow-lg shadow-emerald-500/20" size="lg">
+            <Button className="w-full rounded-xl py-6 bg-gradient-to-r from-cyan-600 to-sky-500 hover:from-cyan-700 hover:to-sky-600 shadow-lg shadow-cyan-500/20" size="lg">
               <ClipboardList className="mr-2" size={18} />{t("nav.startNewIntake")}
             </Button>
           </Link>
         )}
         <button onClick={logout}
-          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/5 rounded-xl font-semibold transition-all">
+          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-cyan-100/50 hover:text-red-400 hover:bg-red-400/10 rounded-xl font-semibold transition-all">
           <LogOut size={16} />{t("nav.signOut")}
         </button>
       </div>
@@ -125,14 +125,14 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
 
   return (
     <div className="min-h-screen bg-background flex">
-      <aside className="hidden md:flex w-64 fixed inset-y-0 border-r bg-card z-20 flex-col">
+      <aside className="hidden md:flex w-64 fixed inset-y-0 border-r border-cyan-900/20 bg-[#011C40] z-20 flex-col">
         <Sidebar />
       </aside>
 
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <aside className="relative w-72 bg-card border-r flex flex-col h-full z-10 overflow-y-auto">
+          <aside className="relative w-72 bg-[#011C40] border-r border-cyan-900/20 flex flex-col h-full z-10 overflow-y-auto">
             <Sidebar />
           </aside>
         </div>
@@ -154,7 +154,7 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value as LanguageCode)}
-              className="h-9 rounded-lg border bg-background px-2 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 max-w-[120px]"
+              className="h-9 rounded-lg border bg-background px-2 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500 max-w-[120px]"
               title="Change language"
             >
               {LANGUAGES.filter((l) => ["en","hi","ta","te","bn","mr","gu","kn","ml","pa","or","as","ur","sa","ne"].includes(l.code)).map((lang) => (
@@ -169,7 +169,7 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
             </button>
 
             {user && (
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-600 to-teal-500 flex items-center justify-center text-white font-black text-sm cursor-default select-none shadow-md">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-600 to-sky-500 flex items-center justify-center text-white font-black text-sm cursor-default select-none shadow-md">
                 {user.name.charAt(0)}
               </div>
             )}

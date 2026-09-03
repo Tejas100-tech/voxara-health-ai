@@ -80,7 +80,7 @@ router.patch("/notifications/:id/acknowledge", async (req, res) => {
     const notification = await Notification.findByIdAndUpdate(
       req.params.id,
       { acknowledged: true },
-      { new: true }
+      { returnDocument: 'after' }
     );
     if (!notification) {
       res.status(404).json({ error: "Notification not found" });

@@ -22,8 +22,8 @@ const CHATBOT_INFO: Record<string, Record<string, { title: string; subtitle: str
       title: "General Health Assistant",
       subtitle: "Ask about symptoms, medications, diet & nutrition",
       icon: "🩺",
-      color: "emerald",
-      gradient: "from-emerald-600 to-teal-500",
+      color: "cyan",
+      gradient: "from-cyan-600 to-sky-500",
       description: "I can help you with general health questions, symptom assessment, medication information, and lifestyle guidance. I'm an AI assistant — always consult a doctor for diagnosis and treatment.",
       topics: ["Fever & Infections", "Diabetes", "Blood Pressure", "Headaches", "Diet & Nutrition", "When to see a doctor"],
     },
@@ -31,8 +31,8 @@ const CHATBOT_INFO: Record<string, Record<string, { title: string; subtitle: str
       title: "सामान्य स्वास्थ्य सहायक",
       subtitle: "लक्षणों, दवाओं, आहार और पोषण के बारे में पूछें",
       icon: "🩺",
-      color: "emerald",
-      gradient: "from-emerald-600 to-teal-500",
+      color: "cyan",
+      gradient: "from-cyan-600 to-sky-500",
       description: "मैं सामान्य स्वास्थ्य प्रश्नों, लक्षण मूल्यांकन, दवा जानकारी और जीवनशैली मार्गदर्शन में मदद कर सकता हूं। मैं एक AI सहायक हूं — निदान और उपचार के लिए हमेशा डॉक्टर से परामर्श करें।",
       topics: ["बुखार और संक्रमण", "मधुमेह", "रक्तचाप", "सिरदर्द", "आहार और पोषण", "कब डॉक्टर को दिखाएं"],
     },
@@ -343,7 +343,7 @@ export default function ChatbotPage() {
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border hover:shadow-sm ${
                     isAyush
                       ? "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800 hover:bg-amber-100"
-                      : "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100"
+                      : "bg-cyan-50 dark:bg-cyan-950/30 text-cyan-700 dark:text-cyan-400 border-cyan-200 dark:border-cyan-800 hover:bg-cyan-100"
                   }`}
                 >
                   {topic}
@@ -384,7 +384,7 @@ export default function ChatbotPage() {
               <div
                 className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                   msg.role === "user"
-                    ? "bg-emerald-600 text-white rounded-br-md"
+                    ? "bg-cyan-600 text-white rounded-br-md"
                     : "bg-card border rounded-bl-md shadow-sm"
                 }`}
               >
@@ -473,7 +473,7 @@ export default function ChatbotPage() {
                   : t("chat.placeholder.general")
               }
               disabled={loading || !initialized}
-              className="flex-1 h-12 rounded-xl border bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+              className="flex-1 h-12 rounded-xl border bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 disabled:opacity-50"
             />
             <Button
               onClick={handleSend}

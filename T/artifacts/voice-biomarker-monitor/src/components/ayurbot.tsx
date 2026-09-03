@@ -35,9 +35,9 @@ const MODE_CONFIG = {
     title: "AyurBot — Learn",
     subtitle: "Ayurvedic Education",
     icon: BookOpen,
-    color: "from-emerald-500 to-teal-600",
-    bgLight: "bg-emerald-50 dark:bg-emerald-950/30",
-    borderColor: "border-emerald-200 dark:border-emerald-800",
+    color: "from-cyan-500 to-sky-600",
+    bgLight: "bg-cyan-50 dark:bg-cyan-950/30",
+    borderColor: "border-cyan-200 dark:border-cyan-800",
   },
   pre_consultation: {
     title: "AyurBot — Assessment",
@@ -289,7 +289,7 @@ export function AyurBot({
             <div className={`max-w-[85%] ${msg.role === "patient" ? "order-2" : ""}`}>
               {msg.role === "bot" && (
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-cyan-500 to-sky-600 flex items-center justify-center">
                     <Leaf size={12} className="text-white" />
                   </div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">AyurBot</span>
@@ -349,7 +349,7 @@ export function AyurBot({
 
         {isTyping && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-cyan-500 to-sky-600 flex items-center justify-center">
               <Loader2 size={12} className="text-white animate-spin" />
             </div>
             <div className={`px-3 py-2 rounded-xl ${config.bgLight} border ${config.borderColor}`}>

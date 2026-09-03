@@ -53,7 +53,7 @@ export default function DoctorLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col lg:flex-row overflow-hidden">
+    <div className="min-h-screen bg-[#011C40] text-white flex flex-col lg:flex-row overflow-hidden">
       {/* Left panel — dark clinical theme */}
       <div className="relative flex-1 bg-slate-900 flex flex-col justify-between p-10 min-h-[260px] lg:min-h-screen overflow-hidden border-r border-white/5">
         <div className="absolute inset-0 pointer-events-none">
@@ -103,7 +103,7 @@ export default function DoctorLoginPage() {
       </div>
 
       {/* Right panel — login form */}
-      <div className="flex-1 flex items-center justify-center p-8 lg:max-w-lg xl:max-w-xl bg-slate-950">
+      <div className="flex-1 flex items-center justify-center p-8 lg:max-w-lg xl:max-w-xl bg-[#011C40]">
         <div className="w-full max-w-md">
           <div className="mb-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-xs font-bold text-cyan-400 uppercase tracking-widest mb-4">
@@ -171,7 +171,7 @@ export default function DoctorLoginPage() {
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/10" /></div>
             <div className="relative flex justify-center">
-              <span className="bg-slate-950 px-4 text-xs text-slate-500 font-bold uppercase tracking-widest">Demo Account</span>
+              <span className="bg-[#011C40] px-4 text-xs text-slate-500 font-bold uppercase tracking-widest">Demo Account</span>
             </div>
           </div>
 

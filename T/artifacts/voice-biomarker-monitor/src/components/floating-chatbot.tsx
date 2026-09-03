@@ -76,15 +76,15 @@ export function FloatingChatbot() {
 
   // ─── Dynamic Theme ─────────────────────────────────────────────────────
   const theme = useMemo(() => isAyush ? {
-    gradient: "from-emerald-500 to-teal-600",
-    buttonGradient: "from-emerald-500 to-teal-600",
-    buttonShadow: "shadow-emerald-500/30",
-    headerBg: "bg-gradient-to-r from-emerald-500 to-teal-600",
-    badge: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300",
+    gradient: "from-[#54ACBF] to-[#26658C]",
+    buttonGradient: "from-[#54ACBF] to-[#26658C]",
+    buttonShadow: "shadow-[#54ACBF]/30",
+    headerBg: "bg-gradient-to-r from-[#54ACBF] to-[#26658C]",
+    badge: "bg-[#A7EBF2]/20 text-[#023859] dark:bg-[#A7EBF2]/10 dark:text-[#A7EBF2]",
     botLabel: tr.chatAyurBot,
-    botLabelColor: "text-emerald-600 dark:text-emerald-400",
-    botDot: "bg-emerald-500",
-    suggestedBg: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-900/50",
+    botLabelColor: "text-[#54ACBF] dark:text-[#A7EBF2]",
+    botDot: "bg-[#54ACBF]",
+    suggestedBg: "bg-[#A7EBF2]/10 text-[#023859] dark:bg-[#A7EBF2]/10 dark:text-[#A7EBF2] hover:bg-[#A7EBF2]/20 dark:hover:bg-[#A7EBF2]/20",
     leafIcon: true,
   } : {
     gradient: "from-blue-500 to-indigo-600",
@@ -393,7 +393,7 @@ export function FloatingChatbot() {
                               onClick={() => handleModeChange(opt.key)}
                               className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left ${
                                 isSelected
-                                  ? isAyush ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300" : "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                                  ? isAyush ? "bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300" : "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
                                   : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                               }`}
                             >
@@ -423,7 +423,7 @@ export function FloatingChatbot() {
                         {msg.role === "bot" && (
                           <div className="flex items-center gap-1.5 mb-1">
                             {isAyush ? (
-                              <Leaf size={10} className="text-emerald-500" />
+                              <Leaf size={10} className="text-cyan-500" />
                             ) : (
                               <HeartPulse size={10} className="text-blue-500" />
                             )}
@@ -461,7 +461,7 @@ export function FloatingChatbot() {
                   {isLoading && (
                     <div className="flex justify-start">
                       <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3 flex items-center gap-2">
-                        <Loader2 size={14} className={`animate-spin ${isAyush ? "text-emerald-500" : "text-blue-500"}`} />
+                        <Loader2 size={14} className={`animate-spin ${isAyush ? "text-cyan-500" : "text-blue-500"}`} />
                         <span className="text-xs text-muted-foreground">{tr.chatThinking}</span>
                       </div>
                     </div>

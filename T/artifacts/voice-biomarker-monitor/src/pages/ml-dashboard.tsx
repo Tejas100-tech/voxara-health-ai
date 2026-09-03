@@ -127,8 +127,8 @@ function RadarFingerprint({ data }: { data: Record<string, number> }) {
 function ZScoreBar({ label, z, idx }: { label: string; z: number; idx: number }) {
   const abs = Math.abs(z);
   const clamped = Math.min(abs, 4);
-  const color = abs > 3.5 ? "bg-red-500" : abs > 2.5 ? "bg-amber-500" : abs > 1.5 ? "bg-primary" : "bg-emerald-500";
-  const textColor = abs > 3.5 ? "text-red-600" : abs > 2.5 ? "text-amber-600" : abs > 1.5 ? "text-primary" : "text-emerald-600";
+  const color = abs > 3.5 ? "bg-red-500" : abs > 2.5 ? "bg-amber-500" : abs > 1.5 ? "bg-primary" : "bg-cyan-500";
+  const textColor = abs > 3.5 ? "text-red-600" : abs > 2.5 ? "text-amber-600" : abs > 1.5 ? "text-primary" : "text-cyan-600";
   return (
     <div className="flex items-center gap-3 py-1.5">
       <span className="text-[10px] font-bold text-muted-foreground w-10 shrink-0 uppercase text-right">C{idx}</span>
@@ -218,7 +218,7 @@ export default function MLDashboard() {
       <div className="max-w-7xl mx-auto space-y-8">
 
         {/* Hero */}
-        <section className="relative overflow-hidden rounded-[2rem] bg-slate-950 text-white p-8 md:p-10">
+        <section className="relative overflow-hidden rounded-[2rem] bg-[#011C40] text-white p-8 md:p-10">
           <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_70%_20%,rgba(0,180,255,.18),transparent_40%),radial-gradient(ellipse_at_10%_80%,rgba(20,184,166,.12),transparent_40%)]" />
           <div className="relative z-10 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-8">
             <div className="space-y-4 max-w-2xl">
@@ -294,7 +294,7 @@ export default function MLDashboard() {
               </div>
 
               {/* Network architecture diagram */}
-              <div className="mt-6 bg-slate-950 rounded-2xl p-6 overflow-x-auto">
+              <div className="mt-6 bg-[#011C40] rounded-2xl p-6 overflow-x-auto">
                 <p className="text-[10px] text-white/40 font-black uppercase tracking-widest mb-4">Network Architecture</p>
                 <div className="flex items-center justify-around gap-4 min-w-[420px]">
                   {[
@@ -557,7 +557,7 @@ export default function MLDashboard() {
                 ))}
               </div>
               <div className="flex gap-4 mt-4 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                <span className="flex items-center gap-1.5"><span className="w-3 h-1.5 rounded bg-emerald-500" /> Normal (&lt;1.5σ)</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-1.5 rounded bg-cyan-500" /> Normal (&lt;1.5σ)</span>
                 <span className="flex items-center gap-1.5"><span className="w-3 h-1.5 rounded bg-primary" /> Watch (1.5–2.5σ)</span>
                 <span className="flex items-center gap-1.5"><span className="w-3 h-1.5 rounded bg-amber-500" /> Alert (2.5–3.5σ)</span>
                 <span className="flex items-center gap-1.5"><span className="w-3 h-1.5 rounded bg-red-500" /> Anomaly (&gt;3.5σ)</span>

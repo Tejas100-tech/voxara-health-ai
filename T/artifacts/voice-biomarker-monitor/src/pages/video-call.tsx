@@ -425,7 +425,7 @@ export default function VideoCallPage() {
       {/* Header */}
       <div className="bg-black/80 backdrop-blur-sm px-6 py-3 flex items-center justify-between text-white z-10">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-cyan-600 flex items-center justify-center">
             <Video size={16} />
           </div>
           <div>
@@ -437,8 +437,8 @@ export default function VideoCallPage() {
           <span className="text-xs text-white/60">{participantCount} {lang.participants}</span>
           {connected && (
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs font-mono text-emerald-400">{formatDuration(callDuration)}</span>
+              <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+              <span className="text-xs font-mono text-cyan-400">{formatDuration(callDuration)}</span>
             </div>
           )}
         </div>
@@ -488,7 +488,7 @@ export default function VideoCallPage() {
             <div className="flex-1 overflow-y-auto p-3 space-y-2">
               {chatMessages.map((msg, i) => (
                 <div key={i} className={`text-xs ${msg.from === user?.patientId ? "text-right" : ""}`}>
-                  <span className={`inline-block px-3 py-1.5 rounded-xl ${msg.from === user?.patientId ? "bg-emerald-600 text-white" : "bg-muted"}`}>
+                  <span className={`inline-block px-3 py-1.5 rounded-xl ${msg.from === user?.patientId ? "bg-cyan-600 text-white" : "bg-muted"}`}>
                     {msg.text}
                   </span>
                   <div className="text-muted-foreground mt-0.5">{msg.time}</div>
@@ -502,9 +502,9 @@ export default function VideoCallPage() {
                 onChange={(e) => setChatInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && sendChatMessage()}
                 placeholder={lang.chatPlaceholder}
-                className="flex-1 h-9 rounded-lg border bg-background px-3 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="flex-1 h-9 rounded-lg border bg-background px-3 text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
               />
-              <button onClick={sendChatMessage} className="h-9 w-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center">
+              <button onClick={sendChatMessage} className="h-9 w-9 rounded-lg bg-cyan-600 text-white flex items-center justify-center">
                 <Send size={14} />
               </button>
             </div>

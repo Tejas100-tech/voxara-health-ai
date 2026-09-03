@@ -21,7 +21,7 @@ const SEVERITY_CONFIG = {
   critical: { dot: "bg-red-500", card: "border-l-red-500 bg-red-50 dark:bg-red-950/20", badge: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400", icon: "text-red-600" },
   warning: { dot: "bg-amber-500", card: "border-l-amber-500 bg-amber-50 dark:bg-amber-950/20", badge: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400", icon: "text-amber-600" },
   info: { dot: "bg-primary", card: "border-l-primary/60 bg-primary/5", badge: "bg-primary/10 text-primary", icon: "text-primary" },
-  success: { dot: "bg-emerald-500", card: "border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/20", badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400", icon: "text-emerald-600" },
+  success: { dot: "bg-cyan-500", card: "border-l-cyan-500 bg-cyan-50 dark:bg-cyan-950/20", badge: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-400", icon: "text-cyan-600" },
 };
 
 const TYPE_ICON: Record<string, typeof BrainCircuit> = {

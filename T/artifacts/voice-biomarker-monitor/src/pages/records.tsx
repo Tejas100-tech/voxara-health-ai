@@ -35,11 +35,11 @@ export default function MyRecords() {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-card border rounded-2xl p-4 text-center">
-            <div className="text-3xl font-black text-emerald-600">{sessions.length}</div>
+            <div className="text-3xl font-black text-cyan-600">{sessions.length}</div>
             <div className="text-xs text-muted-foreground font-bold uppercase tracking-wider mt-1">{t("records.intakes")}</div>
           </div>
           <div className="bg-card border rounded-2xl p-4 text-center">
-            <div className="text-3xl font-black text-teal-600">{summaries.length}</div>
+            <div className="text-3xl font-black text-sky-600">{summaries.length}</div>
             <div className="text-xs text-muted-foreground font-bold uppercase tracking-wider mt-1">{t("records.summaries")}</div>
           </div>
           <div className="bg-card border rounded-2xl p-4 text-center">
@@ -56,7 +56,7 @@ export default function MyRecords() {
               <div key={summary.sessionId} className="bg-card border rounded-2xl p-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-400 flex items-center justify-center text-white">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-cyan-400 flex items-center justify-center text-white">
                       <BrainCircuit size={18} />
                     </div>
                     <div>
@@ -65,7 +65,7 @@ export default function MyRecords() {
                     </div>
                   </div>
                   <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                    summary.status === "approved" ? "bg-emerald-100 text-emerald-700" :
+                    summary.status === "approved" ? "bg-cyan-100 text-cyan-700" :
                     summary.status === "pending_review" ? "bg-amber-100 text-amber-700" :
                     "bg-slate-100 text-slate-700"
                   }`}>
@@ -107,7 +107,7 @@ export default function MyRecords() {
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white ${
                       session.mode === "ayush"
                         ? "bg-gradient-to-br from-orange-500 to-amber-400"
-                        : "bg-gradient-to-br from-emerald-500 to-teal-400"
+                        : "bg-gradient-to-br from-cyan-500 to-sky-400"
                     }`}>
                       {session.mode === "ayush" ? <Stethoscope size={18} /> : <FileText size={18} />}
                     </div>
@@ -123,7 +123,7 @@ export default function MyRecords() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-bold text-emerald-600">{session.answers?.length || 0} answers</span>
+                    <span className="text-sm font-bold text-cyan-600">{session.answers?.length || 0} answers</span>
                     {expandedId === session.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                   </div>
                 </div>

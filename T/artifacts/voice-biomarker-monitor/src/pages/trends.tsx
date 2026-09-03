@@ -151,7 +151,7 @@ export default function Trends() {
               </div>
               <div className="text-5xl font-black text-primary flex items-baseline gap-3 font-[Manrope]">
                 {latest[metric]}
-                <span className={`text-xl font-bold flex items-center ${improving ? "text-emerald-600" : "text-destructive"}`}>
+                <span className={`text-xl font-bold flex items-center ${improving ? "text-cyan-600" : "text-destructive"}`}>
                   {improving ? <TrendingUp size={20} className="mr-1" /> : <TrendingDown size={20} className="mr-1" />}
                   {improving ? "+" : ""}{delta}%
                 </span>
@@ -191,7 +191,7 @@ export default function Trends() {
             <div key={s.label} className="bg-card border rounded-2xl p-5 card-hover text-center">
               <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2">{s.label}</p>
               <p className="text-3xl font-black font-[Manrope] text-foreground">{s.value}</p>
-              <span className={`text-xs font-bold mt-1 inline-flex items-center gap-1 ${s.up ? "text-emerald-600" : "text-destructive"}`}>
+              <span className={`text-xs font-bold mt-1 inline-flex items-center gap-1 ${s.up ? "text-cyan-600" : "text-destructive"}`}>
                 {s.up ? <TrendingUp size={11} /> : <TrendingDown size={11} />} {range} period
               </span>
             </div>

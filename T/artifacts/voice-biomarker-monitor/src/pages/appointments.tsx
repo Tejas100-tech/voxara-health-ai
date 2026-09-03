@@ -25,7 +25,7 @@ const DEMO_DOCTORS = [
 ];
 
 const URGENCY_OPTIONS = [
-  { value: "routine", label: "Routine", desc: "Regular consultation (next 24-48 hours)", color: "emerald" },
+  { value: "routine", label: "Routine", desc: "Regular consultation (next 24-48 hours)", color: "cyan" },
   { value: "urgent", label: "Urgent", desc: "Within 2 hours", color: "amber" },
   { value: "emergency", label: "Emergency", desc: "Immediate priority (within 5 minutes)", color: "red" },
 ];
@@ -105,8 +105,8 @@ export default function AppointmentsPage() {
       <AppLayout userType="patient">
         <div className="max-w-lg mx-auto">
           <div className="bg-card border rounded-[2rem] p-8 text-center space-y-6">
-            <div className="w-20 h-20 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center mx-auto">
-              <CheckCircle2 size={40} className="text-emerald-600" />
+            <div className="w-20 h-20 rounded-full bg-cyan-100 dark:bg-cyan-900/40 flex items-center justify-center mx-auto">
+              <CheckCircle2 size={40} className="text-cyan-600" />
             </div>
             <div>
               <h2 className="text-2xl font-extrabold font-[Manrope] mb-2">Appointment Booked!</h2>
@@ -114,14 +114,14 @@ export default function AppointmentsPage() {
             </div>
             <div className="bg-muted/30 rounded-xl p-5 text-left space-y-3">
               <div className="flex items-center gap-3">
-                <Stethoscope size={16} className="text-emerald-600" />
+                <Stethoscope size={16} className="text-cyan-600" />
                 <div>
                   <div className="font-bold text-sm">{bookedAppointment.doctorName}</div>
                   <div className="text-xs text-muted-foreground">{bookedAppointment.doctorSpecialty}</div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Calendar size={16} className="text-emerald-600" />
+                <Calendar size={16} className="text-cyan-600" />
                 <div className="text-sm">{new Date(bookedAppointment.scheduledAt).toLocaleString()}</div>
               </div>
               <div className="flex items-center gap-3">
@@ -141,7 +141,7 @@ export default function AppointmentsPage() {
               <Button variant="outline" onClick={() => { setBooked(false); setShowBooking(false); }} className="flex-1 rounded-xl font-bold">
                 Book Another
               </Button>
-              <Button onClick={() => setLocation("/dashboard")} className="flex-1 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700">
+              <Button onClick={() => setLocation("/dashboard")} className="flex-1 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-700">
                 Back to Dashboard
               </Button>
             </div>
@@ -162,7 +162,7 @@ export default function AppointmentsPage() {
 
           <div className="bg-card border rounded-[2rem] p-8 space-y-6">
             <div className="text-center mb-4">
-              <Calendar size={36} className="text-emerald-600 mx-auto mb-3" />
+              <Calendar size={36} className="text-cyan-600 mx-auto mb-3" />
               <h2 className="text-2xl font-extrabold font-[Manrope] mb-1">Book Appointment</h2>
               <p className="text-muted-foreground text-sm">Select a doctor and schedule your consultation.</p>
             </div>
@@ -179,11 +179,11 @@ export default function AppointmentsPage() {
                     className={`flex flex-col items-center gap-2 p-4 min-h-[7rem] rounded-2xl border-2 transition-all text-center ${
                       !doc.available ? "border-border opacity-50 cursor-not-allowed" :
                       selectedDoctor === doc.doctorId
-                        ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 shadow-md"
-                        : "border-border hover:border-emerald-300"
+                        ? "border-cyan-500 bg-cyan-50 dark:bg-cyan-950/40 shadow-md"
+                        : "border-border hover:border-cyan-300"
                     }`}
                   >
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-emerald-400 flex items-center justify-center text-white font-bold text-sm">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm">
                       {doc.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
                     </div>
                     <div>
@@ -208,7 +208,7 @@ export default function AppointmentsPage() {
                       urgency === opt.value
                         ? opt.color === "red" ? "border-red-500 bg-red-50 dark:bg-red-950/40" :
                           opt.color === "amber" ? "border-amber-500 bg-amber-50 dark:bg-amber-950/40" :
-                          "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40"
+                          "border-cyan-500 bg-cyan-50 dark:bg-cyan-950/40"
                         : "border-border hover:border-muted-foreground/30"
                     }`}
                   >
@@ -237,7 +237,7 @@ export default function AppointmentsPage() {
                   <select
                     value={selectedTime}
                     onChange={(e) => setSelectedTime(e.target.value)}
-                    className="w-full h-14 rounded-xl border bg-background px-4 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full h-14 rounded-xl border bg-background px-4 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-500"
                   >
                     <option value="">Select time</option>
                     {TIME_SLOTS.map((slot) => (
@@ -255,7 +255,7 @@ export default function AppointmentsPage() {
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="Describe your symptoms or reason for consultation..."
-                className="w-full h-24 rounded-xl border bg-background px-4 py-3 text-base resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full h-24 rounded-xl border bg-background px-4 py-3 text-base resize-none focus:outline-none focus:ring-2 focus:ring-cyan-500"
               />
             </div>
 
@@ -263,7 +263,7 @@ export default function AppointmentsPage() {
             <Button
               onClick={handleBook}
               disabled={!selectedDoctor || !reason.trim() || booking}
-              className="w-full h-16 rounded-2xl font-black text-lg bg-emerald-600 hover:bg-emerald-700 shadow-lg"
+              className="w-full h-16 rounded-2xl font-black text-lg bg-cyan-600 hover:bg-cyan-700 shadow-lg"
             >
               {booking ? <Loader2 size={20} className="animate-spin mr-2" /> : <CheckCircle2 size={20} className="mr-2" />}
               {booking ? "Booking..." : "Confirm Appointment"}
@@ -286,7 +286,7 @@ export default function AppointmentsPage() {
             <h2 className="text-2xl font-extrabold font-[Manrope] mb-1">My Appointments</h2>
             <p className="text-muted-foreground text-sm">Book and manage your doctor consultations.</p>
           </div>
-          <Button onClick={() => setShowBooking(true)} className="h-12 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700">
+          <Button onClick={() => setShowBooking(true)} className="h-12 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-700">
             <Calendar size={16} className="mr-2" /> Book Appointment
           </Button>
         </div>
@@ -302,7 +302,7 @@ export default function AppointmentsPage() {
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold ${
                       apt.urgency === "emergency" ? "bg-gradient-to-br from-red-500 to-red-600" :
                       apt.urgency === "urgent" ? "bg-gradient-to-br from-amber-500 to-orange-500" :
-                      "bg-gradient-to-br from-emerald-500 to-teal-400"
+                      "bg-gradient-to-br from-cyan-500 to-sky-400"
                     }`}>
                       {apt.status === "active" ? <Video size={20} /> : <Stethoscope size={20} />}
                     </div>
@@ -346,7 +346,7 @@ export default function AppointmentsPage() {
                     <div className="text-xs text-muted-foreground">{new Date(apt.scheduledAt).toLocaleString()} · {apt.reason}</div>
                   </div>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    apt.status === "completed" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600"
+                    apt.status === "completed" ? "bg-cyan-100 text-cyan-700" : "bg-slate-100 text-slate-600"
                   }`}>{apt.status}</span>
                 </div>
               </div>
@@ -359,7 +359,7 @@ export default function AppointmentsPage() {
             <Calendar size={48} className="text-muted-foreground/30 mx-auto mb-4" />
             <h3 className="font-bold text-lg mb-2">No Appointments Yet</h3>
             <p className="text-muted-foreground text-sm mb-6">Book your first consultation with a doctor.</p>
-            <Button onClick={() => setShowBooking(true)} className="h-12 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700">
+            <Button onClick={() => setShowBooking(true)} className="h-12 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-700">
               <Calendar size={16} className="mr-2" /> Book Appointment
             </Button>
           </div>

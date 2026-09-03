@@ -407,7 +407,7 @@ export default function AyushAssessment() {
                 <Button
                   onClick={handleSave}
                   disabled={saving}
-                  className="rounded-xl bg-gradient-to-r from-green-700 to-emerald-600"
+                  className="rounded-xl bg-gradient-to-r from-green-700 to-cyan-600"
                 >
                   {saving ? <Loader2 className="animate-spin mr-2" size={16} /> : <Save className="mr-2" size={16} />}
                   {saved ? "Saved ✓" : "Save Assessment"}

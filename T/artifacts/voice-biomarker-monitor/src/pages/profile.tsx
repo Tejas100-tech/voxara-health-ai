@@ -17,7 +17,7 @@ export default function ProfilePage() {
 
         <div className="bg-card border rounded-[2rem] p-8">
           <div className="flex items-center gap-4 mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-emerald-500/20">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-sky-400 flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-cyan-500/20">
               {user?.name?.charAt(0)}
             </div>
             <div>
