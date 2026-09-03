@@ -8,6 +8,7 @@ import { useLatestSession, useLiveVitals } from "@/lib/realtime";
 import {
   runMLPipeline, loadDigitalTwin, type MLInsightsReport, type VocalClass,
 } from "@/lib/ml-engine";
+import { useLanguage } from "@/lib/language";
 
 // ─── Mini Chart Components ────────────────────────────────────────────────────
 
@@ -165,6 +166,7 @@ const CLASS_DESCRIPTIONS: Record<VocalClass, string> = {
 const MFCC_LABELS = ["C0 Energy","C1 F0 proxy","C2 Voice quality","C3 Timbre","C4 Resonance","C5 Articuln","C6 Clarity","C7 Nasality","C8 Fricatives","C9 HF detail","C10 Tremor HF","C11 Sibilance","C12 Breathiness"];
 
 export default function MLDashboard() {
+  const { t } = useLanguage();
   const session = useLatestSession();
   const live = useLiveVitals();
   const twin = loadDigitalTwin();
@@ -255,10 +257,10 @@ export default function MLDashboard() {
 
         {/* Tab nav */}
         <div className="flex gap-2 flex-wrap">
-          {(["network", "fingerprint", "forecast", "anomaly"] as const).map((t) => (
-            <button key={t} onClick={() => setActiveTab(t)}
-              className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${t === activeTab ? "bg-primary text-white border-primary shadow-md shadow-primary/20" : "border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground bg-card"}`}>
-              {t === "network" ? "Neural Network" : t === "fingerprint" ? "Vocal Fingerprint" : t === "forecast" ? "7-Day Forecast" : "Anomaly Detection"}
+          {(["network", "fingerprint", "forecast", "anomaly"] as const).map((tab) => (
+            <button key={tab} onClick={() => setActiveTab(tab)}
+              className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${tab === activeTab ? "bg-primary text-white border-primary shadow-md shadow-primary/20" : "border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground bg-card"}`}>
+              {tab === "network" ? t("ml.neuralNetwork") : tab === "fingerprint" ? t("ml.vocalFingerprint") : tab === "forecast" ? t("ml.sevenDayForecast") : t("ml.anomalyDetection")}
             </button>
           ))}
         </div>

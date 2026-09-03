@@ -1,241 +1,123 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { motion, AnimatePresence } from "framer-motion";
 import {
-  Activity, Mic, TrendingUp, BrainCircuit, Bell, FileText,
-  HeartPulse, User, Radio, History, LogOut, Moon, Sun, X, Menu, Calendar,
-  Stethoscope, Siren, Leaf, Pill,
+  ClipboardList, FileSearch, FileText, LayoutDashboard, LogOut, Moon, Sun,
+  Menu, X, Stethoscope, ShieldCheck, User, Globe, Calendar, MessageSquare, Leaf,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { formatTime, useLiveVitals } from "@/lib/realtime";
-import { fetchUnreadCount } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
-import { useAyushMode } from "@/lib/ayush-mode";
-import { SosButton } from "@/components/sos-button";
-import { FloatingChatbot } from "@/components/floating-chatbot";
-import { getTranslations, type SupportedLanguage } from "@/lib/medikiosk-i18n";
+import { useLanguage } from "@/lib/language";
+import { LANGUAGES, type LanguageCode } from "@/lib/translations";
 
 interface LayoutProps {
   children: ReactNode;
   userType?: "patient" | "clinician";
 }
 
-function useUnreadNotifications() {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    let active = true;
-    const poll = async () => {
-      try {
-        const n = await fetchUnreadCount();
-        if (active) setCount(n);
-      } catch { /* silent */ }
-    };
-    poll();
-    const interval = setInterval(poll, 8000);
-    return () => { active = false; clearInterval(interval); };
-  }, []);
-  return count;
-}
-
-function LiveSparkline({ values }: { values: number[] }) {
-  const max = Math.max(...values, 1);
-  const points = values
-    .map((v, i) => `${(i / (values.length - 1)) * 100},${100 - (v / max) * 80}`)
-    .join(" ");
-  return (
-    <svg viewBox="0 0 100 40" className="w-full h-8" preserveAspectRatio="none">
-      <polyline points={points} fill="none" stroke="hsl(var(--primary))" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-      <polyline points={`0,40 ${points} 100,40`} fill="hsl(var(--primary))" fillOpacity="0.12" stroke="none" />
-    </svg>
-  );
-}
-
-const conditionBadgeColor = (c: string) =>
-  c.toLowerCase().includes("parkinson") ? "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300"
-  : c.toLowerCase().includes("asthma") ? "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
-  : c.toLowerCase().includes("depression") ? "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
-  : "bg-muted text-muted-foreground";
-
 export function AppLayout({ children, userType = "patient" }: LayoutProps) {
   const [location] = useLocation();
-  const live = useLiveVitals();
-  const unreadCount = useUnreadNotifications();
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { mode, toggleMode } = useAyushMode();
+  const { language, setLanguage, t } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [sparkHistory, setSparkHistory] = useState<number[]>([70, 75, 80, 78, 82, 85, live.signalQuality]);
-  const [lang, setLang] = useState<SupportedLanguage>(() => {
-    if (typeof window !== "undefined") {
-      return (localStorage.getItem("medikiosk.language") as SupportedLanguage) || "en";
-    }
-    return "en";
-  });
-  const tr = getTranslations();
-
-  useEffect(() => {
-    setSparkHistory((prev) => [...prev.slice(-11), live.signalQuality]);
-  }, [live.signalQuality]);
 
   const effectiveRole = user?.role ?? userType;
 
   const patientNav = [
-    { name: tr.navDashboard, href: "/", icon: Activity },
-    { name: mode === "ayush" ? tr.navAyurVoxara : tr.navMediKiosk, href: mode === "ayush" ? "/patient/ayush" : "/medikiosk", icon: mode === "ayush" ? Leaf : Stethoscope },
-    { name: tr.navRecordLive, href: "/record", icon: Mic },
-    { name: tr.navHistory, href: "/history", icon: History },
-    { name: tr.navTrends, href: "/trends", icon: TrendingUp },
-    { name: tr.navAIAnalysis, href: "/analysis", icon: BrainCircuit },
-    { name: tr.navMLInsights, href: "/ml", icon: Radio },
-    { name: tr.navAppointments, href: "/appointments", icon: HeartPulse },
+    { name: t("nav.dashboard"), href: "/", icon: LayoutDashboard },
+    { name: t("nav.newIntake"), href: "/intake", icon: ClipboardList },
+    { name: t("nav.records"), href: "/records", icon: FileText },
+    { name: t("nav.appointments") || "Appointments", href: "/appointments", icon: Calendar },
+    { name: t("nav.chatGeneral") || "Health Chat", href: "/chat/general", icon: MessageSquare },
+    { name: t("nav.chatAyush") || "AYUSH Chat", href: "/chat/ayush", icon: Leaf },
+    { name: t("nav.profile"), href: "/profile", icon: User },
   ];
 
   const clinicianNav = [
-    { name: tr.navDashboard, href: "/clinician", icon: User },
-    { name: tr.navSOS, href: "/sos", icon: Siren },
-    { name: mode === "ayush" ? tr.navAYUSHDashboard : tr.navIntakeReview, href: mode === "ayush" ? "/practitioner/ayush" : "/medikiosk/clinician-review", icon: mode === "ayush" ? Leaf : Stethoscope },
-    { name: tr.navAppointments, href: "/appointments", icon: Calendar },
-    { name: tr.navLiveAlerts, href: "/alerts", icon: Bell },
-    { name: tr.navMedication, href: "/medication", icon: FileText },
+    { name: t("nav.clinician"), href: "/clinician", icon: LayoutDashboard },
+    { name: t("nav.queue"), href: "/clinician/queue", icon: ClipboardList },
+    { name: t("nav.reviews"), href: "/clinician/reviews", icon: FileSearch },
+    { name: t("nav.appointments") || "Appointments", href: "/clinician/appointments", icon: Calendar },
+    { name: t("nav.chatGeneral") || "Health Chat", href: "/chat/general", icon: MessageSquare },
+    { name: t("nav.chatAyush") || "AYUSH Chat", href: "/chat/ayush", icon: Leaf },
   ];
 
   const nav = effectiveRole === "clinician" ? clinicianNav : patientNav;
-  const currentPage = nav.find((n) => n.href === location || (location.startsWith(n.href) && n.href !== "/"))?.name ?? "Dashboard";
+  const currentPage = nav.find(
+    (n) => n.href === location || (location.startsWith(n.href) && n.href !== "/")
+  )?.name ?? t("nav.dashboard");
 
   const Sidebar = () => (
-    <div className="flex flex-col h-full">        <div className="shrink-0 p-6 flex items-center justify-between">
+    <div className="flex flex-col h-full">
+      <div className="shrink-0 p-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-secondary text-white flex items-center justify-center shadow-lg shadow-primary/30">
-            {mode === "ayush" ? <Leaf size={22} /> : <HeartPulse size={22} />}
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30">
+            <Stethoscope size={22} />
           </div>
           <div>
-            <h2 className="font-extrabold text-primary text-base leading-tight tracking-tight font-[Manrope]">{mode === "ayush" ? "AyurVoxara" : "Voxara"}</h2>
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">{mode === "ayush" ? "Ayurveda AI" : "Health AI Live"}</p>
+            <h2 className="font-extrabold text-emerald-700 dark:text-emerald-400 text-base leading-tight tracking-tight font-[Manrope]">
+              {t("app.name")}
+            </h2>
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
+              {t("app.tagline")}
+            </p>
           </div>
         </div>
-        <button
-          onClick={() => setMobileOpen(false)}
-          className="md:hidden p-2 rounded-xl hover:bg-muted text-muted-foreground"
-        >
+        <button onClick={() => setMobileOpen(false)} className="md:hidden p-2 rounded-xl hover:bg-muted text-muted-foreground">
           <X size={18} />
         </button>
       </div>
 
       {user && (
         <div className="shrink-0 mx-4 mb-4 rounded-2xl bg-muted/50 border p-4">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-black text-sm shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-500 flex items-center justify-center text-white font-black text-sm shrink-0">
               {user.name.charAt(0)}
             </div>
             <div className="min-w-0">
               <p className="font-bold text-sm truncate leading-tight">{user.name}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">{user.role} · {user.patientId}</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
+                {user.role} · {user.patientId}
+              </p>
             </div>
           </div>
-          {user.conditions && user.conditions.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
-              {user.conditions.map((c) => (
-                <span key={c} className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${conditionBadgeColor(c)}`}>{c}</span>
-              ))}
+          {user.abhaId && (
+            <div className="mt-2 flex items-center gap-1.5 text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+              <ShieldCheck size={12} /> ABHA: {user.abhaId}
             </div>
           )}
         </div>
       )}
 
-      <div className="shrink-0 mx-4 mb-4 rounded-2xl bg-primary/5 border border-primary/15 p-4">
-        <div className="flex items-center justify-between text-xs font-black uppercase tracking-wider text-primary mb-2">
-          <span className="flex items-center gap-2"><Radio size={13} className="animate-pulse" /> Live Signal</span>
-          <span>{formatTime(live.now)}</span>
-        </div>
-        <LiveSparkline values={sparkHistory} />
-        <div className="flex justify-between items-center mt-1">
-          <p className="text-xs text-muted-foreground font-semibold">Signal quality</p>
-          <p className="text-xs font-black text-primary">{live.signalQuality}%</p>
-        </div>
-      </div>
-
       <nav className="flex-1 px-4 space-y-1 overflow-y-auto min-h-0">
         {nav.map((item) => {
           const Icon = item.icon;
           const isActive = location === item.href || (location.startsWith(item.href) && item.href !== "/");
-          const isAlerts = item.href === "/alerts";
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setMobileOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm
-                ${isActive
-                  ? "bg-primary/10 text-primary shadow-sm border border-primary/15"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
-            >
-              <span className="relative">
-                <Icon size={18} />
-                {isAlerts && unreadCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-destructive text-white text-[9px] font-black rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
-                )}
-              </span>
-              {item.name}
-              {isAlerts && unreadCount > 0 && (
-                <span className="ml-auto bg-destructive text-white text-[10px] font-black rounded-full px-2 py-0.5">
-                  {unreadCount}
-                </span>
-              )}
+            <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
+                isActive
+                  ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 shadow-sm border border-emerald-200 dark:border-emerald-800"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}>
+              <Icon size={18} />{item.name}
             </Link>
           );
         })}
       </nav>
 
       <div className="shrink-0 p-4 border-t space-y-2">
-        {/* Allopathic / AYUSH Mode Toggle */}
-        <button
-          onClick={toggleMode}
-          className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all border ${
-            mode === "ayush"
-              ? "bg-gradient-to-r from-green-900/20 to-amber-500/20 border-amber-500/30 text-amber-700 dark:text-amber-300"
-              : "bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20 text-primary"
-          }`}
-        >
-          <AnimatePresence mode="wait">
-            {mode === "ayush" ? (
-              <motion.span key="leaf" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                <Leaf size={18} />
-              </motion.span>
-            ) : (
-              <motion.span key="pill" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                <Pill size={18} />
-              </motion.span>
-            )}
-          </AnimatePresence>
-          <span className="flex-1 text-left">
-            {mode === "ayush" ? tr.switchToAllopathic : tr.switchToAYUSH}
-          </span>
-          <span className={`text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-wider ${
-            mode === "ayush"
-              ? "bg-amber-500/20 text-amber-600"
-              : "bg-primary/15 text-primary"
-          }`}>
-            {mode === "ayush" ? "AYUSH" : "MD"}
-          </span>
-        </button>
-
         {effectiveRole === "patient" && (
-          <Link href="/record" onClick={() => setMobileOpen(false)}>
-            <Button className="w-full rounded-xl py-6 shadow-lg shadow-primary/20 glow-pulse" size="lg">
-              <Mic className="mr-2" size={18} />
-              {tr.newLiveSample}
+          <Link href="/intake" onClick={() => setMobileOpen(false)}>
+            <Button className="w-full rounded-xl py-6 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 shadow-lg shadow-emerald-500/20" size="lg">
+              <ClipboardList className="mr-2" size={18} />{t("nav.startNewIntake")}
             </Button>
           </Link>
         )}
-        <button
-          onClick={logout}
-          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/5 rounded-xl font-semibold transition-all"
-        >
-          <LogOut size={16} />
-          {tr.signOut}
+        <button onClick={logout}
+          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/5 rounded-xl font-semibold transition-all">
+          <LogOut size={16} />{t("nav.signOut")}
         </button>
       </div>
     </div>
@@ -243,12 +125,10 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Desktop Sidebar */}
       <aside className="hidden md:flex w-64 fixed inset-y-0 border-r bg-card z-20 flex-col">
         <Sidebar />
       </aside>
 
-      {/* Mobile Sidebar Overlay */}
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
@@ -261,10 +141,7 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
       <main className="flex-1 md:ml-64 flex flex-col min-h-screen">
         <header className="sticky top-0 z-10 bg-background/90 backdrop-blur-xl border-b px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setMobileOpen(true)}
-              className="md:hidden p-2 rounded-xl hover:bg-muted text-muted-foreground"
-            >
+            <button onClick={() => setMobileOpen(true)} className="md:hidden p-2 rounded-xl hover:bg-muted text-muted-foreground">
               <Menu size={20} />
             </button>
             <div className="hidden md:block">
@@ -272,35 +149,27 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 rounded-full bg-secondary/10 px-4 py-2 text-xs font-black uppercase tracking-wider text-secondary border border-secondary/20">
-              <span className="h-2 w-2 rounded-full bg-secondary animate-pulse" />
-              {tr.realtimeActive}
-            </div>
-
-            <button
-              onClick={toggleTheme}
-              className="p-2.5 rounded-xl hover:bg-muted text-muted-foreground transition-all hover:text-foreground border border-transparent hover:border-border"
-              title="Toggle theme"
+          <div className="flex items-center gap-2">
+            {/* Language Switcher */}
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as LanguageCode)}
+              className="h-9 rounded-lg border bg-background px-2 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 max-w-[120px]"
+              title="Change language"
             >
+              {LANGUAGES.filter((l) => ["en","hi","ta","te","bn","mr","gu","kn","ml","pa","or","as","ur","sa","ne"].includes(l.code)).map((lang) => (
+                <option key={lang.code} value={lang.code}>{lang.nativeName}</option>
+              ))}
+            </select>
+
+            <button onClick={toggleTheme}
+              className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-all hover:text-foreground border border-transparent hover:border-border"
+              title="Toggle theme">
               {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
             </button>
 
-            <Link href="/alerts">
-              <Button variant="ghost" size="icon" className="rounded-full relative">
-                <Bell className="text-muted-foreground" size={19} />
-                {unreadCount > 0 ? (
-                  <span className="absolute right-1.5 top-1.5 h-4 w-4 rounded-full bg-destructive text-white text-[9px] font-black flex items-center justify-center">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
-                ) : (
-                  <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-muted-foreground/30" />
-                )}
-              </Button>
-            </Link>
-
             {user && (
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-black text-sm cursor-default select-none shadow-md">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-600 to-teal-500 flex items-center justify-center text-white font-black text-sm cursor-default select-none shadow-md">
                 {user.name.charAt(0)}
               </div>
             )}
@@ -311,10 +180,6 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
           {children}
         </div>
       </main>
-      {/* Floating AyurBot Chatbot — available on all pages */}
-      <FloatingChatbot />
-      {/* SOS Emergency Button — shown for patients only */}
-      {effectiveRole === "patient" && <SosButton />}
     </div>
   );
 }

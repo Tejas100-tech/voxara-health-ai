@@ -6,12 +6,12 @@ export interface AuthUser {
   name: string;
   role: "patient" | "clinician";
   patientId: string;
-  conditions: string[];
+  abhaId?: string;
   age?: number;
   dob?: string;
   phone?: string;
-  clinicianName?: string;
   doctorId?: string;
+  department?: string;
 }
 
 interface AuthContextValue {
@@ -28,44 +28,44 @@ const AuthContext = createContext<AuthContextValue>({
   logout: () => {},
 });
 
-const AUTH_KEY = "voxara.auth.user";
+const AUTH_KEY = "medikiosk.auth.user";
 
 const demoUsers: Array<AuthUser & { password: string }> = [
   {
-    id: "demo-alex",
-    email: "alex@voxara.ai",
+    id: "demo-ram",
+    email: "ram@medikiosk.ai",
     password: "patient123",
-    name: "Alex Carter",
+    name: "Ram Kumar",
     role: "patient",
     patientId: "PT-001",
-    conditions: ["Asthma", "Mild Depression"],
-    age: 34,
-    dob: "1990-03-12",
-    phone: "+1 (555) 291-4820",
-    clinicianName: "Dr. Priya Mehta",
+    abhaId: "12-3456-7890-1234",
+    age: 56,
+    dob: "1970-05-15",
+    phone: "+91 98765 43210",
+    department: "General Medicine",
   },
   {
-    id: "demo-sofia",
-    email: "sofia@voxara.ai",
+    id: "demo-sunita",
+    email: "sunita@medikiosk.ai",
     password: "patient123",
-    name: "Sofia Reyes",
+    name: "Sunita Devi",
     role: "patient",
     patientId: "PT-002",
-    conditions: ["Parkinson's (Early Stage)"],
-    age: 62,
-    dob: "1962-07-28",
-    phone: "+1 (555) 838-3710",
-    clinicianName: "Dr. James Osei",
+    abhaId: "98-7654-3210-9876",
+    age: 45,
+    dob: "1981-08-22",
+    phone: "+91 87654 32109",
+    department: "Cardiology",
   },
   {
     id: "demo-doctor",
-    email: "doctor@voxara.ai",
+    email: "doctor@medikiosk.ai",
     password: "doctor123",
-    name: "Dr. Priya Mehta",
+    name: "Dr. Priya Sharma",
     role: "clinician",
     patientId: "CL-001",
-    conditions: [],
     doctorId: "DR-003",
+    department: "General Medicine",
   },
 ];
 
@@ -90,7 +90,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(AUTH_KEY, JSON.stringify(nextUser));
     };
 
-    const demoUser = demoUsers.find((candidate) => candidate.email === email.toLowerCase().trim() && candidate.password === password);
+    const demoUser = demoUsers.find(
+      (candidate) => candidate.email === email.toLowerCase().trim() && candidate.password === password
+    );
 
     try {
       const res = await fetch("/api/auth/login", {
@@ -122,6 +124,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null);
     localStorage.removeItem(AUTH_KEY);
+    // Clear all persisted chat histories
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("medikiosk.chat.")) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach((k) => localStorage.removeItem(k));
   };
 
   return (

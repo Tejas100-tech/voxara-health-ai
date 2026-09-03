@@ -10,6 +10,7 @@ import {
 } from "@/lib/realtime";
 import { fetchAIAnalysis, fetchPatientSessions, saveSessionToServer, transcribeAudio, uploadAudioToServer } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { useLanguage } from "@/lib/language";
 
 const promptText =
   "Read this aloud or describe how you feel today: I am checking in with my care team. My breathing, energy, mood, and voice all help tell the story of my health.";
@@ -121,6 +122,7 @@ function LiveTile({ icon: Icon, label, value, width, color = "bg-primary" }: {
 export default function RecordSession() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [isRecording, setIsRecording] = useState(false);
   const [timeLeft, setTimeLeft] = useState(DURATION);
   const [isComplete, setIsComplete] = useState(false);
@@ -363,7 +365,7 @@ export default function RecordSession() {
               : "bg-card border-border text-muted-foreground"}`}
           >
             <div className={`w-2 h-2 rounded-full ${isRecording ? "bg-destructive animate-pulse" : "bg-muted-foreground/40"}`} />
-            {isRecording ? "Live Recording" : permissionState === "blocked" ? "Demo Mode" : "Ready"}
+            {isRecording ? t("record.liveRecording") : permissionState === "blocked" ? t("record.demoMode") : t("record.ready")}
           </div>
         </div>
       </header>
@@ -418,7 +420,7 @@ export default function RecordSession() {
                 {/* Prompt card */}
                 <div className="bg-card/80 backdrop-blur-md px-7 py-6 rounded-2xl w-full border shadow-xl">
                   <p className="text-xs font-black uppercase tracking-widest text-primary mb-2 flex items-center justify-center gap-2">
-                    <Zap size={12} /> {isRecording ? "Recording — MFCC extraction active" : "Speak naturally for 15 seconds"}
+                    <Zap size={12} /> {isRecording ? t("record.liveRecording") + " — MFCC extraction active" : t("record.readPrompt")}
                   </p>
                   <p className="text-muted-foreground leading-relaxed mb-5 text-sm">{promptText}</p>
                   {permissionState === "blocked" && (
@@ -428,7 +430,7 @@ export default function RecordSession() {
                   )}
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Button size="lg" className="rounded-xl px-8 py-5 text-base" onClick={isRecording ? completeRecording : startRecording}>
-                      {isRecording ? "Finish & Analyze" : "Start Live Scan"}
+                      {isRecording ? t("record.finishAnalyze") : t("record.startScan")}
                     </Button>
                     <Link href="/">
                       <Button variant="outline" size="lg" className="rounded-xl px-8 py-5 text-base w-full sm:w-auto">
@@ -443,16 +445,16 @@ export default function RecordSession() {
                 <div className="w-28 h-28 bg-primary/10 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-primary/20">
                   <CheckCircle2 className="text-primary w-14 h-14" />
                 </div>
-                <h2 className="text-4xl font-extrabold font-[Manrope] mb-3">Sample Captured</h2>
+                <h2 className="text-4xl font-extrabold font-[Manrope] mb-3">{t("record.recordingComplete")}</h2>
                 <p className="text-muted-foreground text-base mb-6 max-w-sm">
-                  Running MFCC extraction, AI transcription, and clinical analysis…
+                  {t("record.analyzingVoice")}…
                 </p>
                 <div className="flex flex-col gap-3 w-full max-w-sm">
                   {uploadStatus === "uploading" && <StatusPill icon={<Cloud size={16} className="animate-pulse" />} text="Uploading audio to cloud..." />}
-                  {uploadStatus === "done" && <StatusPill icon={<CheckCircle2 size={16} />} text="Audio saved to Cloudinary" success />}
+                  {uploadStatus === "done" && <StatusPill icon={<CheckCircle2 size={16} />} text={t("record.audioSaved")} success />}
                   {aiStatus === "transcribing" && <StatusPill icon={<BrainCircuit size={16} className="animate-pulse" />} text="AI transcribing voice sample..." />}
                   {aiStatus === "analyzing" && <StatusPill icon={<BrainCircuit size={16} className="animate-pulse" />} text="GPT analyzing biomarkers..." />}
-                  {aiStatus === "done" && <StatusPill icon={<CheckCircle2 size={16} />} text="Clinical AI analysis complete" success />}
+                  {aiStatus === "done" && <StatusPill icon={<CheckCircle2 size={16} />} text={t("record.aiComplete")} success />}
                   {aiStatus === "error" && <StatusPill icon={<AlertCircle size={16} />} text="AI unavailable — using local model" />}
                 </div>
               </div>
@@ -461,11 +463,11 @@ export default function RecordSession() {
 
           {/* Live Metrics Sidebar */}
           <aside className="xl:col-span-5 space-y-4">
-            <LiveTile icon={Volume2} label="Input Volume" value={`${volume}%`} width={volume} />
-            <LiveTile icon={ShieldCheck} label="Signal Clarity" value={`${clarity}%`} width={clarity} color="bg-secondary" />
-            <LiveTile icon={Wind} label="Noise Floor" value={`${noiseFloor} dB`} width={100 - noiseFloor * 3} color="bg-destructive" />
+            <LiveTile icon={Volume2} label={t("record.inputVolume")} value={`${volume}%`} width={volume} />
+            <LiveTile icon={ShieldCheck} label={t("record.signalClarity")} value={`${clarity}%`} width={clarity} color="bg-secondary" />
+            <LiveTile icon={Wind} label={t("record.noiseFloor")} value={`${noiseFloor} dB`} width={100 - noiseFloor * 3} color="bg-destructive" />
             <LiveTile
-              icon={BrainCircuit} label="ML Mode"
+              icon={BrainCircuit} label={t("record.mlMode")}
               value={permissionState === "live" ? "MFCC Live" : "Demo"}
               width={permissionState === "live" ? 96 : 84}
             />

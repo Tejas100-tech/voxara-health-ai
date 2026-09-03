@@ -1,504 +1,549 @@
-import { useEffect, useRef, useState, useCallback } from "react";
-import { useParams, useLocation } from "wouter";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useLocation, useParams } from "wouter";
+import { AppLayout } from "@/components/layout";
 import {
-  Activity, BrainCircuit, Camera, CameraOff, Clock, Heart,
-  MessageSquare, Mic, MicOff, PhoneOff, Radio, Send,
-  Stethoscope, Wind, X, Wifi, WifiOff,
+  Video, VideoOff, Mic, MicOff, PhoneOff,
+  ScreenShare, ScreenShareOff, User,
+  Loader2, AlertCircle, MessageSquare, X, Send,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
-import { useLiveVitals } from "@/lib/realtime";
-import { fetchAppointmentByRoom } from "@/lib/api";
+import { useLanguage } from "@/lib/language";
+import { joinVideoRoom, leaveVideoRoom, endVideoCall } from "@/lib/api";
 
-interface ChatMsg {
-  from: string;
-  name: string;
-  text: string;
-  time: string;
-}
+const ICE_SERVERS: RTCIceServer[] = [
+  { urls: "stun:stun.l.google.com:19302" },
+  { urls: "stun:stun1.l.google.com:19302" },
+];
 
-interface AppointmentInfo {
-  doctorName: string;
-  doctorSpecialty: string;
-  urgency: string;
-  reason: string;
-}
-
-const STUN = {
-  iceServers: [
-    { urls: "stun:stun.l.google.com:19302" },
-    { urls: "stun:stun1.l.google.com:19302" },
-    { urls: "stun:stun2.l.google.com:19302" },
-  ],
+const VIDEO_CALL_STRINGS: Record<string, {
+  connecting: string; waitingDoctor: string; waitingPatient: string;
+  connected: string; roomLabel: string; participants: string;
+  muted: string; unmute: string; cameraOn: string; cameraOff: string;
+  shareScreen: string; stopShare: string; endCall: string;
+  callFailed: string; backToAppts: string; callDuration: string;
+  chatPlaceholder: string;
+}> = {
+  en: { connecting: "Connecting to video call...", waitingDoctor: "Waiting for doctor to join...", waitingPatient: "Waiting for patient to join...", connected: "Connected", roomLabel: "Room", participants: "participant", muted: "Unmute", unmute: "Mute", cameraOn: "Turn on camera", cameraOff: "Turn off camera", shareScreen: "Share screen", stopShare: "Stop sharing", endCall: "End call", callFailed: "Call Failed", backToAppts: "Back to Appointments", callDuration: "Call Duration", chatPlaceholder: "Type a message..." },
+  hi: { connecting: "वीडियो कॉल से जुड़ रहे हैं...", waitingDoctor: "डॉक्टर के जुड़ने की प्रतीक्षा...", waitingPatient: "मरीज़ के जुड़ने की प्रतीक्षा...", connected: "जुड़ गया", roomLabel: "कमरा", participants: "प्रतिभागी", muted: "अनम्यूट", unmute: "म्यूट", cameraOn: "कैमरा चालू करें", cameraOff: "कैमरा बंद करें", shareScreen: "स्क्रीन शेयर करें", stopShare: "शेयर बंद करें", endCall: "कॉल समाप्त", callFailed: "कॉल विफल", backToAppts: "अपॉइंटमेंट पर वापस", callDuration: "कॉल अवधि", chatPlaceholder: "संदेश टाइप करें..." },
+  ta: { connecting: "வீடியோ அழைப்பில் இணைகிறது...", waitingDoctor: "மருத்துவர் இணைய காத்திருக்கிறது...", waitingPatient: "நோயாளர் இணைய காத்திருக்கிறது...", connected: "இணைக்கப்பட்டது", roomLabel: "அறை", participants: "பங்கேற்பாளர்", muted: "முடக்கு", unmute: "நீக்கு", cameraOn: "கேமரா இயக்கு", cameraOff: "கேமரா நிறுத்து", shareScreen: "திரை பகிர்", stopShare: "பகிர்வு நிறுத்து", endCall: "அழைப்பு முடி", callFailed: "அழைப்பு தோல்வி", backToAppts: "சந்திப்புக்கு திரும்பு", callDuration: "அழைப்பு காலம்", chatPlaceholder: "செய்தியை தட்டச்சு செய்யுங்கள்..." },
+  te: { connecting: "వీడియో కాల్‌కు కనెక్ట్ అవుతోంది...", waitingDoctor: "వైద్యుడు చేరడానికి వేచి ఉంది...", waitingPatient: "రోగి చేరడానికి వేచి ఉంది...", connected: "కనెక్ట్ అయింది", roomLabel: "గది", participants: "పాల్గొనేవారు", muted: "మ్యూట్", unmute: "అన్‌మ్యూట్", cameraOn: "కెమెరా ఆన్", cameraOff: "కెమెరా ఆఫ్", shareScreen: "స్క్రీన్ షేర్", stopShare: "షేర్ ఆపు", endCall: "కాల్ ముగించు", callFailed: "కాల్ విఫలం", backToAppts: "అపాయింట్‌మెంట్‌కు తిరిగి", callDuration: "కాల్ వ్యవధి", chatPlaceholder: "సందేశం టైప్ చేయండి..." },
+  bn: { connecting: "ভিডিয়ো কলে সংযোগ হচ্ছে...", waitingDoctor: "ডাক্তারের যোগ দেওয়ার অপেক্ষা...", waitingPatient: "রোগীর যোগ দেওয়ার অপেক্ষা...", connected: "সংযুক্ত", roomLabel: "ঘর", participants: "অংশগ্রহণকারী", muted: "মিউট", unmute: "আনমিউট", cameraOn: "ক্যামেরা চালু", cameraOff: "ক্যামেরা বন্ধ", shareScreen: "স্ক্রিন শেয়ার", stopShare: "শেয়ার বন্ধ", endCall: "কল শেষ", callFailed: "কল ব্যর্থ", backToAppts: "অ্যাপয়েন্টমেন্টে ফিরুন", callDuration: "কল সময়কাল", chatPlaceholder: "বার্তা টাইপ করুন..." },
+  mr: { connecting: "व्हिडिओ कॉलशी जोडले जात आहे...", waitingDoctor: "डॉक्टर जोडण्यासाठी प्रतीक्षा...", waitingPatient: "रुग्ण जोडण्यासाठी प्रतीक्षा...", connected: "जोडले", roomLabel: "खोली", participants: "सहभागी", muted: "म्यूट", unmute: "अनम्यूट", cameraOn: "कॅमेरा चालू", cameraOff: "कॅमेरा बंद", shareScreen: "स्क्रीन शेअर", stopShare: "शेअर बंद", endCall: "कॉल संपवा", callFailed: "कॉल अयशस्वी", backToAppts: "अपॉइंटमेंटवर परत", callDuration: "कॉल कालावधी", chatPlaceholder: "संदेश टाइप करा..." },
+  gu: { connecting: "વિડિયો કૉલ સાથે કનેક્ટ થઈ રહ્યું છે...", waitingDoctor: "ડૉક્ટર જોડાવા માટે રાહ જોઈ રહ્યા છીએ...", waitingPatient: "દર્દી જોડાવા માટે રાહ જોઈ રહ્યા છીએ...", connected: "જોડાયેલ", roomLabel: "ખંડ", participants: "સહભાગી", muted: "મ્યૂટ", unmute: "અનમ્યૂટ", cameraOn: "કૅમેરા ચાલુ", cameraOff: "કૅમેરા બંધ", shareScreen: "સ્ક્રીન શેર", stopShare: "શેર બંધ", endCall: "કૉલ સમાપ્ત", callFailed: "કૉલ નિષ્ફળ", backToAppts: "અપોઇન્ટમેન્ટ પર પાછા", callDuration: "કૉલ સમયગાળો", chatPlaceholder: "સંદેશ ટાઇપ કરો..." },
+  kn: { connecting: "ವೀಡಿಯೊ ಕರೆಗೆ ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ...", waitingDoctor: "ವೈದ್ಯರು ಸೇರಲು ಕಾಯುತ್ತಿದ್ದಾರೆ...", waitingPatient: "ರೋಗಿ ಸೇರಲು ಕಾಯುತ್ತಿದ್ದಾರೆ...", connected: "ಸಂಪರ್ಕಿಸಲಾಗಿದೆ", roomLabel: "ಕೊಠಡಿ", participants: "ಪಾಲ್ಗೊಳ್ಳುವವರು", muted: "ಮ್ಯೂಟ್", unmute: "ಅನ್‌ಮ್ಯೂಟ್", cameraOn: "ಕ್ಯಾಮೆರಾ ಆನ್", cameraOff: "ಕ್ಯಾಮೆರಾ ಆಫ್", shareScreen: "ಸ್ಕ್ರೀನ್ ಹಂಚಿಕೊಳ್ಳಿ", stopShare: "ಹಂಚಿಕೆ ನಿಲ್ಲಿಸಿ", endCall: "ಕರೆ ಮುಗಿಸಿ", callFailed: "ಕರೆ ವಿಫಲ", backToAppts: "ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್‌ಗೆ ಹಿಂತಿರುಗಿ", callDuration: "ಕರೆ ಅವಧಿ", chatPlaceholder: "ಸಂದೇಶ ಟೈಪ್ ಮಾಡಿ..." },
+  ml: { connecting: "വീഡിയോ കോളിലേക്ക് കണക്റ്റ് ചെയ്യുന്നു...", waitingDoctor: "ഡോക്ടർ ചേരാൻ കാത്തിരിക്കുന്നു...", waitingPatient: "രോഗി ചേരാൻ കാത്തിരിക്കുന്നു...", connected: "കണക്റ്റ് ചെയ്തു", roomLabel: "മുറി", participants: "പങ്കെടുക്കുന്നവർ", muted: "മ്യൂട്ട്", unmute: "അൺമ്യൂട്ട്", cameraOn: "ക്യാമറ ഓൺ", cameraOff: "ക്യാമറ ഓഫ്", shareScreen: "സ്ക്രീൻ ഷെയർ", stopShare: "ഷെയർ നിർത്തുക", endCall: "കോൾ അവസാനിപ്പിക്കുക", callFailed: "കോൾ പരാജയം", backToAppts: "അപ്പോയിൻ്റ്മെൻ്റിലേക്ക് തിരിച്ചു", callDuration: "കോൾ ദൈർഘ്യം", chatPlaceholder: "സന്ദേശം ടൈപ്പ് ചെയ്യുക..." },
+  pa: { connecting: "ਵੀਡੀਓ ਕਾਲ ਨਾਲ ਜੁੜ ਰਿਹਾ ਹੈ...", waitingDoctor: "ਡਾਕਟਰ ਦੇ ਜੁੜਨ ਦੀ ਉਡੀਕ...", waitingPatient: "ਮਰੀਜ਼ ਦੇ ਜੁੜਨ ਦੀ ਉਡੀਕ...", connected: "ਜੁੜ ਗਿਆ", roomLabel: "ਕਮਰਾ", participants: "ਹਿੱਸਾ ਲੈਣ ਵਾਲੇ", muted: "ਮਿਊਟ", unmute: "ਅਨਮਿਊਟ", cameraOn: "ਕੈਮਰਾ ਚਾਲੂ", cameraOff: "ਕੈਮਰਾ ਬੰਦ", shareScreen: "ਸਕ੍ਰੀਨ ਸ਼ੇਅਰ", stopShare: "ਸ਼ੇਅਰ ਬੰਦ", endCall: "ਕਾਲ ਖਤਮ", callFailed: "ਕਾਲ ਅਸਫਲ", backToAppts: "ਐਪੋਇੰਟਮੈਂਟ ਤੇ ਵਾਪਸ", callDuration: "ਕਾਲ ਅਵਧੀ", chatPlaceholder: "ਸੁਨੇਹਾ ਟਾਈਪ ਕਰੋ..." },
+  or: { connecting: "ଭିଡିଓ କଲ୍ ସହ ସଂଯୋଗ ହେଉଛି...", waitingDoctor: "ଡାକ୍ତର ଯୋଗ ଦେବାକୁ ଅପେକ୍ଷା...", waitingPatient: "ରୋଗୀ ଯୋଗ ଦେବାକୁ ସଂଯୁକ୍ତ", connected: "ସଂଯୁକ୍ତ", roomLabel: "ଘର", participants: "ଅଂଶଗ୍ରହଣକାରୀ", muted: "ମ୍ୟୁଟ୍", unmute: "ଅନ୍‌ମ୍ୟୁଟ୍", cameraOn: "କ୍ୟାମେରା ଅନ୍", cameraOff: "କ୍ୟାମେରା ଅଫ୍", shareScreen: "ସ୍କ୍ରିନ୍ ସେୟାର୍", stopShare: "ସେୟାର୍ ବନ୍ଦ", endCall: "କଲ୍ ସମାପ୍ତ", callFailed: "କଲ୍ ବିଫଳ", backToAppts: "ଆପୋଇଣ୍ଟମେଣ୍ଟକୁ ଫେରନ୍ତୁ", callDuration: "କଲ୍ ଅବଧି", chatPlaceholder: "ବାର୍ତ୍ତା ଟାଇପ୍ କରନ୍ତୁ..." },
+  as: { connecting: "ভিডিঅ কলল সংযোগ কৰি আছে...", waitingDoctor: "চিকিৎসক যোগ দিবলৈ অপেক্ষা...", waitingPatient: "ৰোগী যোগ দিবলৈ অপেক্ষা...", connected: "সংযুক্ত", roomLabel: "ঘৰ", participants: "অংশগ্ৰহণকাৰী", muted: "মিউট", unmute: "আনমিউট", cameraOn: "কেমেৰা অন", cameraOff: "কেমেৰা অফ", shareScreen: "স্ক্ৰিন শ্বেয়াৰ", stopShare: "শ্বেয়াৰ বন্ধ", endCall: "কল শেষ", callFailed: "কল ব্যৰ্থ", backToAppts: "এপয়েণ্টমেণ্টলৈ উভতি", callDuration: "কল সময়", chatPlaceholder: "বাৰ্তা টাইপ কৰক..." },
+  ur: { connecting: "ویڈیو کال سے جوڑ رہے ہیں...", waitingDoctor: "ڈاکٹر کے جڑنے کا انتظار...", waitingPatient: "مریض کے جڑنے کا انتظار...", connected: "جڑ گیا", roomLabel: "کمرہ", participants: "شریک", muted: "میوٹ", unmute: "انمیوٹ", cameraOn: "کیمرا چالو", cameraOff: "کیمرا بند", shareScreen: "سکرین شیئر", stopShare: "شیئر بند", endCall: "کال ختم", callFailed: "کال ناکام", backToAppts: "اپوائنٹمنٹ پر واپس", callDuration: "کال کا وقت", chatPlaceholder: "پیغام ٹائپ کریں..." },
+  sa: { connecting: "भिडियो कलं सह संयोज्यते...", waitingDoctor: "वैद्यस्य आगमनप्रतीक्षा...", waitingPatient: "रोगिणः आगमनप्रतीक्षा...", connected: "संयुक्तम्", roomLabel: "कक्षः", participants: "सहभागिनः", muted: "म्यूट", unmute: "अन्म्यूट", cameraOn: "दृश्यपटः चालू", cameraOff: "दृश्यपटः बन्ध", shareScreen: "पटः साझा", stopShare: "साझा बन्ध", endCall: "कलं समापय", callFailed: "कलं विफलम्", backToAppts: "नियोजनं प्रति प्रत्यागच्छ", callDuration: "कलस्य अवधिः", chatPlaceholder: "सन्देशं टाइप कुरु..." },
+  ne: { connecting: "भिडियो कलसँग जोडिँदैछ...", waitingDoctor: "डाक्टर जोडिन पर्खिँदै...", waitingPatient: "बिरामी जोडिन पर्खिँदै...", connected: "जोडियो", roomLabel: "कोठा", participants: "सहभागी", muted: "म्युट", unmute: "अनम्युट", cameraOn: "क्यामेरा चालू", cameraOff: "क्यामेरा बन्द", shareScreen: "स्क्रिन साझा", stopShare: "साझा बन्द", endCall: "कल समाप्त", callFailed: "कल असफल", backToAppts: "एपोइन्टमेन्टमा फर्क", callDuration: "कल अवधि", chatPlaceholder: "सन्देश टाइप गर्नुहोस्..." },
 };
 
-function nowStr() {
-  return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
-
-function BioPanel({ live }: { live: ReturnType<typeof useLiveVitals> }) {
-  return (
-    <div className="space-y-2">
-      {[
-        { icon: Heart, label: "Health Score", value: `${Math.round((live.vocalStability + live.signalQuality) / 2)}%`, color: "text-primary" },
-        { icon: Activity, label: "Tremor", value: `${live.tremorDrift}%`, color: "text-red-400" },
-        { icon: Wind, label: "Resp Load", value: `${live.respiratoryLoad}%`, color: "text-secondary" },
-        { icon: BrainCircuit, label: "Signal", value: `${live.signalQuality}%`, color: "text-primary" },
-      ].map(({ icon: Icon, label, value, color }) => (
-        <div key={label} className="flex items-center justify-between bg-white/10 rounded-xl px-3 py-2">
-          <div className="flex items-center gap-2 text-white/70 text-xs font-semibold">
-            <Icon size={12} className={color} /> {label}
-          </div>
-          <span className={`font-black text-xs ${color}`}>{value}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export default function VideoCallPage() {
-  const { id: roomId } = useParams<{ id: string }>();
-  const [, navigate] = useLocation();
+  const params = useParams();
+  const roomId = params.roomId || "";
   const { user } = useAuth();
-  const live = useLiveVitals();
+  const { language, t } = useLanguage();
+  const [, setLocation] = useLocation();
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
-  const localStreamRef = useRef<MediaStream | null>(null);
-  const pcRef = useRef<RTCPeerConnection | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const peerRef = useRef<RTCPeerConnection | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
-  const chatEndRef = useRef<HTMLDivElement>(null);
-  const makingOfferRef = useRef(false);
 
-  const [apptInfo, setApptInfo] = useState<AppointmentInfo | null>(null);
-  const [callState, setCallState] = useState<"connecting" | "active" | "ended">("connecting");
-  const [peerConnected, setPeerConnected] = useState(false);
-  const [muted, setMuted] = useState(false);
+  const [connected, setConnected] = useState(false);
+  const [connecting, setConnecting] = useState(true);
+  const [audioMuted, setAudioMuted] = useState(false);
   const [videoOff, setVideoOff] = useState(false);
-  const [showChat, setShowChat] = useState(true);
-  const [showBio, setShowBio] = useState(true);
+  const [screenSharing, setScreenSharing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [callDuration, setCallDuration] = useState(0);
+  const [participantCount, setParticipantCount] = useState(0);
+  const [showChat, setShowChat] = useState(false);
+  const [chatMessages, setChatMessages] = useState<{ from: string; text: string; time: string }[]>([]);
   const [chatInput, setChatInput] = useState("");
-  const [messages, setMessages] = useState<ChatMsg[]>([]);
-  const [elapsed, setElapsed] = useState(0);
-  const [wsStatus, setWsStatus] = useState<"connecting" | "open" | "closed">("connecting");
 
-  const addMsg = useCallback((from: string, name: string, text: string) => {
-    setMessages((prev) => [...prev, { from, name, text, time: nowStr() }]);
+  const durationRef = useRef<NodeJS.Timeout | null>(null);
+  const pollRef = useRef<NodeJS.Timeout | null>(null);
+  const lang = VIDEO_CALL_STRINGS[language] || VIDEO_CALL_STRINGS.en;
+
+  // ── WebSocket Signaling ────────────────────────────────────────────────
+  const sendWs = useCallback((msg: object) => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify(msg));
+    }
   }, []);
 
-  // Fetch appointment info
+  // ── Initialize WebRTC + WebSocket ──────────────────────────────────────
   useEffect(() => {
-    if (!roomId) return;
-    fetchAppointmentByRoom(roomId)
-      .then((d) => setApptInfo(d as AppointmentInfo))
-      .catch(() => {});
-  }, [roomId]);
+    if (!roomId || !user) return;
 
-  // Timer
-  useEffect(() => {
-    if (callState !== "active") return;
-    const t = setInterval(() => setElapsed((e) => e + 1), 1000);
-    return () => clearInterval(t);
-  }, [callState]);
-
-  // Scroll chat
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  // WebRTC + signaling
-  useEffect(() => {
-    if (!roomId) return;
     let cancelled = false;
+    let pc: RTCPeerConnection | null = null;
 
-    const createPC = (ws: WebSocket): RTCPeerConnection => {
-      const pc = new RTCPeerConnection(STUN);
-      pcRef.current = pc;
-
-      // Add local tracks once stream is available
-      if (localStreamRef.current) {
-        localStreamRef.current.getTracks().forEach((t) => pc.addTrack(t, localStreamRef.current!));
-      }
-
-      pc.ontrack = (e) => {
-        if (cancelled) return;
-        const [stream] = e.streams;
-        if (remoteVideoRef.current) remoteVideoRef.current.srcObject = stream;
-        setPeerConnected(true);
-        setCallState("active");
-      };
-
-      pc.onicecandidate = (e) => {
-        if (e.candidate && ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ type: "ice-candidate", candidate: e.candidate }));
-        }
-      };
-
-      pc.onconnectionstatechange = () => {
-        if (pc.connectionState === "disconnected" || pc.connectionState === "failed") {
-          setPeerConnected(false);
-        }
-      };
-
-      return pc;
-    };
-
-    const init = async () => {
-      // Start camera first
+    async function init() {
       try {
+        // Get local media
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: "user" },
-          audio: true,
+          audio: { echoCancellation: true, noiseSuppression: true },
         });
+
         if (cancelled) { stream.getTracks().forEach((t) => t.stop()); return; }
-        localStreamRef.current = stream;
-        if (localVideoRef.current) {
-          localVideoRef.current.srcObject = stream;
-          localVideoRef.current.muted = true;
-        }
-      } catch {
-        addMsg("system", "System", "Camera/microphone access denied. Others cannot see or hear you.");
-      }
+        streamRef.current = stream;
+        if (localVideoRef.current) localVideoRef.current.srcObject = stream;
 
-      // Connect WebSocket signaling
-      const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const ws = new WebSocket(`${proto}//${window.location.host}/ws`);
-      wsRef.current = ws;
+        // Create peer connection
+        pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+        peerRef.current = pc;
 
-      ws.onopen = () => {
-        if (cancelled) return;
-        setWsStatus("open");
-        ws.send(JSON.stringify({ type: "join", roomId }));
-        addMsg("system", "System", "Waiting for the other participant to join…");
-      };
+        stream.getTracks().forEach((track) => pc!.addTrack(track, stream));
 
-      ws.onclose = () => {
-        if (!cancelled) setWsStatus("closed");
-      };
+        // Handle remote stream
+        pc.ontrack = (event) => {
+          if (remoteVideoRef.current && event.streams[0]) {
+            remoteVideoRef.current.srcObject = event.streams[0];
+          }
+          setConnected(true);
+          setConnecting(false);
+        };
 
-      ws.onerror = () => {
-        if (!cancelled) addMsg("system", "System", "Connection error — please refresh.");
-      };
+        pc.onconnectionstatechange = () => {
+          if (pc?.connectionState === "connected") {
+            setConnected(true);
+            setConnecting(false);
+          }
+        };
 
-      ws.onmessage = async (event) => {
-        if (cancelled) return;
-        try {
+        // ICE candidates → send via WebSocket
+        pc.onicecandidate = (event) => {
+          if (event.candidate) {
+            sendWs({ type: "ice-candidate", candidate: event.candidate.toJSON() });
+          }
+        };
+
+        // Connect WebSocket
+        const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        const wsUrl = `${wsProtocol}//${window.location.host}/ws/signaling`;
+        const ws = new WebSocket(wsUrl);
+        wsRef.current = ws;
+
+        ws.onopen = () => {
+          // Join the room
+          ws.send(JSON.stringify({
+            type: "join",
+            roomId,
+            participantId: user!.patientId,
+            participantName: user!.name,
+          }));
+        };
+
+        ws.onmessage = async (event) => {
+          if (cancelled) return;
           const msg = JSON.parse(event.data);
 
-          if (msg.type === "peer-joined") {
-            // We are the existing peer — initiate offer
-            addMsg("system", "System", "Participant joined — connecting video…");
-            const pc = createPC(ws);
-            makingOfferRef.current = true;
-            const offer = await pc.createOffer();
-            await pc.setLocalDescription(offer);
-            makingOfferRef.current = false;
-            ws.send(JSON.stringify({ type: "offer", sdp: pc.localDescription }));
+          switch (msg.type) {
+            case "room-joined":
+              setParticipantCount(msg.participantCount);
+              // I'm the latest joiner — if others are already here, I create the offer (I'm the polite peer)
+              if (msg.participants.length > 0 && pc && pc.signalingState === "stable") {
+                try {
+                  const offer = await pc.createOffer();
+                  await pc.setLocalDescription(offer);
+                  ws.send(JSON.stringify({ type: "offer", sdp: pc.localDescription!.toJSON() }));
+                } catch (e) { console.error("Failed to create offer on room-joined:", e); }
+              }
+              break;
 
-          } else if (msg.type === "offer") {
-            // We are the new peer — answer
-            const pc = createPC(ws);
-            await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
-            ws.send(JSON.stringify({ type: "answer", sdp: pc.localDescription }));
-            addMsg("system", "System", "Connecting video…");
+            case "participant-joined":
+              setParticipantCount(msg.participantCount);
+              // A new participant joined AFTER me — I was here first, so I wait for their offer.
+              // Do NOT create an offer here — that causes glare.
+              break;
 
-          } else if (msg.type === "answer") {
-            if (pcRef.current?.signalingState === "have-local-offer") {
-              await pcRef.current.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+            case "offer":
+              if (pc) {
+                // Only set remote description if we're in stable state (no local offer pending)
+                if (pc.signalingState === "stable") {
+                  await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+                  const answer = await pc.createAnswer();
+                  await pc.setLocalDescription(answer);
+                  ws.send(JSON.stringify({ type: "answer", sdp: pc.localDescription!.toJSON() }));
+                }
+              }
+              break;
+
+            case "answer":
+              if (pc) {
+                // Only set remote answer if we have a pending local offer
+                if (pc.signalingState === "have-local-offer") {
+                  await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+                }
+              }
+              break;
+
+            case "ice-candidate":
+              if (pc && msg.candidate) {
+                try {
+                  await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+                } catch {}
+              }
+              break;
+
+            case "participant-left":
+              setParticipantCount((c) => Math.max(0, c - 1));
+              break;
+
+            case "call-ended":
+              // Other party ended call
+              setConnected(false);
+              endCall();
+              break;
+
+            case "chat":
+              setChatMessages((prev) => [...prev, {
+                from: msg.from,
+                text: msg.text,
+                time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+              }]);
+              break;
+          }
+        };
+
+        ws.onerror = () => {
+          // Fall back to HTTP signaling
+          console.log("WebSocket failed, falling back to HTTP polling");
+          startHttpPolling(pc!, roomId, user!.patientId);
+        };
+
+        ws.onclose = () => {
+          if (!cancelled) {
+            // Try HTTP fallback
+            startHttpPolling(pc!, roomId, user!.patientId);
+          }
+        };
+
+        // Register room via HTTP too
+        await joinVideoRoom(roomId, user!.patientId, user!.name);
+
+        setConnecting(false);
+      } catch (err: any) {
+        if (!cancelled) {
+          setError(err.message || "Failed to start video call");
+          setConnecting(false);
+        }
+      }
+    }
+
+    // ── HTTP Polling Fallback ──────────────────────────────────────────────
+    function startHttpPolling(pcRef: RTCPeerConnection, rid: string, pid: string) {
+      if (pollRef.current) clearInterval(pollRef.current);
+
+      let sentOffer = false;
+      pollRef.current = setInterval(async () => {
+        if (cancelled || pcRef.signalingState === "closed") {
+          if (pollRef.current) clearInterval(pollRef.current);
+          return;
+        }
+
+        try {
+          // Check if room has another participant
+          const roomRes = await fetch(`/api/video/room/${rid}`);
+          const roomData = await roomRes.json();
+          setParticipantCount(roomData.participantCount);
+
+          // Only create offer if I'm the later joiner and in stable state
+          // Use a deterministic rule: the participant with the later timestamp joins second
+          // For simplicity, only create offer once when first seeing 2 participants
+          if (roomData.participantCount >= 2 && !sentOffer && pcRef.signalingState === "stable") {
+            // Only create offer if I joined AFTER the other participant
+            // Use a simple heuristic: if I haven't received an offer, I'm the offerer
+            // But first check if there's already an offer from the other side
+            let hasOffer = false;
+            for (const otherId of roomData.participants) {
+              if (otherId === pid) continue;
+              try {
+                const offerRes = await fetch(`/api/video/room/${rid}/offer/${otherId}`);
+                if (offerRes.ok) { hasOffer = true; break; }
+              } catch {}
             }
 
-          } else if (msg.type === "ice-candidate" && msg.candidate) {
-            try {
-              await pcRef.current?.addIceCandidate(new RTCIceCandidate(msg.candidate));
-            } catch { /* ignore stale candidates */ }
-
-          } else if (msg.type === "peer-left") {
-            setPeerConnected(false);
-            if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
-            addMsg("system", "System", "The other participant disconnected.");
-
-          } else if (msg.type === "chat") {
-            addMsg(msg.from, msg.name, msg.text);
-
-          } else if (msg.type === "error") {
-            addMsg("system", "System", "Room is full. Please check your appointment link.");
+            if (hasOffer && pcRef.signalingState === "stable") {
+              // Receive offer, create answer
+              for (const otherId of roomData.participants) {
+                if (otherId === pid) continue;
+                const offerRes = await fetch(`/api/video/room/${rid}/offer/${otherId}`);
+                if (offerRes.ok) {
+                  const { sdp } = await offerRes.json();
+                  await pcRef.setRemoteDescription(new RTCSessionDescription(sdp));
+                  const answer = await pcRef.createAnswer();
+                  await pcRef.setLocalDescription(answer);
+                  await fetch(`/api/video/room/${rid}/answer`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ from: pid, sdp: pcRef.localDescription!.toJSON() }),
+                  });
+                  sentOffer = true;
+                  break;
+                }
+              }
+            } else if (!hasOffer && pcRef.signalingState === "stable") {
+              // No existing offer — I'm the first to connect, create offer
+              const offer = await pcRef.createOffer();
+              await pcRef.setLocalDescription(offer);
+              await fetch(`/api/video/room/${rid}/offer`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ from: pid, sdp: pcRef.localDescription!.toJSON() }),
+              });
+              sentOffer = true;
+            }
           }
-        } catch { /* ignore parse errors */ }
-      };
-    };
+
+          // Check for answer (if I sent the offer)
+          if (sentOffer && pcRef.signalingState === "have-local-offer") {
+            const ansRes = await fetch(`/api/video/room/${rid}/answer/${pid}`);
+            if (ansRes.ok) {
+              const { sdp } = await ansRes.json();
+              await pcRef.setRemoteDescription(new RTCSessionDescription(sdp));
+            }
+          }
+        } catch {}
+      }, 1500);
+    }
 
     init();
 
     return () => {
       cancelled = true;
-      localStreamRef.current?.getTracks().forEach((t) => t.stop());
-      pcRef.current?.close();
-      wsRef.current?.close();
+      if (pollRef.current) clearInterval(pollRef.current);
+      if (streamRef.current) streamRef.current.getTracks().forEach((track) => track.stop());
+      if (peerRef.current) peerRef.current.close();
+      if (wsRef.current) wsRef.current.close();
+      leaveVideoRoom(roomId, user?.patientId || "").catch(() => {});
     };
-  }, [roomId, addMsg]);
+  }, [roomId, user, sendWs]);
 
-  const toggleMute = () => {
-    localStreamRef.current?.getAudioTracks().forEach((t) => { t.enabled = muted; });
-    setMuted((m) => !m);
-  };
+  // ── Call timer ────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (connected) {
+      durationRef.current = setInterval(() => setCallDuration((s) => s + 1), 1000);
+    }
+    return () => { if (durationRef.current) clearInterval(durationRef.current); };
+  }, [connected]);
 
-  const toggleVideo = () => {
-    localStreamRef.current?.getVideoTracks().forEach((t) => { t.enabled = videoOff; });
-    setVideoOff((v) => !v);
-  };
+  // ── Controls ──────────────────────────────────────────────────────────
+  const toggleAudio = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getAudioTracks().forEach((t) => { t.enabled = audioMuted; });
+      setAudioMuted(!audioMuted);
+    }
+  }, [audioMuted]);
 
-  const sendMessage = () => {
-    if (!chatInput.trim() || !wsRef.current) return;
-    const text = chatInput.trim();
-    wsRef.current.send(JSON.stringify({ type: "chat", from: user?.patientId ?? "unknown", name: user?.name ?? "You", text }));
-    addMsg(user?.patientId ?? "me", "You", text);
+  const toggleVideo = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getVideoTracks().forEach((t) => { t.enabled = videoOff; });
+      setVideoOff(!videoOff);
+    }
+  }, [videoOff]);
+
+  const toggleScreenShare = useCallback(async () => {
+    try {
+      if (screenSharing) {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        const videoTrack = stream.getVideoTracks()[0];
+        if (peerRef.current) {
+          const sender = peerRef.current.getSenders().find((s) => s.track?.kind === "video");
+          sender?.replaceTrack(videoTrack);
+        }
+        if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+        streamRef.current = stream;
+        setScreenSharing(false);
+      } else {
+        const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+        const screenTrack = screenStream.getVideoTracks()[0];
+        if (peerRef.current) {
+          const sender = peerRef.current.getSenders().find((s) => s.track?.kind === "video");
+          sender?.replaceTrack(screenTrack);
+        }
+        if (localVideoRef.current) localVideoRef.current.srcObject = screenStream;
+        screenTrack.onended = () => toggleScreenShare();
+        setScreenSharing(true);
+      }
+    } catch {}
+  }, [screenSharing]);
+
+  const endCall = useCallback(async () => {
+    sendWs({ type: "end-call" });
+    if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
+    if (peerRef.current) peerRef.current.close();
+    await endVideoCall(roomId).catch(() => {});
+    if (user?.role === "clinician") {
+      setLocation("/clinician/appointments");
+    } else {
+      setLocation("/appointments");
+    }
+  }, [roomId, setLocation, user, sendWs]);
+
+  const sendChatMessage = useCallback(() => {
+    if (!chatInput.trim()) return;
+    sendWs({ type: "chat", text: chatInput.trim() });
+    setChatMessages((prev) => [...prev, {
+      from: user?.patientId || "me",
+      text: chatInput.trim(),
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    }]);
     setChatInput("");
+  }, [chatInput, sendWs, user]);
+
+  const formatDuration = (secs: number) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
-  const endCall = () => {
-    setCallState("ended");
-    localStreamRef.current?.getTracks().forEach((t) => t.stop());
-    pcRef.current?.close();
-    wsRef.current?.close();
-    setTimeout(() => navigate("/appointments"), 2500);
-  };
-
-  const fmt = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
-  const remoteName = apptInfo
-    ? (user?.role === "clinician" ? "Patient" : apptInfo.doctorName)
-    : "Participant";
-
-  if (callState === "ended") {
+  if (error) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-        <div className="text-center animate-in fade-in zoom-in duration-500">
-          <div className="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <PhoneOff className="text-red-400" size={36} />
-          </div>
-          <h2 className="text-3xl font-extrabold font-[Manrope] mb-3">Call Ended</h2>
-          <p className="text-white/60 mb-2">Duration: {fmt(elapsed)}</p>
-          <p className="text-white/40 text-sm">Redirecting to appointments…</p>
+      <AppLayout userType={user?.role === "clinician" ? "clinician" : "patient"}>
+        <div className="max-w-lg mx-auto text-center py-20">
+          <AlertCircle size={48} className="text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2">{lang.callFailed}</h2>
+          <p className="text-muted-foreground mb-6">{error}</p>
+          <Button onClick={() => setLocation(user?.role === "clinician" ? "/clinician/appointments" : "/appointments")} className="rounded-xl font-bold">
+            {lang.backToAppts}
+          </Button>
         </div>
-      </div>
+      </AppLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col overflow-hidden">
-
-      {/* Top Bar */}
-      <header className="flex items-center justify-between px-6 py-4 bg-slate-900/80 backdrop-blur-xl border-b border-white/10 z-20 shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-            <Stethoscope size={18} />
+    <div className="h-screen bg-black flex flex-col">
+      {/* Header */}
+      <div className="bg-black/80 backdrop-blur-sm px-6 py-3 flex items-center justify-between text-white z-10">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center">
+            <Video size={16} />
           </div>
           <div>
-            <p className="font-bold text-sm leading-tight">
-              {apptInfo ? `${apptInfo.doctorName} · ${apptInfo.doctorSpecialty}` : "Video Consultation"}
-            </p>
-            <p className="text-white/40 text-xs font-mono">Room: {roomId?.slice(5, 22)}</p>
+            <div className="font-bold text-sm">MediKiosk Video</div>
+            <div className="text-xs text-white/60">{lang.roomLabel}: {roomId.slice(-8)}</div>
           </div>
         </div>
-
         <div className="flex items-center gap-4">
-          {callState === "active" && peerConnected && (
-            <div className="flex items-center gap-2 bg-red-600/20 border border-red-500/30 rounded-full px-4 py-1.5 text-red-400 text-xs font-black uppercase tracking-widest">
-              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-              Live · {fmt(elapsed)}
+          <span className="text-xs text-white/60">{participantCount} {lang.participants}</span>
+          {connected && (
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs font-mono text-emerald-400">{formatDuration(callDuration)}</span>
             </div>
           )}
-          {callState === "connecting" && (
-            <div className="flex items-center gap-2 text-white/50 text-xs font-semibold">
-              <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-              Connecting…
-            </div>
-          )}
-          <div className={`flex items-center gap-1.5 text-xs font-semibold ${wsStatus === "open" ? "text-emerald-400" : "text-red-400"}`}>
-            {wsStatus === "open" ? <Wifi size={13} /> : <WifiOff size={13} />}
-            {wsStatus === "open" ? "Signaling OK" : "Disconnected"}
-          </div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-white/40">
-            <Radio size={12} className="animate-pulse text-secondary" /> Biomarkers live
-          </div>
         </div>
-      </header>
+      </div>
 
-      {/* Main Area */}
-      <div className="flex flex-1 overflow-hidden">
+      {/* Video Area */}
+      <div className="flex-1 relative">
+        <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover" />
 
-        {/* Video pane */}
-        <div className="flex-1 relative bg-slate-900 overflow-hidden">
-
-          {/* Remote video (full screen) */}
-          <video
-            ref={remoteVideoRef}
-            autoPlay
-            playsInline
-            className={`absolute inset-0 w-full h-full object-cover ${peerConnected ? "" : "hidden"}`}
-          />
-
-          {/* Waiting / avatar placeholder when no remote */}
-          {!peerConnected && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-950">
-              <div className="flex flex-col items-center gap-6 text-center px-8">
-                <div className="w-36 h-36 rounded-full bg-gradient-to-br from-primary/40 to-secondary/40 border border-white/10 flex items-center justify-center shadow-2xl animate-pulse">
-                  <Stethoscope size={52} className="text-white/60" />
-                </div>
-                <div>
-                  <p className="text-xl font-bold font-[Manrope] mb-1">{remoteName}</p>
-                  <p className="text-white/40 text-sm">
-                    {wsStatus === "open" ? "Waiting for them to join the call…" : "Connecting to signaling server…"}
-                  </p>
-                  <p className="text-white/25 text-xs mt-2 font-mono break-all">Share your room link to invite them</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Local video PIP */}
-          <div className="absolute bottom-6 right-6 w-48 h-36 rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl bg-slate-800 z-10">
-            <video
-              ref={localVideoRef}
-              autoPlay
-              playsInline
-              muted
-              className={`w-full h-full object-cover scale-x-[-1] ${videoOff ? "hidden" : ""}`}
-            />
-            {videoOff && (
-              <div className="w-full h-full flex items-center justify-center bg-slate-800">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center font-black text-xl font-[Manrope]">
-                  {user?.name.charAt(0) ?? "Y"}
-                </div>
-              </div>
-            )}
-            <div className="absolute bottom-1.5 left-2 right-2 flex items-center justify-between">
-              <span className="text-[10px] text-white/80 font-bold bg-black/60 rounded px-1.5 py-0.5">{user?.name ?? "You"}</span>
-              {muted && <MicOff size={11} className="text-red-400" />}
-            </div>
-          </div>
-
-          {/* Live biomarkers overlay */}
-          {showBio && callState === "active" && (
-            <div className="absolute top-4 left-4 w-52 bg-black/60 backdrop-blur-xl rounded-2xl p-4 border border-white/10 z-10">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-black uppercase tracking-widest text-white/50 flex items-center gap-1">
-                  <Activity size={10} className="animate-pulse text-primary" /> Live Vitals
-                </span>
-                <button onClick={() => setShowBio(false)} className="text-white/30 hover:text-white/60">
-                  <X size={12} />
-                </button>
-              </div>
-              <BioPanel live={live} />
-            </div>
-          )}
-          {!showBio && (
-            <button onClick={() => setShowBio(true)} className="absolute top-4 left-4 p-2.5 bg-black/50 border border-white/10 rounded-xl text-white/50 hover:text-white z-10">
-              <Activity size={16} />
-            </button>
-          )}
-
-          {/* Elapsed timer */}
-          {callState === "active" && peerConnected && (
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/60 backdrop-blur-md rounded-full px-4 py-2 border border-white/10 text-xs font-bold text-white/70 z-10">
-              <Clock size={13} /> {fmt(elapsed)}
+        {/* Local PiP */}
+        <div className="absolute top-4 right-4 w-48 h-36 rounded-xl overflow-hidden border-2 border-white/20 shadow-lg z-10">
+          <video ref={localVideoRef} autoPlay playsInline muted className="w-full h-full object-cover transform scale-x-[-1]" />
+          {videoOff && (
+            <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
+              <User size={32} className="text-gray-400" />
             </div>
           )}
         </div>
 
-        {/* Chat sidebar */}
+        {connecting && (
+          <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white z-20">
+            <Loader2 size={40} className="animate-spin mb-4" />
+            <p className="font-bold">{lang.connecting}</p>
+            <p className="text-sm text-white/60">{lang.roomLabel}: {roomId}</p>
+          </div>
+        )}
+
+        {!connecting && !connected && (
+          <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white z-20">
+            <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center mb-4">
+              <User size={40} className="text-white/60" />
+            </div>
+            <p className="font-bold">
+              {user?.role === "clinician" ? lang.waitingPatient : lang.waitingDoctor}
+            </p>
+            <p className="text-sm text-white/60">{lang.roomLabel}: {roomId}</p>
+          </div>
+        )}
+
+        {/* In-call chat overlay */}
         {showChat && (
-          <aside className="w-80 shrink-0 flex flex-col bg-slate-900 border-l border-white/10">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 shrink-0">
-              <div className="flex items-center gap-2 font-bold text-sm">
-                <MessageSquare size={16} /> In-Call Chat
-              </div>
-              <button onClick={() => setShowChat(false)} className="text-white/30 hover:text-white/60">
-                <X size={16} />
+          <div className="absolute bottom-20 right-4 w-80 bg-card/95 backdrop-blur-xl rounded-2xl border shadow-2xl z-30 flex flex-col" style={{ height: "320px" }}>
+            <div className="flex items-center justify-between px-4 py-3 border-b">
+              <span className="font-bold text-sm">{language === "hi" ? "चैट" : "Chat"}</span>
+              <button onClick={() => setShowChat(false)} className="p-1 rounded-lg hover:bg-muted"><X size={16} /></button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-3 space-y-2">
+              {chatMessages.map((msg, i) => (
+                <div key={i} className={`text-xs ${msg.from === user?.patientId ? "text-right" : ""}`}>
+                  <span className={`inline-block px-3 py-1.5 rounded-xl ${msg.from === user?.patientId ? "bg-emerald-600 text-white" : "bg-muted"}`}>
+                    {msg.text}
+                  </span>
+                  <div className="text-muted-foreground mt-0.5">{msg.time}</div>
+                </div>
+              ))}
+            </div>
+            <div className="border-t p-2 flex gap-2">
+              <input
+                type="text"
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && sendChatMessage()}
+                placeholder={lang.chatPlaceholder}
+                className="flex-1 h-9 rounded-lg border bg-background px-3 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              />
+              <button onClick={sendChatMessage} className="h-9 w-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center">
+                <Send size={14} />
               </button>
             </div>
-
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
-              {messages.length === 0 && (
-                <p className="text-white/25 text-xs text-center mt-4">No messages yet</p>
-              )}
-              {messages.map((msg, i) => {
-                const isMe = msg.from === (user?.patientId ?? "me") || msg.name === "You";
-                const isSystem = msg.from === "system";
-                if (isSystem) {
-                  return (
-                    <div key={i} className="flex justify-center">
-                      <span className="text-[10px] text-white/30 bg-white/5 rounded-full px-3 py-1">{msg.text}</span>
-                    </div>
-                  );
-                }
-                return (
-                  <div key={i} className={`flex flex-col gap-1 ${isMe ? "items-end" : "items-start"}`}>
-                    <span className="text-[10px] text-white/30 font-semibold">{msg.name} · {msg.time}</span>
-                    <div className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${isMe ? "bg-primary text-white rounded-br-sm" : "bg-white/10 text-white/90 rounded-bl-sm"}`}>
-                      {msg.text}
-                    </div>
-                  </div>
-                );
-              })}
-              <div ref={chatEndRef} />
-            </div>
-
-            <div className="p-4 border-t border-white/10 shrink-0">
-              <div className="flex gap-2">
-                <input
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                  placeholder="Type a message…"
-                  className="flex-1 bg-white/10 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-primary/40"
-                />
-                <button
-                  onClick={sendMessage}
-                  className="p-2.5 bg-primary rounded-xl hover:bg-primary/80 transition-colors"
-                >
-                  <Send size={16} />
-                </button>
-              </div>
-            </div>
-          </aside>
+          </div>
         )}
       </div>
 
       {/* Controls */}
-      <footer className="bg-slate-900/90 backdrop-blur-xl border-t border-white/10 px-6 py-5 flex items-center justify-center gap-4 z-20 shrink-0">
-        <button
-          onClick={toggleMute}
-          className={`p-4 rounded-2xl border transition-all flex flex-col items-center gap-1 ${muted ? "bg-red-600 border-red-500 text-white" : "bg-white/10 border-white/15 text-white/80 hover:bg-white/20"}`}
-        >
-          {muted ? <MicOff size={22} /> : <Mic size={22} />}
-          <span className="text-[10px] font-black uppercase tracking-wider">{muted ? "Unmute" : "Mute"}</span>
+      <div className="bg-black/90 backdrop-blur-sm px-6 py-4 flex items-center justify-center gap-3 z-10">
+        <button onClick={toggleAudio}
+          className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${audioMuted ? "bg-red-600 text-white" : "bg-white/10 text-white hover:bg-white/20"}`}
+          title={audioMuted ? lang.muted : lang.unmute}>
+          {audioMuted ? <MicOff size={22} /> : <Mic size={22} />}
         </button>
 
-        <button
-          onClick={toggleVideo}
-          className={`p-4 rounded-2xl border transition-all flex flex-col items-center gap-1 ${videoOff ? "bg-red-600 border-red-500 text-white" : "bg-white/10 border-white/15 text-white/80 hover:bg-white/20"}`}
-        >
-          {videoOff ? <CameraOff size={22} /> : <Camera size={22} />}
-          <span className="text-[10px] font-black uppercase tracking-wider">Camera</span>
+        <button onClick={toggleVideo}
+          className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${videoOff ? "bg-red-600 text-white" : "bg-white/10 text-white hover:bg-white/20"}`}
+          title={videoOff ? lang.cameraOn : lang.cameraOff}>
+          {videoOff ? <VideoOff size={22} /> : <Video size={22} />}
         </button>
 
-        <button
-          onClick={() => setShowChat((c) => !c)}
-          className={`p-4 rounded-2xl border transition-all flex flex-col items-center gap-1 ${showChat ? "bg-white/20 border-white/30 text-white" : "bg-white/10 border-white/15 text-white/80 hover:bg-white/20"}`}
-        >
+        <button onClick={toggleScreenShare}
+          className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${screenSharing ? "bg-blue-600 text-white" : "bg-white/10 text-white hover:bg-white/20"}`}
+          title={screenSharing ? lang.stopShare : lang.shareScreen}>
+          {screenSharing ? <ScreenShareOff size={22} /> : <ScreenShare size={22} />}
+        </button>
+
+        <button onClick={() => setShowChat(!showChat)}
+          className="w-14 h-14 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-all"
+          title={language === "hi" ? "चैट" : "Chat"}>
           <MessageSquare size={22} />
-          <span className="text-[10px] font-black uppercase tracking-wider">Chat</span>
         </button>
 
-        <button
-          onClick={endCall}
-          className="p-4 px-8 rounded-2xl bg-red-600 hover:bg-red-700 text-white transition-all shadow-xl shadow-red-600/30 flex flex-col items-center gap-1"
-        >
-          <PhoneOff size={22} />
-          <span className="text-[10px] font-black uppercase tracking-wider">End Call</span>
+        <button onClick={endCall}
+          className="w-16 h-16 rounded-full bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition-all shadow-lg shadow-red-600/30"
+          title={lang.endCall}>
+          <PhoneOff size={24} />
         </button>
-      </footer>
+      </div>
     </div>
   );
 }

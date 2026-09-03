@@ -4,6 +4,7 @@ import { AppLayout } from "@/components/layout";
 import { Bell, BrainCircuit, CheckCheck, Filter, PhoneCall, ShieldCheck, Stethoscope, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { fetchNotifications, markAllNotificationsRead, markNotificationRead } from "@/lib/api";
+import { useLanguage } from "@/lib/language";
 
 interface AlertNotification {
   _id: string;
@@ -68,6 +69,7 @@ function adaptNotification(raw: unknown): AlertNotification {
 }
 
 export default function AlertsHistory() {
+  const { t } = useLanguage();
   const [notifications, setNotifications] = useState<AlertNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterType>("all");
@@ -115,12 +117,12 @@ export default function AlertsHistory() {
             <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-2">
               <Bell size={13} /> Smart Alerts
             </div>
-            <h1 className="text-4xl font-extrabold font-[Manrope] text-foreground leading-tight">Alerts & Notifications</h1>
+            <h1 className="text-4xl font-extrabold font-[Manrope] text-foreground leading-tight">{t("alerts.title")}</h1>
             <p className="text-muted-foreground mt-1">Real-time clinical alerts from your voice biomarker monitoring system.</p>
           </div>
           {unreadCount > 0 && (
             <Button variant="outline" className="rounded-xl font-bold" onClick={handleMarkAllRead}>
-              <CheckCheck className="mr-2" size={16} /> Mark All Read ({unreadCount})
+              <CheckCheck className="mr-2" size={16} /> {t("alerts.markAllRead")} ({unreadCount})
             </Button>
           )}
         </section>

@@ -2,7 +2,6 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 const rawPort = process.env.PORT;
 
@@ -26,25 +25,33 @@ if (!basePath) {
   );
 }
 
+// Conditionally load Replit/Antigravity plugins only when running on those platforms
+const replitPlugins = [];
+if (process.env.REPL_ID !== undefined) {
+  try {
+    const runtimeErrorOverlay = (await import("@replit/vite-plugin-runtime-error-modal")).default;
+    replitPlugins.push(runtimeErrorOverlay());
+
+    if (process.env.NODE_ENV !== "production") {
+      const { cartographer } = await import("@replit/vite-plugin-cartographer");
+      replitPlugins.push(cartographer({
+        root: path.resolve(import.meta.dirname, ".."),
+      }));
+
+      const { devBanner } = await import("@replit/vite-plugin-dev-banner");
+      replitPlugins.push(devBanner());
+    }
+  } catch {
+    // Replit plugins not available — skip silently
+  }
+}
+
 export default defineConfig({
   base: basePath,
   plugins: [
     react(),
     tailwindcss(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer({
-              root: path.resolve(import.meta.dirname, ".."),
-            }),
-          ),
-          await import("@replit/vite-plugin-dev-banner").then((m) =>
-            m.devBanner(),
-          ),
-        ]
-      : []),
+    ...replitPlugins,
   ],
   resolve: {
     alias: {
@@ -62,6 +69,8 @@ export default defineConfig({
     port,
     host: "0.0.0.0",
     allowedHosts: true,
+    // Disabled for Freebuff — enabled automatically by Replit/Antigravity via their plugins
+    hmr: process.env.REPL_ID !== undefined ? undefined : false,
     proxy: {
       "/api": {
         target: "http://127.0.0.1:8080",

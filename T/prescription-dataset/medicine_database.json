@@ -1,0 +1,626 @@
+{
+  "Aceta": {
+    "brandName": "Aceta",
+    "genericName": "Paracetamol",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Ace": {
+    "brandName": "Ace",
+    "genericName": "Paracetamol",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Alatrol": {
+    "brandName": "Alatrol",
+    "genericName": "Cetirizine Hydrochloride",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Amodis": {
+    "brandName": "Amodis",
+    "genericName": "Metronidazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Atrizin": {
+    "brandName": "Atrizin",
+    "genericName": "Cetirizine Hydrochloride",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Axodin": {
+    "brandName": "Axodin",
+    "genericName": "Fexofenadine Hydrochloride",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Azithrocin": {
+    "brandName": "Azithrocin",
+    "genericName": "Azithromycin Dihydrate",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Azyth": {
+    "brandName": "Azyth",
+    "genericName": "Azithromycin Dihydrate",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Az": {
+    "brandName": "Az",
+    "genericName": "Azithromycin Dihydrate",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Bacaid": {
+    "brandName": "Bacaid",
+    "genericName": "Baclofen",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Backtone": {
+    "brandName": "Backtone",
+    "genericName": "Baclofen",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Baclofen": {
+    "brandName": "Baclofen",
+    "genericName": "Baclofen",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Baclon": {
+    "brandName": "Baclon",
+    "genericName": "Baclofen",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Bacmax": {
+    "brandName": "Bacmax",
+    "genericName": "Baclofen",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Beklo": {
+    "brandName": "Beklo",
+    "genericName": "Baclofen",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Bicozin": {
+    "brandName": "Bicozin",
+    "genericName": "Vitamin B Complex + Zinc",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Canazole": {
+    "brandName": "Canazole",
+    "genericName": "Fluconazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Candinil": {
+    "brandName": "Candinil",
+    "genericName": "Fluconazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Cetisoft": {
+    "brandName": "Cetisoft",
+    "genericName": "Cetirizine Hydrochloride",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Conaz": {
+    "brandName": "Conaz",
+    "genericName": "Fluconazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Dancel": {
+    "brandName": "Dancel",
+    "genericName": "Ketoconazole (Shampoo)",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Denixil": {
+    "brandName": "Denixil",
+    "genericName": "Clonazepam",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Diflu": {
+    "brandName": "Diflu",
+    "genericName": "Fluconazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Dinafex": {
+    "brandName": "Dinafex",
+    "genericName": "Fexofenadine Hydrochloride",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Disopan": {
+    "brandName": "Disopan",
+    "genericName": "Clonazepam",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Esonix": {
+    "brandName": "Esonix",
+    "genericName": "Esomeprazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Esoral": {
+    "brandName": "Esoral",
+    "genericName": "Esomeprazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Etizin": {
+    "brandName": "Etizin",
+    "genericName": "Cetirizine Hydrochloride",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Exium": {
+    "brandName": "Exium",
+    "genericName": "Esomeprazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Fenadin": {
+    "brandName": "Fenadin",
+    "genericName": "Fexofenadine Hydrochloride",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Fexofast": {
+    "brandName": "Fexofast",
+    "genericName": "Fexofenadine Hydrochloride",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Fexo": {
+    "brandName": "Fexo",
+    "genericName": "Fexofenadine Hydrochloride",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Filmet": {
+    "brandName": "Filmet",
+    "genericName": "Metronidazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Fixal": {
+    "brandName": "Fixal",
+    "genericName": "Fexofenadine Hydrochloride",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Flamyd": {
+    "brandName": "Flamyd",
+    "genericName": "Metronidazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Flexibac": {
+    "brandName": "Flexibac",
+    "genericName": "Baclofen",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Flexilax": {
+    "brandName": "Flexilax",
+    "genericName": "Baclofen",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Flugal": {
+    "brandName": "Flugal",
+    "genericName": "Fluconazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Ketocon": {
+    "brandName": "Ketocon",
+    "genericName": "Ketoconazole (Shampoo)",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Ketoral": {
+    "brandName": "Ketoral",
+    "genericName": "Ketoconazole (Tablet)",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Ketotab": {
+    "brandName": "Ketotab",
+    "genericName": "Ketoconazole (Tablet)",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Ketozol": {
+    "brandName": "Ketozol",
+    "genericName": "Ketoconazole (Shampoo)",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Leptic": {
+    "brandName": "Leptic",
+    "genericName": "Clonazepam",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Lucan-R": {
+    "brandName": "Lucan-R",
+    "genericName": "Fluconazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Lumona": {
+    "brandName": "Lumona",
+    "genericName": "Montelukast Sodium",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "M-Kast": {
+    "brandName": "M-Kast",
+    "genericName": "Montelukast Sodium",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Maxima": {
+    "brandName": "Maxima",
+    "genericName": "Esomeprazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Maxpro": {
+    "brandName": "Maxpro",
+    "genericName": "Esomeprazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Metro": {
+    "brandName": "Metro",
+    "genericName": "Metronidazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Metsina": {
+    "brandName": "Metsina",
+    "genericName": "Metronidazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Monas": {
+    "brandName": "Monas",
+    "genericName": "Montelukast Sodium",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Montair": {
+    "brandName": "Montair",
+    "genericName": "Montelukast Sodium",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Montene": {
+    "brandName": "Montene",
+    "genericName": "Montelukast Sodium",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Montex": {
+    "brandName": "Montex",
+    "genericName": "Montelukast Sodium",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Napa Extend": {
+    "brandName": "Napa Extend",
+    "genericName": "Paracetamol",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Napa": {
+    "brandName": "Napa",
+    "genericName": "Paracetamol",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Nexcap": {
+    "brandName": "Nexcap",
+    "genericName": "Esomeprazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Nexum": {
+    "brandName": "Nexum",
+    "genericName": "Esomeprazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Nidazyl": {
+    "brandName": "Nidazyl",
+    "genericName": "Metronidazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Nizoder": {
+    "brandName": "Nizoder",
+    "genericName": "Ketoconazole (Cream)",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Odmon": {
+    "brandName": "Odmon",
+    "genericName": "Montelukast Sodium",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Omastin": {
+    "brandName": "Omastin",
+    "genericName": "Fluconazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Opton": {
+    "brandName": "Opton",
+    "genericName": "Esomeprazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Progut": {
+    "brandName": "Progut",
+    "genericName": "Esomeprazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Provair": {
+    "brandName": "Provair",
+    "genericName": "Montelukast Sodium",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Renova": {
+    "brandName": "Renova",
+    "genericName": "Paracetamol",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Rhinil": {
+    "brandName": "Rhinil",
+    "genericName": "Cetirizine Hydrochloride",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Ritch": {
+    "brandName": "Ritch",
+    "genericName": "Fexofenadine Hydrochloride",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Rivotril": {
+    "brandName": "Rivotril",
+    "genericName": "Clonazepam",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Romycin": {
+    "brandName": "Romycin",
+    "genericName": "Azithromycin Dihydrate (Ophthalmic)",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Rozith": {
+    "brandName": "Rozith",
+    "genericName": "Azithromycin Dihydrate",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Sergel": {
+    "brandName": "Sergel",
+    "genericName": "Esomeprazole",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Tamen": {
+    "brandName": "Tamen",
+    "genericName": "Paracetamol",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Telfast": {
+    "brandName": "Telfast",
+    "genericName": "Fexofenadine Hydrochloride",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Tridosil": {
+    "brandName": "Tridosil",
+    "genericName": "Azithromycin Dihydrate",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Trilock": {
+    "brandName": "Trilock",
+    "genericName": "Montelukast Sodium",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Vifas": {
+    "brandName": "Vifas",
+    "genericName": "Fexofenadine Hydrochloride",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  },
+  "Zithrin": {
+    "brandName": "Zithrin",
+    "genericName": "Azithromycin Dihydrate",
+    "category": "Unknown",
+    "commonDosages": [
+      "Unknown"
+    ]
+  }
+}

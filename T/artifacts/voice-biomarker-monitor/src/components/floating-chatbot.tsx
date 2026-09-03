@@ -46,9 +46,12 @@ export function FloatingChatbot() {
   // ─── State ─────────────────────────────────────────────────────────────
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  // Independent message & session state per mode so conversations don't leak
+  const [ayushMessages, setAyushMessages] = useState<ChatMessage[]>([]);
+  const [healthMessages, setHealthMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [ayushSessionId, setAyushSessionId] = useState<string | null>(null);
+  const [healthSessionId, setHealthSessionId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -56,6 +59,12 @@ export function FloatingChatbot() {
   const [hasUnread, setHasUnread] = useState(false);
   const [ayushSubMode, setAyushSubMode] = useState<"education" | "pre_consultation" | "practitioner">("education");
   const [healthSubMode, setHealthSubMode] = useState<"general" | "symptom_checker" | "health_education">("general");
+
+  // Derived values — pick the right store for the current mode
+  const messages = isAyush ? ayushMessages : healthMessages;
+  const setMessages = isAyush ? setAyushMessages : setHealthMessages;
+  const sessionId = isAyush ? ayushSessionId : healthSessionId;
+  const setSessionId = isAyush ? setAyushSessionId : setHealthSessionId;
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -99,13 +108,7 @@ export function FloatingChatbot() {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  // Reset session when mode changes
-  useEffect(() => {
-    if (isOpen) {
-      setSessionId(null);
-      setMessages([]);
-    }
-  }, [ayushMode]); // eslint-disable-line react-hooks/exhaustive-deps
+  // No state reset needed on mode change — each mode has its own state store
 
   // ─── Session Creation ──────────────────────────────────────────────────
   useEffect(() => {
@@ -286,10 +289,15 @@ export function FloatingChatbot() {
   }, [sendMessage]);
 
   const handleModeChange = useCallback((newMode: string) => {
-    if (isAyush) setAyushSubMode(newMode as typeof ayushSubMode);
-    else setHealthSubMode(newMode as typeof healthSubMode);
-    setSessionId(null);
-    setMessages([]);
+    if (isAyush) {
+      setAyushSubMode(newMode as typeof ayushSubMode);
+      setAyushSessionId(null);
+      setAyushMessages([]);
+    } else {
+      setHealthSubMode(newMode as typeof healthSubMode);
+      setHealthSessionId(null);
+      setHealthMessages([]);
+    }
     setShowModeSelect(false);
   }, [isAyush]);
 

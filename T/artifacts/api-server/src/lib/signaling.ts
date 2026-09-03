@@ -1,85 +1,201 @@
-import { WebSocketServer, WebSocket } from "ws";
 import type { Server } from "http";
+import { WebSocketServer, WebSocket } from "ws";
 import { logger } from "./logger";
 
-interface SignalingMessage {
-  type: "join" | "offer" | "answer" | "ice-candidate" | "peer-joined" | "peer-left" | "error";
-  roomId?: string;
-  sdp?: any;
-  candidate?: any;
-  peerId?: string;
+// ── Room state ───────────────────────────────────────────────────────────
+interface Participant {
+  ws: WebSocket;
+  id: string;
+  name: string;
 }
 
-const rooms = new Map<string, Map<string, WebSocket>>();
-
-function genId() {
-  return Math.random().toString(36).slice(2, 10);
+interface Room {
+  id: string;
+  participants: Map<string, Participant>;
+  createdAt: number;
 }
 
-function send(ws: WebSocket, msg: SignalingMessage) {
-  if (ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify(msg));
+const rooms = new Map<string, Room>();
+
+function getOrCreateRoom(roomId: string): Room {
+  if (!rooms.has(roomId)) {
+    rooms.set(roomId, {
+      id: roomId,
+      participants: new Map(),
+      createdAt: Date.now(),
+    });
   }
+  return rooms.get(roomId)!;
 }
 
-function broadcast(roomId: string, msg: SignalingMessage, exclude: string) {
-  const room = rooms.get(roomId);
-  if (!room) return;
-  room.forEach((ws, id) => {
-    if (id !== exclude) send(ws, msg);
+// ── Broadcast to other participants ───────────────────────────────────────
+function broadcast(room: Room, senderId: string, message: object) {
+  const data = JSON.stringify(message);
+  room.participants.forEach((p, id) => {
+    if (id !== senderId && p.ws.readyState === WebSocket.OPEN) {
+      p.ws.send(data);
+    }
   });
 }
 
+// ── Attach to HTTP server ────────────────────────────────────────────────
 export function attachSignaling(server: Server) {
-  const wss = new WebSocketServer({ server, path: "/ws" });
+  const wss = new WebSocketServer({ server, path: "/ws/signaling" });
 
-  wss.on("connection", (ws) => {
-    const peerId = genId();
-    let currentRoom: string | null = null;
+  wss.on("connection", (ws: WebSocket) => {
+    let currentRoom: Room | null = null;
+    let participantId: string | null = null;
 
-    ws.on("message", (raw) => {
+    logger.info("WebSocket client connected to signaling");
+
+    ws.on("message", (raw: Buffer) => {
       try {
-        const msg: SignalingMessage = JSON.parse(raw.toString());
+        const msg = JSON.parse(raw.toString());
 
-        if (msg.type === "join" && msg.roomId) {
-          currentRoom = msg.roomId;
-          if (!rooms.has(currentRoom)) rooms.set(currentRoom, new Map());
-          const room = rooms.get(currentRoom)!;
+        switch (msg.type) {
+          // ── Join a room ────────────────────────────────────────────────
+          case "join": {
+            const { roomId, participantId: pid, participantName } = msg;
+            if (!roomId || !pid) break;
 
-          if (room.size >= 2) {
-            send(ws, { type: "error", roomId: currentRoom });
-            return;
+            // Leave previous room if any
+            if (currentRoom && participantId) {
+              currentRoom.participants.delete(participantId);
+              broadcast(currentRoom, participantId, {
+                type: "participant-left",
+                participantId,
+              });
+              if (currentRoom.participants.size === 0) {
+                rooms.delete(currentRoom.id);
+              }
+            }
+
+            const room = getOrCreateRoom(roomId);
+
+            // Notify existing participants before adding new one
+            const existingParticipants = Array.from(room.participants.keys());
+
+            room.participants.set(pid, {
+              ws,
+              id: pid,
+              name: participantName || pid,
+            });
+
+            currentRoom = room;
+            participantId = pid;
+
+            // Tell the joiner about existing participants
+            ws.send(
+              JSON.stringify({
+                type: "room-joined",
+                roomId: room.id,
+                participants: existingParticipants,
+                participantCount: room.participants.size,
+              })
+            );
+
+            // Tell existing participants about the new joiner
+            broadcast(room, pid, {
+              type: "participant-joined",
+              participantId: pid,
+              participantName: participantName || pid,
+              participantCount: room.participants.size,
+            });
+
+            logger.info(
+              { roomId, pid, participantName, count: room.participants.size },
+              "Participant joined signaling room"
+            );
+            break;
           }
 
-          room.set(peerId, ws);
-          logger.info({ roomId: currentRoom, peerId, peers: room.size }, "Peer joined room");
+          // ── WebRTC Offer ───────────────────────────────────────────────
+          case "offer": {
+            if (!currentRoom || !participantId) break;
+            broadcast(currentRoom, participantId, {
+              type: "offer",
+              from: participantId,
+              sdp: msg.sdp,
+            });
+            logger.debug({ from: participantId }, "Relayed offer");
+            break;
+          }
 
-          // Notify existing peers so they initiate the offer
-          broadcast(currentRoom, { type: "peer-joined", peerId }, peerId);
+          // ── WebRTC Answer ──────────────────────────────────────────────
+          case "answer": {
+            if (!currentRoom || !participantId) break;
+            broadcast(currentRoom, participantId, {
+              type: "answer",
+              from: participantId,
+              sdp: msg.sdp,
+            });
+            logger.debug({ from: participantId }, "Relayed answer");
+            break;
+          }
 
-        } else if (msg.type === "offer" && currentRoom) {
-          broadcast(currentRoom, { type: "offer", sdp: msg.sdp }, peerId);
+          // ── ICE Candidate ──────────────────────────────────────────────
+          case "ice-candidate": {
+            if (!currentRoom || !participantId) break;
+            broadcast(currentRoom, participantId, {
+              type: "ice-candidate",
+              from: participantId,
+              candidate: msg.candidate,
+            });
+            break;
+          }
 
-        } else if (msg.type === "answer" && currentRoom) {
-          broadcast(currentRoom, { type: "answer", sdp: msg.sdp }, peerId);
+          // ── End call ───────────────────────────────────────────────────
+          case "end-call": {
+            if (!currentRoom || !participantId) break;
+            broadcast(currentRoom, participantId, {
+              type: "call-ended",
+              by: participantId,
+            });
+            currentRoom.participants.delete(participantId);
+            if (currentRoom.participants.size === 0) {
+              rooms.delete(currentRoom.id);
+            }
+            currentRoom = null;
+            participantId = null;
+            break;
+          }
 
-        } else if (msg.type === "ice-candidate" && currentRoom) {
-          broadcast(currentRoom, { type: "ice-candidate", candidate: msg.candidate }, peerId);
+          // ── Chat message (in-call text) ────────────────────────────────
+          case "chat": {
+            if (!currentRoom || !participantId) break;
+            broadcast(currentRoom, participantId, {
+              type: "chat",
+              from: participantId,
+              text: msg.text,
+              timestamp: Date.now(),
+            });
+            break;
+          }
         }
-      } catch {
-        /* ignore malformed messages */
+      } catch (err) {
+        logger.error({ err }, "Error processing signaling message");
       }
     });
 
     ws.on("close", () => {
-      if (currentRoom) {
-        rooms.get(currentRoom)?.delete(peerId);
-        broadcast(currentRoom, { type: "peer-left", peerId }, peerId);
-        if (rooms.get(currentRoom)?.size === 0) rooms.delete(currentRoom);
-        logger.info({ roomId: currentRoom, peerId }, "Peer left room");
+      if (currentRoom && participantId) {
+        currentRoom.participants.delete(participantId);
+        broadcast(currentRoom, participantId, {
+          type: "participant-left",
+          participantId,
+        });
+        if (currentRoom.participants.size === 0) {
+          rooms.delete(currentRoom.id);
+          logger.debug({ roomId: currentRoom.id }, "Room cleaned up (empty)");
+        }
       }
+      logger.info("WebSocket client disconnected from signaling");
+    });
+
+    ws.on("error", (err) => {
+      logger.error({ err }, "WebSocket signaling error");
     });
   });
 
-  logger.info("WebSocket signaling server attached at /ws");
+  logger.info("WebSocket signaling server attached at /ws/signaling");
 }

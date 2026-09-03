@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/layout";
 import { useAuth } from "@/lib/auth";
+import { useLanguage } from "@/lib/language";
 import {
   Activity, BrainCircuit, Calendar, CheckCircle2, ChevronDown, ChevronUp,
   Clock, Cloud, Database, Flame, Mic, Play, Pause, Radio, TrendingDown, TrendingUp, Wind
@@ -66,6 +67,7 @@ function AudioPlayer({ url }: { url: string }) {
 
 export default function HistoryPage() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -130,14 +132,14 @@ export default function HistoryPage() {
         {/* Stats row */}
         {stats && (
           <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-            <StatCard icon={Mic} label="Total Sessions" value={String(stats.totalSessions)} accent="primary" />
-            <StatCard icon={BrainCircuit} label="Avg Clarity" value={`${stats.avgClarity}%`} accent="secondary" />
-            <StatCard icon={Activity} label="Avg Tremor" value={`${stats.avgTremor}%`} accent="destructive" />
-            <StatCard icon={Wind} label="Avg Breath" value={`${stats.avgBreathlessness}/10`} accent="secondary" />
-            <StatCard icon={Flame} label="Day Streak" value={`${stats.streak}d`} accent="primary" />
+            <StatCard icon={Mic} label={t("history.totalSessions")} value={String(stats.totalSessions)} accent="primary" />
+            <StatCard icon={BrainCircuit} label={t("history.avgClarity")} value={`${stats.avgClarity}%`} accent="secondary" />
+            <StatCard icon={Activity} label={t("history.avgTremor")} value={`${stats.avgTremor}%`} accent="destructive" />
+            <StatCard icon={Wind} label={t("history.avgBreath")} value={`${stats.avgBreathlessness}/10`} accent="secondary" />
+            <StatCard icon={Flame} label={t("history.dayStreak")} value={`${stats.streak}d`} accent="primary" />
             <StatCard
               icon={clarityTrend >= 0 ? TrendingUp : TrendingDown}
-              label="Clarity Trend"
+              label={t("history.clarityTrend")}
               value={`${clarityTrend >= 0 ? "+" : ""}${clarityTrend}%`}
               accent={clarityTrend >= 0 ? "primary" : "destructive"}
             />

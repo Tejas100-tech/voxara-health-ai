@@ -5,9 +5,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Settings2, Pill, Activity, BrainCircuit, ClipboardList, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/lib/language";
 
 export default function MedicationWorkflow() {
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const handleExecute = (e: React.FormEvent) => {
     e.preventDefault();

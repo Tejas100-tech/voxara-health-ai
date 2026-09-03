@@ -1,8 +1,10 @@
 import dotenv from "dotenv";
-import { resolve } from "path";
-// Load .env.local from project root (Freebuff injects env vars here)
-const rootEnvPath = resolve(process.cwd(), "..", "..", "..", ".env.local");
-dotenv.config({ path: rootEnvPath, override: true });
+import path from "path";
+// Load from monorepo root .env and .env.local, then override with local .env
+dotenv.config({ path: path.resolve(process.cwd(), "../../.env.local"), override: false });
+dotenv.config({ path: path.resolve(process.cwd(), "../../.env"), override: false });
+// Freebuff writes .env.local to project root — also load from there
+dotenv.config({ path: path.resolve(process.cwd(), "../../../.env.local"), override: false });
 dotenv.config({ override: true });
 import http from "http";
 import app from "./app";

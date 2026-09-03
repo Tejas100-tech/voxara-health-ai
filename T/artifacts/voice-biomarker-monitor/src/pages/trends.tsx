@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { AppLayout } from "@/components/layout";
 import { ArrowRight, TrendingDown, TrendingUp, Zap } from "lucide-react";
+import { useLanguage } from "@/lib/language";
 
 type Range = "1M" | "3M" | "6M" | "1Y";
 
@@ -104,6 +105,7 @@ const MEDICATIONS = [
 ];
 
 export default function Trends() {
+  const { t } = useLanguage();
   const [range, setRange] = useState<Range>("3M");
   const [metric, setMetric] = useState<Metric>("wellness");
   const data = useMemo(() => generateTrendData(range), [range]);
@@ -181,10 +183,10 @@ export default function Trends() {
         {/* Stats Row */}
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: "Avg Wellness", value: `${Math.round(data.reduce((s, d) => s + d.wellness, 0) / data.length)}%`, up: true },
-            { label: "Peak Clarity", value: `${Math.max(...data.map((d) => d.clarity))}%`, up: true },
-            { label: "Min Tremor", value: `${Math.min(...data.map((d) => d.tremor))}%`, up: false },
-            { label: "Sessions", value: `${data.length}`, up: true },
+            { label: t("trends.avgWellness"), value: `${Math.round(data.reduce((s, d) => s + d.wellness, 0) / data.length)}%`, up: true },
+            { label: t("trends.peakClarity"), value: `${Math.max(...data.map((d) => d.clarity))}%`, up: true },
+            { label: t("trends.minTremor"), value: `${Math.min(...data.map((d) => d.tremor))}%`, up: false },
+            { label: t("trends.sessions"), value: `${data.length}`, up: true },
           ].map((s) => (
             <div key={s.label} className="bg-card border rounded-2xl p-5 card-hover text-center">
               <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-2">{s.label}</p>

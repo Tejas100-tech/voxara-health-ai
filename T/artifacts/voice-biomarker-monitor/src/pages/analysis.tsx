@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { useLatestSession, useLiveVitals, type AIAnalysis } from "@/lib/realtime";
 import { fetchAIAnalysis } from "@/lib/api";
+import { useLanguage } from "@/lib/language";
 
 function RadarChart({ data }: { data: { label: string; value: number; color: string }[] }) {
   const cx = 120; const cy = 120; const r = 90;
@@ -90,6 +91,7 @@ function BiomarkerCard({ icon: Icon, label, value, caption, bars, tone }: {
 export default function Analysis() {
   const session = useLatestSession();
   const live = useLiveVitals();
+  const { t } = useLanguage();
   const [shared, setShared] = useState(false);
   const [aiAnalysis, setAiAnalysis] = useState<AIAnalysis | undefined>(session.aiAnalysis);
   const [aiLoading, setAiLoading] = useState(!session.aiAnalysis);
@@ -122,11 +124,11 @@ export default function Analysis() {
   };
 
   const radarData = [
-    { label: "Clarity", value: session.clarity, color: "hsl(var(--primary))" },
-    { label: "Pitch", value: session.pitchConsistency, color: "hsl(var(--secondary))" },
-    { label: "Stability", value: Math.max(0, 100 - session.tremor), color: "hsl(179 60% 44%)" },
-    { label: "Speech", value: Math.min(100, (session.speechRate / 180) * 100), color: "hsl(199 80% 55%)" },
-    { label: "Breath", value: Math.max(0, 100 - session.breathlessness * 10), color: "hsl(var(--secondary))" },
+    { label: t("analysis.clarity"), value: session.clarity, color: "hsl(var(--primary))" },
+    { label: t("analysis.pitch"), value: session.pitchConsistency, color: "hsl(var(--secondary))" },
+    { label: t("analysis.stability"), value: Math.max(0, 100 - session.tremor), color: "hsl(179 60% 44%)" },
+    { label: t("analysis.speech"), value: Math.min(100, (session.speechRate / 180) * 100), color: "hsl(199 80% 55%)" },
+    { label: t("analysis.breath"), value: Math.max(0, 100 - session.breathlessness * 10), color: "hsl(var(--secondary))" },
   ];
 
   const progressionColor = aiAnalysis?.diseaseProgression?.status === "improving" ? "text-emerald-600"
@@ -169,23 +171,23 @@ export default function Analysis() {
           </div>
           <div className="flex flex-wrap gap-3">
             <Button variant="outline" className="rounded-xl font-bold" onClick={exportReport}>
-              <Download className="mr-2" size={15} /> Export JSON
+              <Download className="mr-2" size={15} /> {t("analysis.downloadReport")}
             </Button>
             <Button className="rounded-xl font-bold" onClick={shareWithDoctor}>
-              <Share2 className="mr-2" size={15} /> {shared ? "Shared ✓" : "Share with MD"}
+              <Share2 className="mr-2" size={15} /> {shared ? "Shared ✓" : t("analysis.shareReport")}
             </Button>
           </div>
         </section>
 
         {/* Biomarker Cards */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <BiomarkerCard icon={Activity} label="Vocal Tremor Drift" value={`${session.tremor}%`}
+          <BiomarkerCard icon={Activity} label={t("analysis.vocalTremorDrift")} value={`${session.tremor}%`}
             caption={aiAnalysis?.biomarkerInsights?.tremor ?? "Live deviation from personal baseline"}
             bars={[28, 42, 37, 44, session.tremor, live.tremorDrift, live.tremorDrift + 5]} tone="primary" />
-          <BiomarkerCard icon={Wind} label="Breathlessness" value={`${session.breathlessness}/10`}
+          <BiomarkerCard icon={Wind} label={t("analysis.breathlessness")} value={`${session.breathlessness}/10`}
             caption={aiAnalysis?.biomarkerInsights?.breathlessness ?? "Respiratory strain inferred from pauses"}
             bars={[66, 62, 58, 49, live.respiratoryLoad, 36, 32]} tone="secondary" />
-          <BiomarkerCard icon={Music} label="Pitch Consistency" value={`${session.pitchConsistency}%`}
+          <BiomarkerCard icon={Music} label={t("analysis.pitchConsistency")} value={`${session.pitchConsistency}%`}
             caption={aiAnalysis?.biomarkerInsights?.pitch ?? "Prosody and tonal stability"}
             bars={[78, 82, 76, 84, 88, live.vocalStability, session.pitchConsistency]} tone="tertiary" />
         </section>
@@ -207,11 +209,11 @@ export default function Analysis() {
           </div>
 
           <div className="bg-card border rounded-[2rem] p-8 space-y-5">
-            <h4 className="font-[Manrope] font-bold text-xl">Sub-Metric Breakdown</h4>
+            <h4 className="font-[Manrope] font-bold text-xl">{t("analysis.clinicalReport")}</h4>
             {[
-              { label: "Jitter Local", val: `${(session.tremor / 24).toFixed(2)}%` },
-              { label: "Noise Floor", val: `${session.noiseFloor} dB` },
-              { label: "Speech Rate", val: `${session.speechRate} wpm` },
+              { label: t("analysis.jitterLocal"), val: `${(session.tremor / 24).toFixed(2)}%` },
+              { label: t("analysis.noiseFloorLabel"), val: `${session.noiseFloor} dB` },
+              { label: t("analysis.speechRate"), val: `${session.speechRate} wpm` },
               { label: "Model Confidence", val: `${session.confidence}%` },
               { label: "ML Model", val: ml?.modelVersion ?? "Voxara ML Ensemble v3.0" },
               { label: "Calibration", val: ml?.calibration ?? "demo calibrated" },

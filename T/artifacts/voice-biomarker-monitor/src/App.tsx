@@ -4,43 +4,39 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import { ThemeProvider } from "@/lib/theme";
+import { LanguageProvider } from "@/lib/language";
 import NotFound from "@/pages/not-found";
+import LandingPage from "@/pages/landing";
 import LoginPage from "@/pages/login";
-import DoctorLoginPage from "@/pages/doctor-login";
 import SignupPage from "@/pages/signup";
-import Dashboard from "@/pages/dashboard";
-import RecordSession from "@/pages/record";
-import Analysis from "@/pages/analysis";
-import Trends from "@/pages/trends";
-import ClinicianOverview from "@/pages/clinician";
-import AlertsHistory from "@/pages/alerts";
-import MedicationWorkflow from "@/pages/medication";
-import HistoryPage from "@/pages/history";
-import PatientDetailPage from "@/pages/patient-detail";
+import PatientDashboard from "@/pages/dashboard";
+import IntakeFlow from "@/pages/intake";
+import MyRecords from "@/pages/records";
+import ProfilePage from "@/pages/profile";
+import ClinicianDashboard from "@/pages/clinician";
+import ClinicianQueue from "@/pages/clinician-queue";
+import ClinicianReviews from "@/pages/clinician-reviews";
 import AppointmentsPage from "@/pages/appointments";
 import VideoCallPage from "@/pages/video-call";
-import MLDashboard from "@/pages/ml-dashboard";
-import MedikioskHub from "@/pages/medikiosk-hub";
-import MedikioskIntake from "@/pages/medikiosk-intake";
-import MedikioskScan from "@/pages/medikiosk-scan";
-import MedikioskSummary from "@/pages/medikiosk-summary";
-import MedikioskClinicianReview from "@/pages/medikiosk-clinician-review";
-import SosDashboard from "@/pages/sos-dashboard";
-import AyushHub from "@/pages/ayush-hub";
-import AyushChat from "@/pages/ayush-chat";
-import AyushAssessment from "@/pages/ayush-assessment";
-import AyushPractitioner from "@/pages/ayush-practitioner";
+import ClinicianAppointments from "@/pages/clinician-appointments";
+import ChatbotPage from "@/pages/chatbot";
 
 const queryClient = new QueryClient();
 
-function ProtectedRoute({ component: Component, roles }: { component: React.ComponentType; roles?: string[] }) {
+function ProtectedRoute({
+  component: Component,
+  roles,
+}: {
+  component: React.ComponentType;
+  roles?: string[];
+}) {
   const { user, loading } = useAuth();
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-secondary animate-pulse" />
-          <p className="text-muted-foreground font-semibold">Loading Voxara...</p>
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-500 animate-pulse" />
+          <p className="text-muted-foreground font-semibold">Loading MediKiosk...</p>
         </div>
       </div>
     );
@@ -50,34 +46,36 @@ function ProtectedRoute({ component: Component, roles }: { component: React.Comp
   return <Component />;
 }
 
+function RootRoute() {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-500 animate-pulse" />
+      </div>
+    );
+  }
+  if (!user) return <LandingPage />;
+  return <ProtectedRoute component={PatientDashboard} />;
+}
+
 function Router() {
   return (
     <Switch>
+      <Route path="/" component={RootRoute} />
       <Route path="/login" component={LoginPage} />
-      <Route path="/doctor-login" component={DoctorLoginPage} />
       <Route path="/signup" component={SignupPage} />
-      <Route path="/" component={() => <ProtectedRoute component={Dashboard} />} />
-      <Route path="/record" component={() => <ProtectedRoute component={RecordSession} />} />
-      <Route path="/analysis" component={() => <ProtectedRoute component={Analysis} />} />
-      <Route path="/trends" component={() => <ProtectedRoute component={Trends} />} />
-      <Route path="/history" component={() => <ProtectedRoute component={HistoryPage} />} />
+      <Route path="/intake" component={() => <ProtectedRoute component={IntakeFlow} />} />
+      <Route path="/records" component={() => <ProtectedRoute component={MyRecords} />} />
+      <Route path="/profile" component={() => <ProtectedRoute component={ProfilePage} />} />
+      <Route path="/clinician" component={() => <ProtectedRoute component={ClinicianDashboard} roles={["clinician"]} />} />
+      <Route path="/clinician/queue" component={() => <ProtectedRoute component={ClinicianQueue} roles={["clinician"]} />} />
+      <Route path="/clinician/reviews" component={() => <ProtectedRoute component={ClinicianReviews} roles={["clinician"]} />} />
+      <Route path="/clinician/summary/:sessionId" component={() => <ProtectedRoute component={ClinicianReviews} roles={["clinician"]} />} />
       <Route path="/appointments" component={() => <ProtectedRoute component={AppointmentsPage} />} />
-      <Route path="/call/:id" component={() => <ProtectedRoute component={VideoCallPage} />} />
-      <Route path="/ml" component={() => <ProtectedRoute component={MLDashboard} />} />
-      <Route path="/clinician" component={() => <ProtectedRoute component={ClinicianOverview} roles={["clinician"]} />} />
-      <Route path="/clinician/patient/:patientId" component={() => <ProtectedRoute component={PatientDetailPage} roles={["clinician"]} />} />
-      <Route path="/alerts" component={() => <ProtectedRoute component={AlertsHistory} />} />
-      <Route path="/medication" component={() => <ProtectedRoute component={MedicationWorkflow} />} />
-      <Route path="/medikiosk" component={() => <ProtectedRoute component={MedikioskHub} />} />
-      <Route path="/medikiosk/intake" component={() => <ProtectedRoute component={MedikioskIntake} />} />
-      <Route path="/medikiosk/scan" component={() => <ProtectedRoute component={MedikioskScan} />} />
-      <Route path="/medikiosk/summary" component={() => <ProtectedRoute component={MedikioskSummary} />} />
-      <Route path="/medikiosk/clinician-review" component={() => <ProtectedRoute component={MedikioskClinicianReview} roles={["clinician"]} />} />
-      <Route path="/sos" component={() => <ProtectedRoute component={SosDashboard} roles={["clinician"]} />} />
-      <Route path="/patient/ayush" component={() => <ProtectedRoute component={AyushHub} />} />
-      <Route path="/patient/ayush/chat" component={() => <ProtectedRoute component={AyushChat} />} />
-      <Route path="/patient/ayush/assessment" component={() => <ProtectedRoute component={AyushAssessment} />} />
-      <Route path="/practitioner/ayush" component={() => <ProtectedRoute component={AyushPractitioner} roles={["clinician"]} />} />
+      <Route path="/call/:roomId" component={() => <ProtectedRoute component={VideoCallPage} />} />
+      <Route path="/clinician/appointments" component={() => <ProtectedRoute component={ClinicianAppointments} roles={["clinician"]} />} />
+      <Route path="/chat/:type" component={() => <ProtectedRoute component={ChatbotPage} />} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -86,16 +84,18 @@ function Router() {
 function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-              <Router />
-            </WouterRouter>
-            <Toaster />
-          </TooltipProvider>
-        </QueryClientProvider>
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <TooltipProvider>
+              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                <Router />
+              </WouterRouter>
+              <Toaster />
+            </TooltipProvider>
+          </QueryClientProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }
