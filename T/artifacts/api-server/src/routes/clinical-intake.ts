@@ -1,13 +1,93 @@
 import { Router } from "express";
 import { logger } from "../lib/logger";
+import { connectMongoDB, hasMongoDB } from "../lib/mongodb";
+import IntakeRecord from "../models/intake-record";
 import { getGreeting, getTranslatedQuestions } from "../lib/translations";
 import { getMCQOptions } from "../lib/mcq-options";
 import { getDiseaseCategory, getDiseaseQuestions } from "../lib/disease-questions";
 
 const router = Router();
 
-// In-memory demo store
+// ── Storage ───────────────────────────────────────────────────────────────
+// Primary store is MongoDB (IntakeRecord model) so intake sessions and the
+// answers/documents inside them survive server restarts. The in-memory map
+// stays as the live cache and as a fallback when MongoDB is unavailable.
 const intakeSessions: Record<string, any> = {};
+
+async function mongoAvailable(): Promise<boolean> {
+  if (!hasMongoDB()) return false;
+  try {
+    await connectMongoDB();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function toPlain(doc: any): Record<string, any> | undefined {
+  if (!doc) return undefined;
+  const obj = typeof doc.toObject === "function" ? doc.toObject() : doc;
+  const { _id, __v, ...rest } = obj;
+  return rest as Record<string, any>;
+}
+
+async function findStoredSession(sessionId: string): Promise<Record<string, any> | undefined> {
+  if (intakeSessions[sessionId]) return intakeSessions[sessionId];
+  if (await mongoAvailable()) {
+    try {
+      const doc = await IntakeRecord.findOne({ id: sessionId }).lean();
+      if (doc) {
+        const plain = toPlain(doc);
+        if (plain) intakeSessions[sessionId] = plain;
+        return plain;
+      }
+    } catch (err) {
+      logger.warn({ err }, "Failed to load intake session from MongoDB");
+    }
+  }
+  return undefined;
+}
+
+async function listStoredSessions(patientId?: string): Promise<Record<string, any>[]> {
+  if (await mongoAvailable()) {
+    try {
+      const q: Record<string, unknown> = {};
+      if (patientId) q.patientId = patientId;
+      const docs = await IntakeRecord.find(q).sort({ createdAt: -1 }).limit(200).lean();
+      return docs.map((d: any) => toPlain(d)).filter(Boolean) as Record<string, any>[];
+    } catch (err) {
+      logger.warn({ err }, "Failed to list intake sessions from MongoDB");
+    }
+  }
+  let sessions = Object.values(intakeSessions).sort(
+    (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+  if (patientId) sessions = sessions.filter((s: any) => s.patientId === patientId);
+  return sessions;
+}
+
+async function saveSession(session: Record<string, any>): Promise<void> {
+  if (!session?.id) return;
+  intakeSessions[session.id] = session;
+  if (await mongoAvailable()) {
+    try {
+      await IntakeRecord.findOneAndUpdate({ id: session.id }, { $set: session }, { upsert: true });
+    } catch (err) {
+      logger.warn({ err: (err as Error)?.message }, "Failed to persist intake session");
+    }
+  }
+}
+
+async function removeSession(sessionId: string): Promise<void> {
+  delete intakeSessions[sessionId];
+  if (await mongoAvailable()) {
+    try {
+      await IntakeRecord.deleteOne({ id: sessionId });
+    } catch (err) {
+      logger.warn({ err: (err as Error)?.message }, "Failed to delete intake session from MongoDB");
+    }
+  }
+}
 
 interface HistoryAnswer {
   question: string;
@@ -289,7 +369,7 @@ function estimateNoiseLevel(): { level: "low" | "medium" | "high"; db: number; r
 }
 
 // ── Start a new intake session ────────────────────────────────────────────
-router.post("/intake/start", (req, res) => {
+router.post("/intake/start", async (req, res) => {
   try {
     const { patientId, patientName, abhaId, language, mode, track } = req.body;
 
@@ -321,7 +401,7 @@ router.post("/intake/start", (req, res) => {
       updatedAt: new Date().toISOString(),
     };
 
-    intakeSessions[sessionId] = session;
+    await saveSession(session);
 
     const greeting = getGreeting(language, sessionMode);
     const noise = estimateNoiseLevel();
@@ -376,8 +456,8 @@ router.get("/intake/noise-level", (_req, res) => {
 });
 
 // ── Pre-load all MCQs for a session ──────────────────────────────────────
-router.get("/intake/:sessionId/mcqs", (req, res) => {
-  const session = intakeSessions[String(req.params.sessionId)];
+router.get("/intake/:sessionId/mcqs", async (req, res) => {
+  const session = await findStoredSession(String(req.params.sessionId));
   if (!session) { res.status(404).json({ error: "Session not found" }); return; }
 
   const { getAllMCQOptions } = require("../lib/mcq-options");
@@ -386,12 +466,12 @@ router.get("/intake/:sessionId/mcqs", (req, res) => {
 });
 
 // ── Submit an answer ──────────────────────────────────────────────────────
-router.post("/intake/:sessionId/answer", (req, res) => {
+router.post("/intake/:sessionId/answer", async (req, res) => {
   try {
     const sessionId = String(req.params.sessionId);
     const { answer, chiefComplaint, question, category } = req.body;
 
-    const session = intakeSessions[sessionId];
+    const session = await findStoredSession(sessionId);
     if (!session) {
       res.status(404).json({ error: "Session not found" });
       return;
@@ -431,7 +511,7 @@ router.post("/intake/:sessionId/answer", (req, res) => {
 
     if (next.isComplete) {
       session.status = "documents";
-      intakeSessions[sessionId] = session;
+      await saveSession(session);
       res.json({
         session,
         message: track === "rapid"
@@ -442,7 +522,7 @@ router.post("/intake/:sessionId/answer", (req, res) => {
         progress: 100,
       });
     } else {
-      intakeSessions[sessionId] = session;
+      await saveSession(session);
       res.json({
         session,
         nextQuestion: next,
@@ -458,40 +538,42 @@ router.post("/intake/:sessionId/answer", (req, res) => {
 });
 
 // ── Get / List / Delete sessions ──────────────────────────────────────────
-router.get("/intake/:sessionId", (req, res) => {
-  const session = intakeSessions[String(req.params.sessionId)];
+router.get("/intake/:sessionId", async (req, res) => {
+  const session = await findStoredSession(String(req.params.sessionId));
   if (!session) { res.status(404).json({ error: "Session not found" }); return; }
   res.json(session);
 });
 
-router.get("/intake", (req, res) => {
-  const { patientId } = req.query;
-  let sessions = Object.values(intakeSessions).sort(
-    (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-  if (typeof patientId === "string" && patientId) {
-    sessions = sessions.filter((s: any) => s.patientId === patientId);
+router.get("/intake", async (req, res) => {
+  try {
+    const { patientId } = req.query;
+    const sessions = await listStoredSessions(typeof patientId === "string" && patientId ? patientId : undefined);
+    res.json(sessions);
+  } catch (err) {
+    logger.error({ err }, "Failed to list intake sessions");
+    res.status(500).json({ error: "Failed to list intake sessions" });
   }
-  res.json(sessions);
 });
 
-router.delete("/intake/:sessionId", (req, res) => {
+router.delete("/intake/:sessionId", async (req, res) => {
   const sessionId = String(req.params.sessionId);
-  if (!intakeSessions[sessionId]) { res.status(404).json({ error: "Session not found" }); return; }
-  delete intakeSessions[sessionId];
+  const session = await findStoredSession(sessionId);
+  if (!session) { res.status(404).json({ error: "Session not found" }); return; }
+  await removeSession(sessionId);
   res.json({ success: true });
 });
 
 // Update session status (for doctors to mark patients as completed)
-router.patch("/intake/:sessionId/status", (req, res) => {
+router.patch("/intake/:sessionId/status", async (req, res) => {
   const sessionId = String(req.params.sessionId);
   const { status, completedBy, completedAt } = req.body;
-  const session = intakeSessions[sessionId];
+  const session = await findStoredSession(sessionId);
   if (!session) { res.status(404).json({ error: "Session not found" }); return; }
   session.status = status || "completed";
   session.completedBy = completedBy || "doctor";
   session.completedAt = completedAt || new Date().toISOString();
   session.updatedAt = new Date().toISOString();
+  await saveSession(session);
   res.json({ success: true, session });
 });
 

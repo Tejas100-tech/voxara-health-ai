@@ -1,11 +1,81 @@
 import { Router } from "express";
 import { logger } from "../lib/logger";
+import { connectMongoDB, hasMongoDB } from "../lib/mongodb";
+import SummaryRecord from "../models/summary-record";
 import { translateCode, searchNAMASTE } from "../lib/namaste-icd11";
 import { generateWithGemini } from "../lib/gemini";
 
 const router = Router();
 
+// ── Storage ───────────────────────────────────────────────────────────────
+// Primary store is MongoDB (SummaryRecord model) so summaries — including the
+// review status doctors set — survive server restarts. In-memory map is the
+// live cache / fallback when MongoDB is unavailable.
 const summaries: Record<string, any> = {};
+
+async function mongoAvailable(): Promise<boolean> {
+  if (!hasMongoDB()) return false;
+  try {
+    await connectMongoDB();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function toPlain(doc: any): Record<string, any> | undefined {
+  if (!doc) return undefined;
+  const obj = typeof doc.toObject === "function" ? doc.toObject() : doc;
+  const { _id, __v, ...rest } = obj;
+  return rest as Record<string, any>;
+}
+
+async function findStoredSummary(sessionId: string): Promise<Record<string, any> | undefined> {
+  if (summaries[sessionId]) return summaries[sessionId];
+  if (await mongoAvailable()) {
+    try {
+      const doc = await SummaryRecord.findOne({ sessionId }).lean();
+      if (doc) {
+        const plain = toPlain(doc);
+        if (plain) summaries[sessionId] = plain;
+        return plain;
+      }
+    } catch (err) {
+      logger.warn({ err }, "Failed to load summary from MongoDB");
+    }
+  }
+  return undefined;
+}
+
+async function listStoredSummaries(patientId?: string): Promise<Record<string, any>[]> {
+  if (await mongoAvailable()) {
+    try {
+      const q: Record<string, unknown> = {};
+      if (patientId) q.patientId = patientId;
+      const docs = await SummaryRecord.find(q).sort({ generatedAt: -1 }).limit(200).lean();
+      return docs.map((d: any) => toPlain(d)).filter(Boolean) as Record<string, any>[];
+    } catch (err) {
+      logger.warn({ err }, "Failed to list summaries from MongoDB");
+    }
+  }
+  let all = Object.values(summaries).sort(
+    (a: any, b: any) => new Date(b.generatedAt).getTime() - new Date(a.generatedAt).getTime()
+  );
+  if (patientId) all = all.filter((s: any) => s.patientId === patientId);
+  return all;
+}
+
+async function saveSummary(summary: Record<string, any>): Promise<void> {
+  if (!summary?.sessionId) return;
+  summaries[summary.sessionId] = summary;
+  if (await mongoAvailable()) {
+    try {
+      await SummaryRecord.findOneAndUpdate({ sessionId: summary.sessionId }, { $set: summary }, { upsert: true });
+    } catch (err) {
+      logger.warn({ err: (err as Error)?.message }, "Failed to persist clinical summary");
+    }
+  }
+}
 
 // ── Allopathic fallback summary ───────────────────────────────────────────
 function generateAllopathicSummary(answers: any[], documents: any[], chiefComplaint: string) {
@@ -221,7 +291,7 @@ router.post("/clinical-summary/generate", async (req, res) => {
       })),
     };
 
-    summaries[sessionId] = enrichedSummary;
+    await saveSummary(enrichedSummary);
 
     res.json({
       summary: enrichedSummary,
@@ -235,33 +305,43 @@ router.post("/clinical-summary/generate", async (req, res) => {
   }
 });
 
-router.get("/clinical-summary/:sessionId", (req, res) => {
-  const summary = summaries[String(req.params.sessionId)];
-  if (!summary) { res.status(404).json({ error: "Summary not found" }); return; }
-  res.json(summary);
-});
-
-router.patch("/clinical-summary/:sessionId/review", (req, res) => {
-  const sessionId = String(req.params.sessionId);
-  const summary = summaries[sessionId];
-  if (!summary) { res.status(404).json({ error: "Summary not found" }); return; }
-  const { status, physicianNotes } = req.body;
-  if (status) summary.status = status;
-  if (physicianNotes !== undefined) summary.physicianNotes = physicianNotes;
-  summary.reviewedAt = new Date().toISOString();
-  summaries[sessionId] = summary;
-  res.json(summary);
-});
-
-router.get("/clinical-summary", (req, res) => {
-  const { patientId } = req.query;
-  let all = Object.values(summaries).sort(
-    (a: any, b: any) => new Date(b.generatedAt).getTime() - new Date(a.generatedAt).getTime()
-  );
-  if (typeof patientId === "string" && patientId) {
-    all = all.filter((s: any) => s.patientId === patientId);
+router.get("/clinical-summary/:sessionId", async (req, res) => {
+  try {
+    const summary = await findStoredSummary(String(req.params.sessionId));
+    if (!summary) { res.status(404).json({ error: "Summary not found" }); return; }
+    res.json(summary);
+  } catch (err) {
+    logger.error({ err }, "Failed to fetch summary");
+    res.status(500).json({ error: "Failed to fetch summary" });
   }
-  res.json(all);
+});
+
+router.patch("/clinical-summary/:sessionId/review", async (req, res) => {
+  try {
+    const sessionId = String(req.params.sessionId);
+    const summary = await findStoredSummary(sessionId);
+    if (!summary) { res.status(404).json({ error: "Summary not found" }); return; }
+    const { status, physicianNotes } = req.body;
+    if (status) summary.status = status;
+    if (physicianNotes !== undefined) summary.physicianNotes = physicianNotes;
+    summary.reviewedAt = new Date().toISOString();
+    await saveSummary(summary);
+    res.json(summary);
+  } catch (err) {
+    logger.error({ err }, "Failed to review summary");
+    res.status(500).json({ error: "Failed to review summary" });
+  }
+});
+
+router.get("/clinical-summary", async (req, res) => {
+  try {
+    const { patientId } = req.query;
+    const all = await listStoredSummaries(typeof patientId === "string" && patientId ? patientId : undefined);
+    res.json(all);
+  } catch (err) {
+    logger.error({ err }, "Failed to list summaries");
+    res.status(500).json({ error: "Failed to list summaries" });
+  }
 });
 
 export default router;

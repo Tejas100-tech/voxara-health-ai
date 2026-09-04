@@ -12,8 +12,8 @@ import { useLanguage } from "@/lib/language";
 import { joinVideoRoom, leaveVideoRoom, endVideoCall } from "@/lib/api";
 
 const ICE_SERVERS: RTCIceServer[] = [
-  { urls: "stun:stun.l.google.com:19302" },
-  { urls: "stun:stun1.l.google.com:19302" },
+  { urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302", "stun:stun3.l.google.com:19302"] },
+  { urls: "stun:stun.services.mozilla.com" },
 ];
 
 const VIDEO_CALL_STRINGS: Record<string, {
@@ -58,6 +58,9 @@ export default function VideoCallPage() {
   const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null);
   const httpFallbackStartedRef = useRef(false);
   const wsAttemptsRef = useRef(0);
+  const joinedCountRef = useRef(0);
+  const makingOfferRef = useRef(false);
+  const watchdogRef = useRef<NodeJS.Timeout | null>(null);
   const endCallRef = useRef<() => void>(() => { });
 
   const [connected, setConnected] = useState(false);
@@ -150,6 +153,52 @@ export default function VideoCallPage() {
           }
         };
 
+        // Create + send an offer when we are the caller. Guarded so the
+        // watchdog and message handlers never double-offer.
+        const createAndSendOffer = async () => {
+          if (!pc || makingOfferRef.current) return;
+          if (pc.signalingState !== "stable") return;
+          makingOfferRef.current = true;
+          try {
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            wsRef.current?.send(JSON.stringify({ type: "offer", sdp: pc.localDescription!.toJSON() }));
+          } catch (e) {
+            console.error("Failed to create offer:", e);
+          } finally {
+            makingOfferRef.current = false;
+          }
+        };
+
+        // Answer the remote's offer (also used after glare rollback).
+        const answerFlow = async () => {
+          if (!pc) return;
+          if (pc.signalingState === "have-remote-offer") {
+            await flushPendingIce();
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            wsRef.current?.send(JSON.stringify({ type: "answer", sdp: pc.localDescription!.toJSON() }));
+          }
+        };
+
+        // Handle an incoming offer, rolling back our own offer on glare so the
+        // exchange always makes progress instead of both peers waiting forever.
+        const handleIncomingOffer = async (sdp: any) => {
+          if (!pc) return;
+          if (pc.signalingState === "have-local-offer") {
+            try { await pc.setLocalDescription({ type: "rollback" }); } catch { /* not supported — ignore */ }
+          }
+          if (pc.signalingState === "stable") {
+            try {
+              await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+            } catch (e) {
+              console.error("Failed to apply remote offer:", e);
+              return;
+            }
+            await answerFlow();
+          }
+        };
+
         const openSocket = () => {
           if (cancelled || endedRef.current) return;
           const ws = new WebSocket(wsUrl);
@@ -178,32 +227,30 @@ export default function VideoCallPage() {
             switch (msg.type) {
               case "room-joined":
                 setParticipantCount(msg.participantCount);
+                joinedCountRef.current = msg.participantCount;
                 // I'm the latest joiner — if others are already here I create the
-                // offer (I'm the polite peer). This also fires after a reconnect,
-                // which re-negotiates media with the other device.
-                if (msg.participants.length > 0 && pc && pc.signalingState === "stable") {
-                  try {
-                    const offer = await pc.createOffer();
-                    await pc.setLocalDescription(offer);
-                    ws.send(JSON.stringify({ type: "offer", sdp: pc.localDescription!.toJSON() }));
-                  } catch (e) { console.error("Failed to create offer on room-joined:", e); }
+                // offer. This also fires after a reconnect, re-negotiating media
+                // with the other device.
+                if (msg.participants.length > 0) {
+                  await createAndSendOffer();
                 }
                 break;
 
               case "participant-joined":
                 setParticipantCount(msg.participantCount);
-                // A new participant joined AFTER me — I was here first, so I wait
-                // for their offer. Do NOT create an offer here — that causes glare.
+                joinedCountRef.current = msg.participantCount;
+                // A peer is here and I was first — normally they offer. As a
+                // safety net, if no offer arrives within a moment I'll offer
+                // myself so the call still connects (the peer answers instead).
+                setTimeout(() => {
+                  if (!cancelled && joinedCountRef.current >= 2 && pc && pc.signalingState === "stable" && !pc.remoteDescription) {
+                    createAndSendOffer();
+                  }
+                }, 1200);
                 break;
 
               case "offer":
-                if (pc && pc.signalingState === "stable") {
-                  await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-                  await flushPendingIce();
-                  const answer = await pc.createAnswer();
-                  await pc.setLocalDescription(answer);
-                  ws.send(JSON.stringify({ type: "answer", sdp: pc.localDescription!.toJSON() }));
-                }
+                await handleIncomingOffer(msg.sdp);
                 break;
 
               case "answer":
@@ -226,6 +273,7 @@ export default function VideoCallPage() {
 
               case "participant-left":
                 setParticipantCount((c) => Math.max(0, c - 1));
+                joinedCountRef.current = Math.max(0, joinedCountRef.current - 1);
                 setConnected(false);
                 break;
 
@@ -274,6 +322,20 @@ export default function VideoCallPage() {
 
         // Register room via HTTP too
         await joinVideoRoom(roomId, user!.patientId, user!.name);
+
+        // Self-healing watchdog: whenever a peer is present but media is not
+        // connected (missed offer, glare, ICE blip, deadlock), re-negotiate.
+        watchdogRef.current = setInterval(async () => {
+          if (cancelled || endedRef.current || !pc) return;
+          if (joinedCountRef.current < 2) return;
+          if (pc.connectionState === "connected") return;
+          if (wsRef.current?.readyState !== WebSocket.OPEN) return;
+          if (pc.signalingState === "have-remote-offer") {
+            await answerFlow().catch(() => { });
+          } else {
+            await createAndSendOffer().catch(() => { });
+          }
+        }, 6000);
 
         setConnecting(false);
       } catch (err: any) {
@@ -366,6 +428,7 @@ export default function VideoCallPage() {
     return () => {
       cancelled = true;
       endedRef.current = true;
+      if (watchdogRef.current) clearInterval(watchdogRef.current);
       if (pollRef.current) clearInterval(pollRef.current);
       if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
       if (streamRef.current) streamRef.current.getTracks().forEach((track) => track.stop());

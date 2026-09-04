@@ -1,6 +1,7 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import { connectMongoDB, demoUsers, hasMongoDB } from "../lib/mongodb";
+import { cityGeo } from "../lib/cities";
 import { User, seedUsers } from "../models/user";
 import { Doctor } from "../models/doctor";
 import { logger } from "../lib/logger";
@@ -160,6 +161,10 @@ router.post("/auth/register", async (req, res) => {
       try {
         const doctorCount = await Doctor.countDocuments();
         const doctorId = `DR-${String(doctorCount + 1).padStart(3, "0")}`;
+        // Resolve the chosen city to its state + coordinates so the doctor
+        // appears with a correct region and works with "Near Me" searches.
+        const resolvedCity = city || "Mumbai";
+        const geo = cityGeo(resolvedCity);
         await Doctor.create({
           doctorId,
           doctorName: name.trim(),
@@ -167,8 +172,10 @@ router.post("/auth/register", async (req, res) => {
           available: true,
           email: email.toLowerCase().trim(),
           phone: phone || undefined,
-          city: city || "Mumbai",
-          region: city || "India",
+          city: resolvedCity,
+          region: geo?.region || resolvedCity || "India",
+          lat: geo?.lat,
+          lng: geo?.lng,
           clinic: clinic || "",
           address: address || undefined,
           consultationFee: consultationFee ? Number(consultationFee) : 500,
@@ -185,8 +192,10 @@ router.post("/auth/register", async (req, res) => {
           specialty: specialty || "General Medicine",
           department: specialty || "General Medicine",
           available: true,
-          city: city || "Mumbai",
-          region: city || "India",
+          city: resolvedCity,
+          region: geo?.region || resolvedCity || "India",
+          lat: geo?.lat,
+          lng: geo?.lng,
           clinic: clinic || "",
           address: address || undefined,
           experience: experience ? Number(experience) : 1,

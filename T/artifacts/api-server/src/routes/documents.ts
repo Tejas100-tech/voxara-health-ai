@@ -1,6 +1,8 @@
 import { Router } from "express";
 import multer from "multer";
 import { logger } from "../lib/logger";
+import { connectMongoDB, hasMongoDB } from "../lib/mongodb";
+import UploadedDocument from "../models/uploaded-document";
 import { processMedicalDocument, assessExtractionQuality } from "../lib/mistral-ocr";
 import { extractMedicinesFromText, matchMedicine, getAllMedicineNames } from "../lib/prescription-ocr-training";
 
@@ -28,8 +30,69 @@ function isCloudinaryAvailable(): boolean {
 
 const router = Router();
 
-// In-memory demo store (in production, use MongoDB)
+// ── Storage ───────────────────────────────────────────────────────────────
+// Primary store is MongoDB (UploadedDocument model) so scanned documents for
+// a session survive server restarts and the dashboard scan count stays right.
+// The in-memory map is the live cache / fallback when MongoDB is unavailable.
 const documents: Record<string, any[]> = {};
+
+async function mongoAvailable(): Promise<boolean> {
+  if (!hasMongoDB()) return false;
+  try {
+    await connectMongoDB();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function toPlain(doc: any): Record<string, any> | undefined {
+  if (!doc) return undefined;
+  const obj = typeof doc.toObject === "function" ? doc.toObject() : doc;
+  const { _id, __v, ...rest } = obj;
+  return rest as Record<string, any>;
+}
+
+async function persistDoc(doc: Record<string, any>): Promise<void> {
+  if (!doc?.id) return;
+  if (await mongoAvailable()) {
+    try {
+      await UploadedDocument.findOneAndUpdate({ id: doc.id }, { $set: doc }, { upsert: true });
+    } catch (err) {
+      logger.warn({ err: (err as Error)?.message }, "Failed to persist uploaded document");
+    }
+  }
+}
+
+async function removeDoc(sessionId: string, docId: string): Promise<void> {
+  if (documents[sessionId]) {
+    documents[sessionId] = documents[sessionId].filter((d) => d.id !== docId);
+  }
+  if (await mongoAvailable()) {
+    try {
+      await UploadedDocument.deleteOne({ id: docId, sessionId });
+    } catch (err) {
+      logger.warn({ err: (err as Error)?.message }, "Failed to delete document from MongoDB");
+    }
+  }
+}
+
+async function listSessionDocs(sessionId: string): Promise<any[]> {
+  const mem = documents[sessionId];
+  if (mem && mem.length > 0) return mem;
+  if (await mongoAvailable()) {
+    try {
+      const docs = await UploadedDocument.find({ sessionId }).sort({ uploadedAt: 1 }).lean();
+      if (docs.length > 0) {
+        documents[sessionId] = docs.map((d: any) => toPlain(d)).filter(Boolean);
+        return documents[sessionId] as any[];
+      }
+    } catch (err) {
+      logger.warn({ err }, "Failed to list documents from MongoDB");
+    }
+  }
+  return mem || [];
+}
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -314,6 +377,7 @@ router.post("/documents/:sessionId/upload", upload.array("files", 10), async (re
       };
 
       documents[sessionId].push(doc);
+      await persistDoc(doc);
       processedDocs.push(doc);
 
       logger.info({
@@ -337,35 +401,51 @@ router.post("/documents/:sessionId/upload", upload.array("files", 10), async (re
 });
 
 // Get all documents for a session
-router.get("/documents/:sessionId", (req, res) => {
-  const sessionId = String(req.params.sessionId);
-  const docs = documents[sessionId] || [];
-  res.json(docs);
+router.get("/documents/:sessionId", async (req, res) => {
+  try {
+    const sessionId = String(req.params.sessionId);
+    const docs = await listSessionDocs(sessionId);
+    res.json(docs);
+  } catch (err) {
+    logger.error({ err }, "Failed to list documents");
+    res.status(500).json({ error: "Failed to list documents" });
+  }
 });
 
 // Get a single document
-router.get("/documents/:sessionId/:docId", (req, res) => {
-  const sessionId = String(req.params.sessionId);
-  const docId = String(req.params.docId);
-  const docs = documents[sessionId] || [];
-  const doc = docs.find((d) => d.id === docId);
-  if (!doc) {
-    res.status(404).json({ error: "Document not found" });
-    return;
+router.get("/documents/:sessionId/:docId", async (req, res) => {
+  try {
+    const sessionId = String(req.params.sessionId);
+    const docId = String(req.params.docId);
+    const docs = await listSessionDocs(sessionId);
+    const doc = docs.find((d) => d.id === docId);
+    if (!doc) {
+      res.status(404).json({ error: "Document not found" });
+      return;
+    }
+    res.json(doc);
+  } catch (err) {
+    logger.error({ err }, "Failed to fetch document");
+    res.status(500).json({ error: "Failed to fetch document" });
   }
-  res.json(doc);
 });
 
 // Delete a document
-router.delete("/documents/:sessionId/:docId", (req, res) => {
-  const sessionId = String(req.params.sessionId);
-  const docId = String(req.params.docId);
-  if (!documents[sessionId]) {
-    res.status(404).json({ error: "No documents found" });
-    return;
+router.delete("/documents/:sessionId/:docId", async (req, res) => {
+  try {
+    const sessionId = String(req.params.sessionId);
+    const docId = String(req.params.docId);
+    const docs = await listSessionDocs(sessionId);
+    if (!docs.some((d) => d.id === docId)) {
+      res.status(404).json({ error: "Document not found" });
+      return;
+    }
+    await removeDoc(sessionId, docId);
+    res.json({ success: true });
+  } catch (err) {
+    logger.error({ err }, "Failed to delete document");
+    res.status(500).json({ error: "Failed to delete document" });
   }
-  documents[sessionId] = documents[sessionId].filter((d) => d.id !== docId);
-  res.json({ success: true });
 });
 
 export default router;

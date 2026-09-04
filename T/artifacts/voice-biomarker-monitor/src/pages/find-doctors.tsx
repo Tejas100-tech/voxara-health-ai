@@ -12,10 +12,12 @@ import { useAuth } from "@/lib/auth";
 import { useLanguage } from "@/lib/language";
 import { searchDoctors, getDoctorSpecialties, getDoctorCities, type Doctor } from "@/lib/api";
 
-const INDIAN_CITIES = [
+// Offline fallback only — the full all-India list is loaded from the API
+// (getDoctorCities → /api/doctors/cities).
+const FALLBACK_CITIES = [
   "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai",
   "Kolkata", "Pune", "Ahmedabad", "Jaipur", "Lucknow",
-  "Chandigarh", "Kochi",
+  "Chandigarh", "Kochi", "Patna", "Bhopal", "Guwahati", "Srinagar",
 ];
 
 export default function FindDoctors() {
@@ -26,6 +28,7 @@ export default function FindDoctors() {
   const [city, setCity] = useState(user?.city || "");
   const [specialty, setSpecialty] = useState("");
   const [specialties, setSpecialties] = useState<string[]>([]);
+  const [cities, setCities] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [error, setError] = useState("");
   const [liveCount, setLiveCount] = useState(0);
@@ -96,6 +99,8 @@ export default function FindDoctors() {
 
   useEffect(() => {
     getDoctorSpecialties().then(setSpecialties).catch(() => {});
+    // Full list of supported cities (all over India)
+    getDoctorCities().then(setCities).catch(() => {});
     fetchDoctors();
     connectWebSocket();
 
@@ -212,7 +217,7 @@ export default function FindDoctors() {
               className="w-full h-12 pl-11 pr-4 rounded-2xl border border-[#B9DCE3] bg-white text-[#011C40] text-sm font-semibold focus:outline-none focus:border-[#54ACBF] appearance-none"
             >
               <option value="">All Cities</option>
-              {INDIAN_CITIES.map((c) => (
+              {(cities.length > 0 ? cities : FALLBACK_CITIES).map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>

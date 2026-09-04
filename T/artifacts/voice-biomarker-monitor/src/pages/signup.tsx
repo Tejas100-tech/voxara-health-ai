@@ -1,13 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, Link } from "wouter";
 import { AlertCircle, ArrowLeft, Loader2, Mail, ShieldCheck, Stethoscope, User, CircleCheck, ArrowRight, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { registerUser } from "@/lib/api";
+import { registerUser, getDoctorCities } from "@/lib/api";
 import { useLanguage } from "@/lib/language";
 import { LANGUAGES, type LanguageCode } from "@/lib/translations";
 
 const LANG_CODES = ["en", "hi", "hi-en", "ta", "te", "bn", "mr", "gu", "kn", "ml", "pa", "or", "as", "ur", "sa", "ne"] as LanguageCode[];
+
+// Offline fallback — full all-India list loads from the API.
+const FALLBACK_CITIES = [
+  "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai", "Kolkata",
+  "Pune", "Ahmedabad", "Jaipur", "Lucknow", "Chandigarh", "Kochi",
+];
 
 export default function SignupPage() {
   const [, setLocation] = useLocation();
@@ -33,6 +39,11 @@ export default function SignupPage() {
   const [languages, setLanguages] = useState("");
   const [consultationTypes, setConsultationTypes] = useState<string[]>(["in-person", "video", "chat"]);
   const [availableSlots, setAvailableSlots] = useState("");
+  const [cities, setCities] = useState<string[]>([]);
+
+  useEffect(() => {
+    getDoctorCities().then(setCities).catch(() => { });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,17 +113,15 @@ export default function SignupPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="flex gap-3">
               <button type="button" onClick={() => setRole("patient")}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-extrabold text-sm border transition-all ${
-                  role === "patient"
-                    ? "luna-btn-teal border-transparent text-white shadow-lg shadow-[#54ACBF]/25"
-                    : "bg-[#F7FCFD] border-[#DCEFF2] text-[#5d7a8c] hover:border-[#54ACBF]"
-                }`}><User size={18} /> {t("login.patient")}</button>
+                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-extrabold text-sm border transition-all ${role === "patient"
+                  ? "luna-btn-teal border-transparent text-white shadow-lg shadow-[#54ACBF]/25"
+                  : "bg-[#F7FCFD] border-[#DCEFF2] text-[#5d7a8c] hover:border-[#54ACBF]"
+                  }`}><User size={18} /> {t("login.patient")}</button>
               <button type="button" onClick={() => setRole("clinician")}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-extrabold text-sm border transition-all ${
-                  role === "clinician"
-                    ? "luna-btn border-transparent text-white shadow-lg shadow-[#023859]/30"
-                    : "bg-[#F7FCFD] border-[#DCEFF2] text-[#5d7a8c] hover:border-[#54ACBF]"
-                }`}><Stethoscope size={18} /> {t("login.clinician")}</button>
+                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-extrabold text-sm border transition-all ${role === "clinician"
+                  ? "luna-btn border-transparent text-white shadow-lg shadow-[#023859]/30"
+                  : "bg-[#F7FCFD] border-[#DCEFF2] text-[#5d7a8c] hover:border-[#54ACBF]"
+                  }`}><Stethoscope size={18} /> {t("login.clinician")}</button>
             </div>
 
             <div>
@@ -198,11 +207,10 @@ export default function SignupPage() {
                     {["in-person", "video", "chat"].map((ct) => (
                       <button key={ct} type="button"
                         onClick={() => setConsultationTypes((prev) => prev.includes(ct) ? prev.filter((x) => x !== ct) : [...prev, ct])}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
-                          consultationTypes.includes(ct)
-                            ? "bg-[#54ACBF] text-white border-transparent"
-                            : "bg-[#F7FCFD] border-[#DCEFF2] text-[#5d7a8c]"
-                        }`}>
+                        className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${consultationTypes.includes(ct)
+                          ? "bg-[#54ACBF] text-white border-transparent"
+                          : "bg-[#F7FCFD] border-[#DCEFF2] text-[#5d7a8c]"
+                          }`}>
                         {ct === "in-person" ? "In-person" : ct === "video" ? "Video" : "Chat"}
                       </button>
                     ))}
@@ -223,7 +231,7 @@ export default function SignupPage() {
                 <select value={city} onChange={(e) => setCity(e.target.value)}
                   className="w-full h-12 pl-11 pr-4 rounded-2xl border border-[#B9DCE3] bg-[#F7FCFD] text-[#011C40] text-sm font-semibold focus:outline-none focus:border-[#54ACBF] appearance-none">
                   <option value="">Select your city</option>
-                  {"Mumbai,Delhi,Bangalore,Hyderabad,Chennai,Kolkata,Pune,Ahmedabad,Jaipur,Lucknow,Chandigarh,Kochi".split(",").map((c) => (
+                  {(cities.length > 0 ? cities : FALLBACK_CITIES).map((c) => (
                     <option key={c} value={c}>{c}</option>
                   ))}
                 </select>

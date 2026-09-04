@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { INDIAN_CITY_NAMES } from "../lib/cities";
 import { listDoctors, toPublicDoctor, type PublicDoctor } from "../lib/doctors";
 import { Doctor } from "../models/doctor";
 import { connectMongoDB, hasMongoDB } from "../lib/mongodb";
@@ -102,11 +103,14 @@ router.get("/doctors/specialties", async (_req, res) => {
   }
 });
 
-// ── Get all unique cities ──────────────────────────────────────────────
+// ── Get all supported cities (all over India) ───────────────────────────
+// Returns the full city registry (every Indian city a patient can search or a
+// doctor can register in) merged with any extra cities already on the roster.
 router.get("/doctors/cities", async (_req, res) => {
   try {
     const doctors = await listDoctors();
-    const cities = [...new Set(doctors.map((d) => d.city).filter(Boolean) as string[])].sort();
+    const rosterCities = doctors.map((d) => d.city).filter(Boolean) as string[];
+    const cities = [...new Set([...INDIAN_CITY_NAMES, ...rosterCities])].sort();
     res.json({ cities });
   } catch (err) {
     logger.error({ err }, "Failed to list cities");
