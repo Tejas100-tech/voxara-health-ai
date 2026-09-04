@@ -78,22 +78,22 @@
   --primary-foreground: 0 0% 100%;
   --secondary: 202 57% 35%;
   --secondary-foreground: 0 0% 100%;
-  --background: 186 30% 95%;
+  --background: 186 45% 93%;
   --foreground: 204 96% 13%;
   --card: 0 0% 100%;
   --card-foreground: 204 96% 13%;
-  --card-border: 186 20% 88%;
+  --card-border: 186 35% 86%;
   --popover: 0 0% 100%;
   --popover-foreground: 204 96% 13%;
-  --popover-border: 186 20% 88%;
-  --muted: 186 15% 90%;
-  --muted-foreground: 202 20% 45%;
-  --accent: 186 30% 85%;
+  --popover-border: 186 35% 86%;
+  --muted: 186 32% 88%;
+  --muted-foreground: 202 25% 42%;
+  --accent: 186 35% 84%;
   --accent-foreground: 204 96% 13%;
   --destructive: 0 75% 42%;
   --destructive-foreground: 0 0% 100%;
-  --border: 186 20% 88%;
-  --input: 186 20% 88%;
+  --border: 186 35% 86%;
+  --input: 186 35% 86%;
   --ring: 189 40% 54%;
 
   --sidebar: 204 96% 13%;
@@ -266,6 +266,24 @@
     radial-gradient(1200px 620px at 85% -10%, hsl(189 40% 54% / 0.16) 0%, transparent 60%),
     radial-gradient(900px 520px at -10% 20%, hsl(202 57% 35% / 0.14) 0%, transparent 55%),
     linear-gradient(180deg, hsl(210 98% 8%) 0%, hsl(204 96% 12%) 60%, hsl(210 98% 7%) 100%);
+}
+
+/* App-shell canvas — soft LUNA sky wash for signed-in pages (light) */
+.luna-app-bg {
+  background:
+    radial-gradient(1100px 560px at 92% -12%, hsl(186 60% 80% / 0.55) 0%, transparent 60%),
+    radial-gradient(900px 520px at -10% 12%, hsl(189 45% 68% / 0.35) 0%, transparent 55%),
+    radial-gradient(700px 420px at 55% 105%, hsl(189 40% 70% / 0.3) 0%, transparent 60%),
+    linear-gradient(180deg, hsl(186 55% 92%) 0%, hsl(186 48% 90%) 45%, hsl(189 45% 86%) 100%);
+}
+
+/* App-shell canvas for dark mode — deep navy wash */
+.dark .luna-app-bg {
+  background:
+    radial-gradient(1100px 560px at 92% -12%, hsl(189 40% 54% / 0.16) 0%, transparent 58%),
+    radial-gradient(900px 520px at -10% 12%, hsl(202 57% 35% / 0.14) 0%, transparent 55%),
+    radial-gradient(700px 420px at 55% 105%, hsl(204 96% 20% / 0.25) 0%, transparent 60%),
+    linear-gradient(180deg, hsl(210 98% 8%) 0%, hsl(204 96% 12%) 55%, hsl(210 98% 6%) 100%);
 }
 
 /* Soft dot grid used inside hero panels */

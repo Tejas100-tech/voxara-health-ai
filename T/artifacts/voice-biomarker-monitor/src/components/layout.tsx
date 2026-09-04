@@ -56,10 +56,10 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
             <Stethoscope size={22} />
           </div>
           <div>
-            <h2 className="font-extrabold text-white text-base leading-tight tracking-tight font-[Manrope]">
+            <h2 className="font-extrabold text-[#023859] dark:text-white text-base leading-tight tracking-tight font-[Manrope]">
               {t("app.name")}
             </h2>
-            <p className="text-[10px] uppercase tracking-widest text-cyan-300/60 font-bold">
+            <p className="text-[10px] uppercase tracking-widest text-[#54ACBF] dark:text-cyan-300/60 font-bold">
               {t("app.tagline")}
             </p>
           </div>
@@ -70,20 +70,20 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
       </div>
 
       {user && (
-        <div className="shrink-0 mx-4 mb-4 rounded-2xl bg-white/5 border border-white/10 p-4">
+        <div className="shrink-0 mx-4 mb-4 rounded-2xl bg-[#A7EBF2]/35 border border-[#54ACBF]/25 p-4 dark:bg-white/5 dark:border-white/10">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl luna-brand-gradient flex items-center justify-center text-white font-black text-sm shrink-0">
               {user.name.charAt(0)}
             </div>
             <div className="min-w-0">
-              <p className="font-bold text-sm truncate leading-tight">{user.name}</p>
-              <p className="text-[10px] text-cyan-300/60 uppercase tracking-widest font-bold">
+              <p className="font-bold text-sm truncate leading-tight text-[#023859] dark:text-white">{user.name}</p>
+              <p className="text-[10px] text-[#26658C] dark:text-cyan-300/60 uppercase tracking-widest font-bold">
                 {user.role} · {user.patientId}
               </p>
             </div>
           </div>
           {user.abhaId && (
-            <div className="mt-2 flex items-center gap-1.5 text-[10px] text-cyan-300 font-bold">
+            <div className="mt-2 flex items-center gap-1.5 text-[10px] text-[#26658C] dark:text-cyan-300 font-bold">
               <ShieldCheck size={12} /> ABHA: {user.abhaId}
             </div>
           )}
@@ -98,8 +98,8 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
             <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${
                 isActive
-                  ? "bg-white/10 text-cyan-300 shadow-sm border border-cyan-500/30"
-                  : "text-cyan-100/60 hover:bg-white/5 hover:text-white"
+                  ? "bg-[#54ACBF] text-white shadow-md border border-transparent dark:bg-white/10 dark:text-cyan-300 dark:shadow-sm dark:border-cyan-500/30"
+                  : "text-[#26658C] hover:bg-[#A7EBF2]/45 hover:text-[#023859] dark:text-cyan-100/60 dark:hover:bg-white/5 dark:hover:text-white"
               }`}>
               <Icon size={18} />{item.name}
             </Link>
@@ -116,7 +116,7 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
           </Link>
         )}
         <button onClick={logout}
-          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-cyan-100/50 hover:text-red-400 hover:bg-red-400/10 rounded-xl font-semibold transition-all">
+          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#26658C]/70 hover:text-red-500 hover:bg-red-500/10 dark:text-cyan-100/50 dark:hover:text-red-400 dark:hover:bg-red-400/10 rounded-xl font-semibold transition-all">
           <LogOut size={16} />{t("nav.signOut")}
         </button>
       </div>
@@ -124,22 +124,22 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
   );
 
   return (
-    <div className="min-h-screen bg-background flex">
-      <aside className="hidden md:flex w-64 fixed inset-y-0 border-r border-cyan-900/20 bg-[#011C40] z-20 flex-col">
+    <div className="min-h-screen luna-app-bg flex">
+      <aside className="hidden md:flex w-64 fixed inset-y-0 z-20 flex-col bg-white/85 backdrop-blur-xl border-r border-[#26658C]/10 shadow-xl shadow-[#26658C]/5 dark:bg-[#011C40] dark:border-cyan-900/20 dark:shadow-none">
         <Sidebar />
       </aside>
 
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <aside className="relative w-72 bg-[#011C40] border-r border-cyan-900/20 flex flex-col h-full z-10 overflow-y-auto">
+          <aside className="relative w-72 bg-white/95 dark:bg-[#011C40] border-r border-[#26658C]/10 dark:border-cyan-900/20 flex flex-col h-full z-10 overflow-y-auto">
             <Sidebar />
           </aside>
         </div>
       )}
 
       <main className="flex-1 md:ml-64 flex flex-col min-h-screen">
-        <header className="sticky top-0 z-10 bg-background/90 backdrop-blur-xl border-b px-6 py-3.5 flex items-center justify-between">
+        <header className="sticky top-0 z-10 bg-white/70 dark:bg-[#011C40]/70 backdrop-blur-xl border-b border-[#26658C]/10 dark:border-cyan-900/25 px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button onClick={() => setMobileOpen(true)} className="md:hidden p-2 rounded-xl hover:bg-muted text-muted-foreground">
               <Menu size={20} />

@@ -344,7 +344,7 @@ export default function RecordSession() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col overflow-hidden relative">
+    <div className="min-h-screen luna-app-bg flex flex-col overflow-hidden relative">
       {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-25">
         <div
@@ -352,7 +352,7 @@ export default function RecordSession() {
         />
       </div>
 
-      <header className="relative z-20 p-6 flex justify-between items-center border-b border-border/50 bg-background/60 backdrop-blur-xl">
+      <header className="relative z-20 p-6 flex justify-between items-center border-b border-border/50 bg-white/60 dark:bg-[#011C40]/60 backdrop-blur-xl">
         <Link href="/" className="font-extrabold text-xl tracking-tight text-primary font-[Manrope]">
           Voxara Health AI
         </Link>
