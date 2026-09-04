@@ -88,9 +88,21 @@ router.post("/auth/login", async (req, res) => {
   }
 });
 
+function computeAge(dob: string): number | undefined {
+  const d = new Date(dob);
+  if (isNaN(d.getTime())) return undefined;
+  const diff = Date.now() - d.getTime();
+  return Math.floor(diff / (365.25 * 24 * 60 * 60 * 1000));
+}
+
 router.post("/auth/register", async (req, res) => {
   try {
-    const { name, email, password, role, dob, phone, conditions, clinicianName, age, specialty, city } = req.body;
+    const {
+      name, email, password, role, dob, phone, conditions, clinicianName, age,
+      specialty, city,
+      // clinician profile fields
+      clinic, address, consultationFee, experience, languages, consultationTypes, availableSlots,
+    } = req.body;
 
     if (!name || !email || !password || !role) {
       res.status(400).json({ error: "Name, email, password, and role are required" });
@@ -138,9 +150,9 @@ router.post("/auth/register", async (req, res) => {
       patientId,
       conditions: Array.isArray(conditions) ? conditions : (conditions ? [conditions] : []),
       dob: dob || undefined,
+      age: age ? Number(age) : dob ? computeAge(dob) : undefined,
       phone: phone || undefined,
       clinicianName: clinicianName || undefined,
-      age: age ? Number(age) : undefined,
       city: city || undefined,
     });
 
@@ -157,6 +169,13 @@ router.post("/auth/register", async (req, res) => {
           phone: phone || undefined,
           city: city || "Mumbai",
           region: city || "India",
+          clinic: clinic || "",
+          address: address || undefined,
+          consultationFee: consultationFee ? Number(consultationFee) : 500,
+          experience: experience ? Number(experience) : 1,
+          languages: Array.isArray(languages) && languages.length ? languages : ["English", "Hindi"],
+          consultationTypes: Array.isArray(consultationTypes) && consultationTypes.length ? consultationTypes : ["in-person", "video", "chat"],
+          availableSlots: Array.isArray(availableSlots) ? availableSlots : [],
         });
 
         // Broadcast new doctor to all connected patients in real-time
@@ -168,14 +187,15 @@ router.post("/auth/register", async (req, res) => {
           available: true,
           city: city || "Mumbai",
           region: city || "India",
-          clinic: "",
-          experience: 1,
-          consultationFee: 500,
-          consultationTypes: ["in-person", "video", "chat"],
+          clinic: clinic || "",
+          address: address || undefined,
+          experience: experience ? Number(experience) : 1,
+          consultationFee: consultationFee ? Number(consultationFee) : 500,
+          consultationTypes: Array.isArray(consultationTypes) && consultationTypes.length ? consultationTypes : ["in-person", "video", "chat"],
           rating: 4.5,
           totalPatients: 0,
-          languages: ["English", "Hindi"],
-          availableSlots: ["10:00-11:00", "14:00-15:00"],
+          languages: Array.isArray(languages) && languages.length ? languages : ["English", "Hindi"],
+          availableSlots: Array.isArray(availableSlots) ? availableSlots : ["10:00-11:00", "14:00-15:00"],
         });
       } catch (err) {
         logger.error({ err }, "Failed to auto-create Doctor record for clinician");

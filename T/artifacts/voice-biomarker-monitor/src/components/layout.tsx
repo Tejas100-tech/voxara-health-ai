@@ -2,7 +2,7 @@ import { ReactNode, useState } from "react";
 import { Link, useLocation } from "wouter";
 import {
   ClipboardList, FileSearch, FileText, LayoutDashboard, LogOut, Moon, Sun,
-  Menu, X, Stethoscope, ShieldCheck, User, Globe, Calendar, MessageSquare, Leaf,
+  Menu, X, Stethoscope, ShieldCheck, User, Globe, Calendar, CalendarClock, MessageSquare, Leaf,
   Search, MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,30 +25,42 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
 
   const effectiveRole = user?.role ?? userType;
 
+  // t() returns the raw key when a translation is missing, so resolve labels
+  // with a fallback for keys that may not be defined in every language yet.
+  const label = (key: string, fallback: string) => {
+    const value = t(key);
+    return value && value !== key ? value : fallback;
+  };
+
   const patientNav = [
-    { name: t("nav.dashboard"), href: "/", icon: LayoutDashboard },
-    { name: t("nav.newIntake"), href: "/intake", icon: ClipboardList },
-    { name: t("nav.records"), href: "/records", icon: FileText },
-    { name: t("nav.findDoctors") || "Find Doctors", href: "/find-doctors", icon: Search },
-    { name: t("nav.appointments") || "Appointments", href: "/appointments", icon: Calendar },
-    { name: t("nav.chatGeneral") || "Health Chat", href: "/chat/general", icon: MessageSquare },
-    { name: t("nav.chatAyush") || "AYUSH Chat", href: "/chat/ayush", icon: Leaf },
-    { name: t("nav.profile"), href: "/profile", icon: User },
+    { name: label("nav.dashboard", "Dashboard"), href: "/", icon: LayoutDashboard },
+    { name: label("nav.newIntake", "New Intake"), href: "/intake", icon: ClipboardList },
+    { name: label("nav.records", "My Records"), href: "/records", icon: FileText },
+    { name: label("nav.findDoctors", "Find Doctors"), href: "/find-doctors", icon: Search },
+    { name: label("nav.appointments", "Appointments"), href: "/appointments", icon: Calendar },
+    { name: label("nav.chatGeneral", "Health Chat"), href: "/chat/general", icon: MessageSquare },
+    { name: label("nav.chatAyush", "AYUSH Chat"), href: "/chat/ayush", icon: Leaf },
+    { name: label("nav.profile", "Profile"), href: "/profile", icon: User },
   ];
 
   const clinicianNav = [
-    { name: t("nav.clinician"), href: "/clinician", icon: LayoutDashboard },
-    { name: t("nav.queue"), href: "/clinician/queue", icon: ClipboardList },
-    { name: t("nav.reviews"), href: "/clinician/reviews", icon: FileSearch },
-    { name: t("nav.appointments") || "Appointments", href: "/clinician/appointments", icon: Calendar },
-    { name: t("nav.chatGeneral") || "Health Chat", href: "/chat/general", icon: MessageSquare },
-    { name: t("nav.chatAyush") || "AYUSH Chat", href: "/chat/ayush", icon: Leaf },
+    { name: label("nav.clinician", "Dashboard"), href: "/clinician", icon: LayoutDashboard },
+    { name: label("nav.queue", "Patient Queue"), href: "/clinician/queue", icon: ClipboardList },
+    { name: label("nav.reviews", "Reviews"), href: "/clinician/reviews", icon: FileSearch },
+    { name: label("nav.appointments", "Appointments"), href: "/clinician/appointments", icon: Calendar },
+    { name: label("nav.schedule", "My Schedule"), href: "/clinician/schedule", icon: CalendarClock },
+    { name: label("nav.chatGeneral", "Health Chat"), href: "/chat/general", icon: MessageSquare },
+    { name: label("nav.chatAyush", "AYUSH Chat"), href: "/chat/ayush", icon: Leaf },
   ];
 
   const nav = effectiveRole === "clinician" ? clinicianNav : patientNav;
-  const currentPage = nav.find(
-    (n) => n.href === location || (location.startsWith(n.href) && n.href !== "/")
-  )?.name ?? t("nav.dashboard");
+  // Match the longest href so /clinician/schedule highlights "My Schedule",
+  // not the /clinician dashboard. Root "/" only matches the exact path.
+  const sortedNav = [...nav].sort((a, b) => b.href.length - a.href.length);
+  const isMatch = (href: string) =>
+    href === "/" ? location === "/" || location === "" : location === href || location.startsWith(href + "/");
+  const currentItem = sortedNav.find((n) => isMatch(n.href));
+  const currentPage = currentItem?.name ?? t("nav.dashboard");
 
   const Sidebar = () => (
     <div className="flex flex-col h-full">
@@ -95,7 +107,7 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
       <nav className="flex-1 px-4 space-y-1 overflow-y-auto min-h-0">
         {nav.map((item) => {
           const Icon = item.icon;
-          const isActive = location === item.href || (location.startsWith(item.href) && item.href !== "/");
+          const isActive = currentItem?.href === item.href;
           return (
             <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${

@@ -19,6 +19,7 @@ import ClinicianReviews from "@/pages/clinician-reviews";
 import AppointmentsPage from "@/pages/appointments";
 import VideoCallPage from "@/pages/video-call";
 import ClinicianAppointments from "@/pages/clinician-appointments";
+import ClinicianSchedule from "@/pages/clinician-schedule";
 import ChatbotPage from "@/pages/chatbot";
 import FindDoctorsPage from "@/pages/find-doctors";
 
@@ -76,6 +77,7 @@ function Router() {
       <Route path="/appointments" component={() => <ProtectedRoute component={AppointmentsPage} />} />
       <Route path="/call/:roomId" component={() => <ProtectedRoute component={VideoCallPage} />} />
       <Route path="/clinician/appointments" component={() => <ProtectedRoute component={ClinicianAppointments} roles={["clinician"]} />} />
+      <Route path="/clinician/schedule" component={() => <ProtectedRoute component={ClinicianSchedule} roles={["clinician"]} />} />
       <Route path="/find-doctors" component={() => <ProtectedRoute component={FindDoctorsPage} />} />
       <Route path="/chat/:type" component={() => <ProtectedRoute component={ChatbotPage} />} />
       <Route component={NotFound} />

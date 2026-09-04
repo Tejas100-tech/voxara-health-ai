@@ -10,6 +10,7 @@ export interface IDoctor extends Document {
   bio?: string;
   city: string;
   region: string;
+  address?: string;
   lat: number;
   lng: number;
   clinic: string;
@@ -34,6 +35,7 @@ const DoctorSchema = new Schema<IDoctor>(
     bio: { type: String },
     city: { type: String, required: true, default: "Mumbai" },
     region: { type: String, required: true, default: "Maharashtra" },
+    address: { type: String },
     lat: { type: Number, default: 19.076 },
     lng: { type: Number, default: 72.8777 },
     clinic: { type: String, default: "" },

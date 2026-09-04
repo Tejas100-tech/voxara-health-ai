@@ -1,13 +1,50 @@
+import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout";
 import { Link } from "wouter";
 import { ArrowRight, ClipboardList, Clock, FileText, ScanLine, ShieldCheck, Activity, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import { useLanguage } from "@/lib/language";
+import { getAllIntakeSessions, getAllClinicalSummaries, getDocuments } from "@/lib/api";
 
 export default function PatientDashboard() {
   const { user } = useAuth();
   const { t } = useLanguage();
+
+  // Real per-patient stats (no hardcoded demo numbers).
+  const [stats, setStats] = useState<{
+    intakes: number;
+    scanned: number;
+    summaries: number;
+    reviewed: number;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const sessions = await getAllIntakeSessions(user.patientId);
+        const scanned = (
+          await Promise.all(
+            sessions.map((s) => getDocuments(s.id).then((d) => d.length).catch(() => 0))
+          )
+        ).reduce((a, b) => a + b, 0);
+        const summaries = await getAllClinicalSummaries(user.patientId);
+        const reviewed = summaries.filter(
+          (s) => (s.status || "").toLowerCase() === "approved"
+        ).length;
+        if (!cancelled) {
+          setStats({ intakes: sessions.length, scanned, summaries: summaries.length, reviewed });
+        }
+      } catch {
+        if (!cancelled) setStats({ intakes: 0, scanned: 0, summaries: 0, reviewed: 0 });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   return (
     <AppLayout userType="patient">
@@ -46,13 +83,13 @@ export default function PatientDashboard() {
           </div>
         </section>
 
-        {/* Stats */}
+        {/* Stats — real data for the signed-in patient */}
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: t("records.intakes"), value: "3", icon: ClipboardList, color: "text-[#26658C] dark:text-cyan-300" },
-            { label: t("documents.scanned"), value: "7", icon: ScanLine, color: "text-[#26658C] dark:text-cyan-300" },
-            { label: t("records.summaries"), value: "2", icon: FileText, color: "text-[#26658C] dark:text-cyan-300" },
-            { label: t("records.reviewed"), value: "1", icon: Clock, color: "text-[#26658C] dark:text-cyan-300" },
+            { label: t("records.intakes"), value: stats === null ? "…" : String(stats.intakes), icon: ClipboardList, color: "text-[#26658C] dark:text-cyan-300" },
+            { label: t("documents.scanned"), value: stats === null ? "…" : String(stats.scanned), icon: ScanLine, color: "text-[#26658C] dark:text-cyan-300" },
+            { label: t("records.summaries"), value: stats === null ? "…" : String(stats.summaries), icon: FileText, color: "text-[#26658C] dark:text-cyan-300" },
+            { label: t("records.reviewed"), value: stats === null ? "…" : String(stats.reviewed), icon: Clock, color: "text-[#26658C] dark:text-cyan-300" },
           ].map(({ label, value, icon: Icon, color }) => (
             <div key={label} className="bg-card border rounded-2xl p-5 card-hover">
               <Icon size={20} className={`${color} mb-3`} />

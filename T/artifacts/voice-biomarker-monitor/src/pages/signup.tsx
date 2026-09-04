@@ -22,12 +22,43 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Patient extras
+  const [dob, setDob] = useState("");
+  // Clinician extras
+  const [specialty, setSpecialty] = useState("");
+  const [clinic, setClinic] = useState("");
+  const [address, setAddress] = useState("");
+  const [fee, setFee] = useState("");
+  const [experience, setExperience] = useState("");
+  const [languages, setLanguages] = useState("");
+  const [consultationTypes, setConsultationTypes] = useState<string[]>(["in-person", "video", "chat"]);
+  const [availableSlots, setAvailableSlots] = useState("");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      await registerUser({ name, email, password, role, phone, abhaId, city });
+      const payload: Record<string, any> = { name, email, password, role, phone, city };
+      if (role === "patient") {
+        payload.dob = dob || undefined;
+        payload.abhaId = abhaId || undefined;
+        if (dob) {
+          const d = new Date(dob);
+          const age = Math.floor((Date.now() - d.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+          if (!isNaN(age) && age >= 0) payload.age = age;
+        }
+      } else {
+        payload.specialty = specialty || undefined;
+        payload.clinic = clinic || undefined;
+        payload.address = address || undefined;
+        payload.consultationFee = fee ? Number(fee) : undefined;
+        payload.experience = experience ? Number(experience) : undefined;
+        payload.languages = languages.split(",").map((s) => s.trim()).filter(Boolean);
+        payload.consultationTypes = consultationTypes;
+        payload.availableSlots = availableSlots.split(",").map((s) => s.trim()).filter(Boolean);
+      }
+      await registerUser(payload);
       setLocation("/login");
     } catch (err: any) { setError(err.message || "Registration failed"); }
     setLoading(false);
@@ -108,13 +139,81 @@ export default function SignupPage() {
                 className="h-12 rounded-2xl border-[#B9DCE3] bg-[#F7FCFD] text-[#011C40] focus:border-[#54ACBF]" />
             </div>
             {role === "patient" && (
-              <div>
-                <label className="text-xs font-extrabold text-[#26658C] uppercase tracking-wider mb-2 block flex items-center gap-2">
-                  <ShieldCheck size={14} className="text-[#54ACBF]" /> {t("signup.abhaId")}
-                </label>
-                <Input placeholder="XX-XXXX-XXXX-XXXX" value={abhaId} onChange={(e) => setAbhaId(e.target.value)}
-                  className="h-12 rounded-2xl border-[#B9DCE3] bg-[#F7FCFD] text-[#011C40] focus:border-[#54ACBF]" />
-              </div>
+              <>
+                <div>
+                  <label className="text-xs font-extrabold text-[#26658C] uppercase tracking-wider mb-2 block">Date of Birth</label>
+                  <Input type="date" value={dob} onChange={(e) => setDob(e.target.value)}
+                    max={new Date().toISOString().split("T")[0]}
+                    className="h-12 rounded-2xl border-[#B9DCE3] bg-[#F7FCFD] text-[#011C40] focus:border-[#54ACBF]" />
+                </div>
+                <div>
+                  <label className="text-xs font-extrabold text-[#26658C] uppercase tracking-wider mb-2 block flex items-center gap-2">
+                    <ShieldCheck size={14} className="text-[#54ACBF]" /> {t("signup.abhaId")}
+                  </label>
+                  <Input placeholder="XX-XXXX-XXXX-XXXX" value={abhaId} onChange={(e) => setAbhaId(e.target.value)}
+                    className="h-12 rounded-2xl border-[#B9DCE3] bg-[#F7FCFD] text-[#011C40] focus:border-[#54ACBF]" />
+                </div>
+              </>
+            )}
+
+            {role === "clinician" && (
+              <>
+                <div>
+                  <label className="text-xs font-extrabold text-[#26658C] uppercase tracking-wider mb-2 block">Specialty</label>
+                  <Input placeholder="e.g. Cardiology, Pediatrics, General Medicine" value={specialty} onChange={(e) => setSpecialty(e.target.value)}
+                    className="h-12 rounded-2xl border-[#B9DCE3] bg-[#F7FCFD] text-[#011C40] focus:border-[#54ACBF]" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-extrabold text-[#26658C] uppercase tracking-wider mb-2 block">Hospital / Clinic</label>
+                    <Input placeholder="Hospital or clinic name" value={clinic} onChange={(e) => setClinic(e.target.value)}
+                      className="h-12 rounded-2xl border-[#B9DCE3] bg-[#F7FCFD] text-[#011C40] focus:border-[#54ACBF]" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-extrabold text-[#26658C] uppercase tracking-wider mb-2 block">Consultation Fee (₹)</label>
+                    <Input type="number" min={0} placeholder="500" value={fee} onChange={(e) => setFee(e.target.value)}
+                      className="h-12 rounded-2xl border-[#B9DCE3] bg-[#F7FCFD] text-[#011C40] focus:border-[#54ACBF]" />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-extrabold text-[#26658C] uppercase tracking-wider mb-2 block">Clinic Address</label>
+                  <Input placeholder="Full clinic / hospital address" value={address} onChange={(e) => setAddress(e.target.value)}
+                    className="h-12 rounded-2xl border-[#B9DCE3] bg-[#F7FCFD] text-[#011C40] focus:border-[#54ACBF]" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-extrabold text-[#26658C] uppercase tracking-wider mb-2 block">Years of Experience</label>
+                    <Input type="number" min={0} placeholder="5" value={experience} onChange={(e) => setExperience(e.target.value)}
+                      className="h-12 rounded-2xl border-[#B9DCE3] bg-[#F7FCFD] text-[#011C40] focus:border-[#54ACBF]" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-extrabold text-[#26658C] uppercase tracking-wider mb-2 block">Languages (comma separated)</label>
+                    <Input placeholder="English, Hindi, Marathi" value={languages} onChange={(e) => setLanguages(e.target.value)}
+                      className="h-12 rounded-2xl border-[#B9DCE3] bg-[#F7FCFD] text-[#011C40] focus:border-[#54ACBF]" />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-extrabold text-[#26658C] uppercase tracking-wider mb-2 block">Consultation Types</label>
+                  <div className="flex gap-2 flex-wrap">
+                    {["in-person", "video", "chat"].map((ct) => (
+                      <button key={ct} type="button"
+                        onClick={() => setConsultationTypes((prev) => prev.includes(ct) ? prev.filter((x) => x !== ct) : [...prev, ct])}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
+                          consultationTypes.includes(ct)
+                            ? "bg-[#54ACBF] text-white border-transparent"
+                            : "bg-[#F7FCFD] border-[#DCEFF2] text-[#5d7a8c]"
+                        }`}>
+                        {ct === "in-person" ? "In-person" : ct === "video" ? "Video" : "Chat"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-extrabold text-[#26658C] uppercase tracking-wider mb-2 block">Appointment Slots (comma separated, e.g. 09:00-10:00, 14:00-15:00)</label>
+                  <Input placeholder="09:00-10:00, 14:00-15:00, 17:00-18:00" value={availableSlots} onChange={(e) => setAvailableSlots(e.target.value)}
+                    className="h-12 rounded-2xl border-[#B9DCE3] bg-[#F7FCFD] text-[#011C40] focus:border-[#54ACBF]" />
+                </div>
+              </>
             )}
 
             <div>

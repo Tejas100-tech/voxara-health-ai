@@ -62,8 +62,9 @@ export async function getIntakeSession(sessionId: string): Promise<IntakeSession
   return res.json();
 }
 
-export async function getAllIntakeSessions(): Promise<IntakeSession[]> {
-  const res = await fetch(`${API_BASE}/intake`);
+export async function getAllIntakeSessions(patientId?: string): Promise<IntakeSession[]> {
+  const qs = patientId ? `?patientId=${encodeURIComponent(patientId)}` : "";
+  const res = await fetch(`${API_BASE}/intake${qs}`);
   if (!res.ok) throw new Error("Failed to fetch sessions");
   return res.json();
 }
@@ -153,8 +154,9 @@ export async function getClinicalSummary(sessionId: string): Promise<ClinicalSum
   return res.json();
 }
 
-export async function getAllClinicalSummaries(): Promise<ClinicalSummary[]> {
-  const res = await fetch(`${API_BASE}/clinical-summary`);
+export async function getAllClinicalSummaries(patientId?: string): Promise<ClinicalSummary[]> {
+  const qs = patientId ? `?patientId=${encodeURIComponent(patientId)}` : "";
+  const res = await fetch(`${API_BASE}/clinical-summary${qs}`);
   if (!res.ok) throw new Error("Failed to fetch summaries");
   return res.json();
 }
@@ -276,9 +278,11 @@ export interface Doctor {
   available: boolean;
   city?: string;
   region?: string;
+  address?: string;
   lat?: number;
   lng?: number;
   clinic?: string;
+  phone?: string;
   experience?: number;
   consultationFee?: number;
   consultationTypes?: string[];
@@ -313,6 +317,25 @@ export async function searchDoctors(params: {
   if (params.available) qs.set("available", "true");
   const res = await fetch(`${API_BASE}/doctors?${qs.toString()}`);
   if (!res.ok) throw new Error("Failed to search doctors");
+  return res.json();
+}
+
+export async function getDoctor(doctorId: string): Promise<Doctor> {
+  const res = await fetch(`${API_BASE}/doctors/${encodeURIComponent(doctorId)}`);
+  if (!res.ok) throw new Error("Failed to fetch doctor");
+  return res.json();
+}
+
+export async function updateDoctorProfile(doctorId: string, data: Partial<Doctor>): Promise<Doctor> {
+  const res = await fetch(`${API_BASE}/doctors/${encodeURIComponent(doctorId)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to update doctor profile");
+  }
   return res.json();
 }
 

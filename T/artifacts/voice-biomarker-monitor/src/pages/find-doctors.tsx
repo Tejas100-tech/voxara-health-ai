@@ -68,6 +68,13 @@ export default function FindDoctors() {
                 d.doctorId === msg.doctorId ? { ...d, available: msg.available } : d
               )
             );
+          } else if (msg.type === "doctor-updated") {
+            // A doctor changed their fee / clinic / slots / availability
+            setDoctors((prev) =>
+              prev.map((d) =>
+                d.doctorId === msg.doctor.doctorId ? { ...d, ...msg.doctor } : d
+              )
+            );
           }
         } catch {
           // ignore malformed messages

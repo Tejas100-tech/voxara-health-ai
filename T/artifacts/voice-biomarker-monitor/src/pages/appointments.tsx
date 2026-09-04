@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { AppLayout } from "@/components/layout";
 import {
@@ -12,17 +12,8 @@ import { useAuth } from "@/lib/auth";
 import { useLanguage } from "@/lib/language";
 import {
   getAppointments, createAppointment, cancelAppointment,
-  type Appointment,
+  getDoctors, type Doctor, type Appointment,
 } from "@/lib/api";
-
-const DEMO_DOCTORS = [
-  { doctorId: "DR-001", name: "Dr. Priya Sharma", specialty: "General Medicine", available: true },
-  { doctorId: "DR-002", name: "Dr. Rajesh Gupta", specialty: "Cardiology", available: true },
-  { doctorId: "DR-003", name: "Dr. Ananya Reddy", specialty: "Neurology", available: true },
-  { doctorId: "DR-004", name: "Dr. Suresh Patel", specialty: "Orthopedics", available: false },
-  { doctorId: "DR-005", name: "Dr. Meena Iyer", specialty: "AYUSH / Ayurveda", available: true },
-  { doctorId: "DR-006", name: "Dr. Arjun Singh", specialty: "Pediatrics", available: true },
-];
 
 const URGENCY_OPTIONS = [
   { value: "routine", label: "Routine", desc: "Regular consultation (next 24-48 hours)", color: "cyan" },
@@ -52,11 +43,70 @@ export default function AppointmentsPage() {
   const [booking, setBooking] = useState(false);
   const [booked, setBooked] = useState(false);
   const [bookedAppointment, setBookedAppointment] = useState<Appointment | null>(null);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [live, setLive] = useState(false);
+  const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    if (user) {
-      getAppointments({ patientId: user.patientId }).then(setAppointments).catch(() => {});
+    if (!user) return;
+    getAppointments({ patientId: user.patientId }).then(setAppointments).catch(() => { });
+    getDoctors().then(setDoctors).catch(() => { });
+  }, [user]);
+
+  // ── Deep link from find-doctors: /appointments?book=DR-XXX ────────────
+  // Note: wouter's useLocation() returns the pathname only (no search), so
+  // read the query string straight from the browser URL.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const bookId = params.get("book");
+    if (bookId) {
+      setSelectedDoctor(bookId);
+      setShowBooking(true);
+      setLocation(window.location.pathname, { replace: true });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Real-time updates: refresh when this patient's appointments change ──
+  useEffect(() => {
+    if (!user) return;
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    let ws: WebSocket | null = null;
+    let closed = false;
+
+    const refresh = () => {
+      getAppointments({ patientId: user.patientId }).then(setAppointments).catch(() => { });
+    };
+
+    const connect = () => {
+      ws = new WebSocket(`${protocol}//${window.location.host}/ws/discovery`);
+      wsRef.current = ws;
+      ws.onopen = () => setLive(true);
+      ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          const type = msg.type || "";
+          if (!type.startsWith("appointment-")) return;
+          const apt = msg.appointment;
+          if (!apt || apt.patientId !== user.patientId) return;
+          refresh();
+        } catch {
+          // ignore malformed messages
+        }
+      };
+      ws.onclose = () => {
+        setLive(false);
+        if (!closed) setTimeout(connect, 3000);
+      };
+      ws.onerror = () => { try { ws?.close(); } catch { /* noop */ } };
+    };
+
+    connect();
+    return () => {
+      closed = true;
+      try { ws?.close(); } catch { /* noop */ }
+      wsRef.current = null;
+    };
   }, [user]);
 
   const handleBook = async () => {
@@ -64,7 +114,14 @@ export default function AppointmentsPage() {
     setBooking(true);
     try {
       const scheduledAt = selectedDate && selectedTime
-        ? new Date(`${selectedDate}T${convertTo24h(selectedTime)}`).toISOString()
+        ? (() => {
+            // Doctor-provided slots look like "09:00-10:00" — book at the start.
+            const start = selectedTime.includes("-") ? selectedTime.split("-")[0].trim() : selectedTime;
+            const [h, m] = start.split(":").map(Number);
+            const d = new Date(`${selectedDate}T00:00:00`);
+            d.setHours(h || 0, m || 0, 0, 0);
+            return d.toISOString();
+          })()
         : undefined;
 
       const apt = await createAppointment({
@@ -97,7 +154,12 @@ export default function AppointmentsPage() {
     setLocation(`/call/${roomId}`);
   };
 
-  const doctor = DEMO_DOCTORS.find((d) => d.doctorId === selectedDoctor);
+  // Booking slots: prefer the selected doctor's own schedule when available.
+  const selectedDoctorObj = doctors.find((d) => d.doctorId === selectedDoctor);
+  const slotOptions =
+    selectedDoctorObj?.availableSlots && selectedDoctorObj.availableSlots.length > 0
+      ? selectedDoctorObj.availableSlots
+      : TIME_SLOTS;
 
   // ── Booking Success View ──────────────────────────────────────────────
   if (booked && bookedAppointment) {
@@ -141,7 +203,7 @@ export default function AppointmentsPage() {
               <Button variant="outline" onClick={() => { setBooked(false); setShowBooking(false); }} className="flex-1 rounded-xl font-bold">
                 Book Another
               </Button>
-              <Button onClick={() => setLocation("/dashboard")} className="flex-1 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-700">
+              <Button onClick={() => setLocation("/")} className="flex-1 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-700">
                 Back to Dashboard
               </Button>
             </div>
@@ -170,30 +232,33 @@ export default function AppointmentsPage() {
             {/* Doctor Selection */}
             <div>
               <label className="text-sm font-bold uppercase tracking-wider mb-3 block">Select Doctor</label>
-              <div className="grid grid-cols-2 gap-3">
-                {DEMO_DOCTORS.map((doc) => (
-                  <button
-                    key={doc.doctorId}
-                    onClick={() => doc.available && setSelectedDoctor(doc.doctorId)}
-                    disabled={!doc.available}
-                    className={`flex flex-col items-center gap-2 p-4 min-h-[7rem] rounded-2xl border-2 transition-all text-center ${
-                      !doc.available ? "border-border opacity-50 cursor-not-allowed" :
-                      selectedDoctor === doc.doctorId
+              {doctors.length === 0 ? (
+                <div className="text-center py-8 border border-dashed rounded-2xl text-muted-foreground text-sm">
+                  Loading available doctors…
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1">
+                  {doctors.filter((d) => d.available).map((doc) => (
+                    <button
+                      key={doc.doctorId}
+                      type="button"
+                      onClick={() => setSelectedDoctor(doc.doctorId)}
+                      className={`flex flex-col items-center gap-2 p-4 min-h-[7rem] rounded-2xl border-2 transition-all text-center ${selectedDoctor === doc.doctorId
                         ? "border-cyan-500 bg-cyan-50 dark:bg-cyan-950/40 shadow-md"
                         : "border-border hover:border-cyan-300"
-                    }`}
-                  >
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm">
-                      {doc.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
-                    </div>
-                    <div>
-                      <div className="font-bold text-xs">{doc.name}</div>
-                      <div className="text-[10px] text-muted-foreground">{doc.specialty}</div>
-                    </div>
-                    {!doc.available && <span className="text-[9px] text-red-500 font-bold">Unavailable</span>}
-                  </button>
-                ))}
-              </div>
+                        }`}
+                    >
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sky-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm">
+                        {doc.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                      </div>
+                      <div>
+                        <div className="font-bold text-xs">{doc.name}</div>
+                        <div className="text-[10px] text-muted-foreground">{doc.specialty}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Urgency */}
@@ -204,13 +269,12 @@ export default function AppointmentsPage() {
                   <button
                     key={opt.value}
                     onClick={() => setUrgency(opt.value)}
-                    className={`flex flex-col items-center gap-1 p-3 min-h-[5rem] rounded-xl border-2 transition-all ${
-                      urgency === opt.value
-                        ? opt.color === "red" ? "border-red-500 bg-red-50 dark:bg-red-950/40" :
-                          opt.color === "amber" ? "border-amber-500 bg-amber-50 dark:bg-amber-950/40" :
+                    className={`flex flex-col items-center gap-1 p-3 min-h-[5rem] rounded-xl border-2 transition-all ${urgency === opt.value
+                      ? opt.color === "red" ? "border-red-500 bg-red-50 dark:bg-red-950/40" :
+                        opt.color === "amber" ? "border-amber-500 bg-amber-50 dark:bg-amber-950/40" :
                           "border-cyan-500 bg-cyan-50 dark:bg-cyan-950/40"
-                        : "border-border hover:border-muted-foreground/30"
-                    }`}
+                      : "border-border hover:border-muted-foreground/30"
+                      }`}
                   >
                     <span className="font-bold text-sm">{opt.label}</span>
                     <span className="text-[9px] text-muted-foreground text-center">{opt.desc}</span>
@@ -240,7 +304,7 @@ export default function AppointmentsPage() {
                     className="w-full h-14 rounded-xl border bg-background px-4 text-base font-semibold focus:outline-none focus:ring-2 focus:ring-cyan-500"
                   >
                     <option value="">Select time</option>
-                    {TIME_SLOTS.map((slot) => (
+                    {slotOptions.map((slot) => (
                       <option key={slot} value={slot}>{slot}</option>
                     ))}
                   </select>
@@ -283,7 +347,14 @@ export default function AppointmentsPage() {
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-extrabold font-[Manrope] mb-1">My Appointments</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl font-extrabold font-[Manrope] mb-1">My Appointments</h2>
+              {live && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-200 rounded-full text-[10px] font-bold text-emerald-700 mb-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live
+                </span>
+              )}
+            </div>
             <p className="text-muted-foreground text-sm">Book and manage your doctor consultations.</p>
           </div>
           <Button onClick={() => setShowBooking(true)} className="h-12 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-700">
@@ -299,11 +370,10 @@ export default function AppointmentsPage() {
               <div key={apt.id} className="bg-card border rounded-2xl p-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold ${
-                      apt.urgency === "emergency" ? "bg-gradient-to-br from-red-500 to-red-600" :
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold ${apt.urgency === "emergency" ? "bg-gradient-to-br from-red-500 to-red-600" :
                       apt.urgency === "urgent" ? "bg-gradient-to-br from-amber-500 to-orange-500" :
-                      "bg-gradient-to-br from-cyan-500 to-sky-400"
-                    }`}>
+                        "bg-gradient-to-br from-cyan-500 to-sky-400"
+                      }`}>
                       {apt.status === "active" ? <Video size={20} /> : <Stethoscope size={20} />}
                     </div>
                     <div>
@@ -345,9 +415,8 @@ export default function AppointmentsPage() {
                     <div className="font-bold text-sm">{apt.doctorName} · {apt.doctorSpecialty}</div>
                     <div className="text-xs text-muted-foreground">{new Date(apt.scheduledAt).toLocaleString()} · {apt.reason}</div>
                   </div>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    apt.status === "completed" ? "bg-cyan-100 text-cyan-700" : "bg-slate-100 text-slate-600"
-                  }`}>{apt.status}</span>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${apt.status === "completed" ? "bg-cyan-100 text-cyan-700" : "bg-slate-100 text-slate-600"
+                    }`}>{apt.status}</span>
                 </div>
               </div>
             ))}

@@ -1,4 +1,5 @@
-import type { Server } from "http";
+import type { Server, IncomingMessage } from "http";
+import type { Duplex } from "stream";
 import { WebSocketServer, WebSocket } from "ws";
 import { logger } from "./logger";
 
@@ -37,6 +38,52 @@ export function broadcastNewDoctor(doctor: Record<string, any>) {
   logger.info({ doctorId: doctor.doctorId, doctorName: doctor.name, sentTo: sent }, "Broadcast new doctor to patients");
 }
 
+// Broadcast an appointment lifecycle event (created / updated / cancelled) to
+// every connected client. Patient + clinician pages filter by their own ids.
+export function broadcastAppointment(
+  type: "appointment-created" | "appointment-updated" | "appointment-cancelled",
+  appointment: Record<string, any>
+) {
+  const payload = JSON.stringify({
+    type,
+    appointment,
+    timestamp: Date.now(),
+  });
+
+  let sent = 0;
+  clients.forEach((client) => {
+    if (client.ws.readyState === WebSocket.OPEN) {
+      client.ws.send(payload);
+      sent++;
+    }
+  });
+
+  logger.info(
+    { event: type, appointmentId: appointment?.id, sentTo: sent },
+    "Broadcast appointment event"
+  );
+}
+
+// Broadcast a full doctor-profile update (fee, clinic, slots, availability…)
+// so open find-doctors pages can refresh the card in place.
+export function broadcastDoctorUpdated(doctor: Record<string, any>) {
+  const payload = JSON.stringify({
+    type: "doctor-updated",
+    doctor,
+    timestamp: Date.now(),
+  });
+
+  let sent = 0;
+  clients.forEach((client) => {
+    if (client.ws.readyState === WebSocket.OPEN) {
+      client.ws.send(payload);
+      sent++;
+    }
+  });
+
+  logger.info({ doctorId: doctor.doctorId, sentTo: sent }, "Broadcast doctor update");
+}
+
 export function broadcastDoctorStatus(doctorId: string, available: boolean) {
   const payload = JSON.stringify({
     type: "doctor-status-changed",
@@ -52,9 +99,20 @@ export function broadcastDoctorStatus(doctorId: string, available: boolean) {
   });
 }
 
-// ── Attach to HTTP server ──────────────────────────────────────────────
+// ── Attach to HTTP server (noServer mode) ───────────────────────────────
+// Must NOT use `new WebSocketServer({ server, path })`: two path-filtered
+// WebSocketServers on one HTTP server (this one + /ws/signaling) corrupt each
+// other's connections in ws 8.21. Route by URL pathname instead.
 export function attachDiscovery(server: Server) {
-  const wss = new WebSocketServer({ server, path: "/ws/discovery" });
+  const wss = new WebSocketServer({ noServer: true });
+
+  server.on("upgrade", (req: IncomingMessage, socket: Duplex, head: Buffer) => {
+    const pathname = (req.url || "/").split("?")[0];
+    if (pathname !== "/ws/discovery") return;
+    wss.handleUpgrade(req, socket, head, (ws) => {
+      wss.emit("connection", ws, req);
+    });
+  });
 
   wss.on("connection", (ws: WebSocket) => {
     const clientId = `disc-${++clientIdCounter}`;

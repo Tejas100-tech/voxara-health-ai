@@ -67,12 +67,6 @@ catalog:
 
 autoInstallPeers: false
 
-onlyBuiltDependencies:
-  - '@swc/core'
-  - esbuild
-  - msw
-  - unrs-resolver
-
 overrides:
   # replit uses linux-x64 only, we can exclude all other platforms
   # drizzle-kit uses esbuild internally on an older version that's vulnerable, this overrides it
@@ -80,4 +74,6 @@ overrides:
   esbuild: "0.27.3"
 
 allowBuilds:
+  '@google/genai': true
   esbuild: true
+  protobufjs: false

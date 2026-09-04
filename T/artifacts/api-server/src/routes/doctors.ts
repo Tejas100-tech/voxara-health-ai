@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { demoDoctors } from "../lib/mongodb";
+import { listDoctors, toPublicDoctor, type PublicDoctor } from "../lib/doctors";
+import { Doctor } from "../models/doctor";
+import { connectMongoDB, hasMongoDB } from "../lib/mongodb";
+import { broadcastDoctorStatus, broadcastDoctorUpdated } from "../lib/discovery";
 import { logger } from "../lib/logger";
 
 const router = Router();
@@ -22,11 +25,13 @@ function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: numbe
 
 // ── Search / list doctors ───────────────────────────────────────────────
 // GET /api/doctors?city=X&specialty=Y&lat=L&lng=N&radius=R&available=true
-router.get("/doctors", (req, res) => {
+// Serves the MongoDB-backed roster (registered + seeded doctors), so a newly
+// registered clinician appears here even after a page refresh.
+router.get("/doctors", async (req, res) => {
   try {
     const { city, specialty, lat, lng, radius, available, limit } = req.query;
 
-    let doctors = [...demoDoctors] as any[];
+    let doctors: PublicDoctor[] = await listDoctors();
 
     // Filter by availability
     if (available === "true") {
@@ -38,9 +43,9 @@ router.get("/doctors", (req, res) => {
       const q = city.toLowerCase();
       doctors = doctors.filter(
         (d) =>
-          d.city.toLowerCase().includes(q) ||
-          d.region.toLowerCase().includes(q) ||
-          q.includes(d.city.toLowerCase())
+          (d.city || "").toLowerCase().includes(q) ||
+          (d.region || "").toLowerCase().includes(q) ||
+          q.includes((d.city || "").toLowerCase())
       );
     }
 
@@ -63,7 +68,7 @@ router.get("/doctors", (req, res) => {
         doctors = doctors
           .map((d) => ({
             ...d,
-            distance: haversineDistance(userLat, userLng, d.lat, d.lng),
+            distance: haversineDistance(userLat, userLng, d.lat ?? 19.076, d.lng ?? 72.8777),
           }))
           .filter((d) => d.distance <= maxRadius)
           .sort((a, b) => a.distance - b.distance);
@@ -86,29 +91,110 @@ router.get("/doctors", (req, res) => {
 });
 
 // ── Get all unique specialties ─────────────────────────────────────────
-router.get("/doctors/specialties", (_req, res) => {
-  const specialties = [...new Set(demoDoctors.map((d) => d.specialty))].sort();
-  res.json({ specialties });
+router.get("/doctors/specialties", async (_req, res) => {
+  try {
+    const doctors = await listDoctors();
+    const specialties = [...new Set(doctors.map((d) => d.specialty))].sort();
+    res.json({ specialties });
+  } catch (err) {
+    logger.error({ err }, "Failed to list specialties");
+    res.status(500).json({ error: "Failed to list specialties" });
+  }
 });
 
 // ── Get all unique cities ──────────────────────────────────────────────
-router.get("/doctors/cities", (_req, res) => {
-  const cities = [...new Set(demoDoctors.map((d) => d.city))].sort();
-  res.json({ cities });
+router.get("/doctors/cities", async (_req, res) => {
+  try {
+    const doctors = await listDoctors();
+    const cities = [...new Set(doctors.map((d) => d.city).filter(Boolean) as string[])].sort();
+    res.json({ cities });
+  } catch (err) {
+    logger.error({ err }, "Failed to list cities");
+    res.status(500).json({ error: "Failed to list cities" });
+  }
 });
 
 // ── Get single doctor by ID ────────────────────────────────────────────
-router.get("/doctors/:doctorId", (req, res) => {
-  const doctor = demoDoctors.find((d) => d.doctorId === req.params.doctorId);
-  if (!doctor) {
-    res.status(404).json({ error: "Doctor not found" });
-    return;
+router.get("/doctors/:doctorId", async (req, res) => {
+  try {
+    const doctors = await listDoctors();
+    const doctor = doctors.find((d) => d.doctorId === req.params.doctorId);
+    if (!doctor) {
+      res.status(404).json({ error: "Doctor not found" });
+      return;
+    }
+    res.json(doctor);
+  } catch (err) {
+    logger.error({ err }, "Failed to fetch doctor");
+    res.status(500).json({ error: "Failed to fetch doctor" });
   }
-  res.json(doctor);
+});
+
+// ── Doctor self-management ─────────────────────────────────────────────
+// Lets a doctor update their own availability, appointment slots, fee,
+// hospital/clinic, address, consultation types, and other profile fields.
+// Changes are persisted to MongoDB and pushed live to open find-doctors pages.
+const DOCTOR_UPDATABLE_FIELDS = [
+  "available",
+  "availableSlots",
+  "consultationFee",
+  "clinic",
+  "address",
+  "city",
+  "region",
+  "phone",
+  "consultationTypes",
+  "languages",
+  "experience",
+  "bio",
+  "specialty",
+] as const;
+
+router.patch("/doctors/:doctorId", async (req, res) => {
+  try {
+    if (!hasMongoDB()) {
+      res.status(503).json({ error: "Profile updates require a database connection" });
+      return;
+    }
+    await connectMongoDB();
+
+    const doctorId = String(req.params.doctorId);
+    const doc = await Doctor.findOne({ doctorId });
+    if (!doc) {
+      res.status(404).json({ error: "Doctor not found" });
+      return;
+    }
+
+    const previousAvailable = doc.available;
+    for (const field of DOCTOR_UPDATABLE_FIELDS) {
+      const value = req.body[field];
+      if (value === undefined) continue;
+      if (field === "specialty") {
+        doc.doctorSpecialty = String(value);
+      } else if (field === "consultationFee" || field === "experience") {
+        (doc as any)[field] = Number(value);
+      } else {
+        (doc as any)[field] = value;
+      }
+    }
+    await doc.save();
+
+    const updated = toPublicDoctor(doc.toObject() as Record<string, any>);
+
+    if (updated.available !== previousAvailable) {
+      broadcastDoctorStatus(doctorId, updated.available);
+    }
+    broadcastDoctorUpdated(updated);
+    logger.info({ doctorId }, "Doctor profile updated");
+    res.json(updated);
+  } catch (err) {
+    logger.error({ err }, "Failed to update doctor profile");
+    res.status(500).json({ error: "Failed to update doctor profile" });
+  }
 });
 
 // ── Assign a doctor to a session ───────────────────────────────────────
-router.post("/doctors/assign", (req, res) => {
+router.post("/doctors/assign", async (req, res) => {
   try {
     const { sessionId, doctorId } = req.body;
     if (!sessionId || !doctorId) {
@@ -116,7 +202,8 @@ router.post("/doctors/assign", (req, res) => {
       return;
     }
 
-    const doctor = demoDoctors.find((d) => d.doctorId === doctorId);
+    const doctors = await listDoctors();
+    const doctor = doctors.find((d) => d.doctorId === doctorId);
     if (!doctor) {
       res.status(404).json({ error: "Doctor not found" });
       return;
@@ -136,14 +223,20 @@ router.post("/doctors/assign", (req, res) => {
 });
 
 // ── Get doctor assignment for a session ────────────────────────────────
-router.get("/doctors/assignment/:sessionId", (req, res) => {
-  const doctorId = doctorAssignments[String(req.params.sessionId)];
-  if (!doctorId) {
-    res.status(404).json({ error: "No doctor assigned" });
-    return;
+router.get("/doctors/assignment/:sessionId", async (req, res) => {
+  try {
+    const doctorId = doctorAssignments[String(req.params.sessionId)];
+    if (!doctorId) {
+      res.status(404).json({ error: "No doctor assigned" });
+      return;
+    }
+    const doctors = await listDoctors();
+    const doctor = doctors.find((d) => d.doctorId === doctorId);
+    res.json({ doctorId, doctor: doctor || null });
+  } catch (err) {
+    logger.error({ err }, "Failed to fetch assignment");
+    res.status(500).json({ error: "Failed to fetch assignment" });
   }
-  const doctor = demoDoctors.find((d) => d.doctorId === doctorId);
-  res.json({ doctorId, doctor: doctor || null });
 });
 
 export default router;

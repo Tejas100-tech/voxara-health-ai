@@ -464,10 +464,14 @@ router.get("/intake/:sessionId", (req, res) => {
   res.json(session);
 });
 
-router.get("/intake", (_req, res) => {
-  const sessions = Object.values(intakeSessions).sort(
+router.get("/intake", (req, res) => {
+  const { patientId } = req.query;
+  let sessions = Object.values(intakeSessions).sort(
     (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
+  if (typeof patientId === "string" && patientId) {
+    sessions = sessions.filter((s: any) => s.patientId === patientId);
+  }
   res.json(sessions);
 });
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
 import { AppLayout } from "@/components/layout";
 import {
@@ -22,11 +22,59 @@ export default function ClinicianAppointments() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [filter, setFilter] = useState<"all" | "active" | "scheduled" | "completed">("all");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [live, setLive] = useState(false);
+  const wsRef = useRef<WebSocket | null>(null);
+
+  // Scoped to the signed-in doctor's roster (falls back to all in demo mode,
+  // where the clinician account has no Doctor record).
+  const refreshAppointments = useCallback(() => {
+    getAppointments(user?.doctorId ? { doctorId: user.doctorId } : undefined)
+      .then(setAppointments)
+      .catch(() => { });
+  }, [user]);
 
   useEffect(() => {
-    // In demo mode, show all appointments (in production, filter by doctorId)
-    getAppointments().then(setAppointments).catch(() => {});
-  }, []);
+    refreshAppointments();
+  }, [refreshAppointments]);
+
+  // ── Real-time updates: refresh when an appointment for this doctor ──
+  //    is created, accepted/rejected, completed, or cancelled elsewhere.
+  useEffect(() => {
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    let ws: WebSocket | null = null;
+    let closed = false;
+
+    const connect = () => {
+      ws = new WebSocket(`${protocol}//${window.location.host}/ws/discovery`);
+      wsRef.current = ws;
+      ws.onopen = () => setLive(true);
+      ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          const type = msg.type || "";
+          if (!type.startsWith("appointment-")) return;
+          const apt = msg.appointment;
+          if (!apt) return;
+          if (user?.doctorId && apt.doctorId !== user.doctorId) return;
+          refreshAppointments();
+        } catch {
+          // ignore malformed messages
+        }
+      };
+      ws.onclose = () => {
+        setLive(false);
+        if (!closed) setTimeout(connect, 3000);
+      };
+      ws.onerror = () => { try { ws?.close(); } catch { /* noop */ } };
+    };
+
+    connect();
+    return () => {
+      closed = true;
+      try { ws?.close(); } catch { /* noop */ }
+      wsRef.current = null;
+    };
+  }, [user, refreshAppointments]);
 
   const handleAccept = async (apt: Appointment) => {
     setActionLoading(apt.id);
@@ -78,7 +126,14 @@ export default function ClinicianAppointments() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-extrabold font-[Manrope] mb-1">Appointment Management</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl font-extrabold font-[Manrope] mb-1">Appointment Management</h2>
+              {live && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-200 rounded-full text-[10px] font-bold text-emerald-700 mb-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live
+                </span>
+              )}
+            </div>
             <p className="text-muted-foreground text-sm">Manage incoming patient appointments and video consultations.</p>
           </div>
         </div>
@@ -109,11 +164,10 @@ export default function ClinicianAppointments() {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-                filter === f
-                  ? "bg-cyan-600 text-white"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              }`}
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${filter === f
+                ? "bg-cyan-600 text-white"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
+                }`}
             >
               {f.charAt(0).toUpperCase() + f.slice(1)}
               {f === "scheduled" && scheduledCount > 0 && (
@@ -159,19 +213,17 @@ export default function ClinicianAppointments() {
             {filtered.map((apt) => (
               <div
                 key={apt.id}
-                className={`bg-card border rounded-2xl p-5 ${
-                  apt.urgency === "emergency" && apt.status === "scheduled"
-                    ? "border-red-300 dark:border-red-700 shadow-md shadow-red-500/10"
-                    : ""
-                }`}
+                className={`bg-card border rounded-2xl p-5 ${apt.urgency === "emergency" && apt.status === "scheduled"
+                  ? "border-red-300 dark:border-red-700 shadow-md shadow-red-500/10"
+                  : ""
+                  }`}
               >
                 <div className="flex items-center gap-4">
                   {/* Patient Avatar */}
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white font-bold text-lg ${
-                    apt.urgency === "emergency" ? "bg-gradient-to-br from-red-500 to-red-600" :
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white font-bold text-lg ${apt.urgency === "emergency" ? "bg-gradient-to-br from-red-500 to-red-600" :
                     apt.urgency === "urgent" ? "bg-gradient-to-br from-amber-500 to-orange-500" :
-                    "bg-gradient-to-br from-sky-500 to-cyan-400"
-                  }`}>
+                      "bg-gradient-to-br from-sky-500 to-cyan-400"
+                    }`}>
                     {apt.patientName.charAt(0)}
                   </div>
 
@@ -179,17 +231,15 @@ export default function ClinicianAppointments() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-bold">{apt.patientName}</span>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        apt.urgency === "emergency" ? "bg-red-100 text-red-700" :
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${apt.urgency === "emergency" ? "bg-red-100 text-red-700" :
                         apt.urgency === "urgent" ? "bg-amber-100 text-amber-700" :
-                        "bg-cyan-100 text-cyan-700"
-                      }`}>{apt.urgency}</span>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        apt.status === "active" ? "bg-blue-100 text-blue-700" :
+                          "bg-cyan-100 text-cyan-700"
+                        }`}>{apt.urgency}</span>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${apt.status === "active" ? "bg-blue-100 text-blue-700" :
                         apt.status === "completed" ? "bg-cyan-100 text-cyan-700" :
-                        apt.status === "cancelled" ? "bg-slate-100 text-slate-600" :
-                        "bg-amber-100 text-amber-700"
-                      }`}>{apt.status}</span>
+                          apt.status === "cancelled" ? "bg-slate-100 text-slate-600" :
+                            "bg-amber-100 text-amber-700"
+                        }`}>{apt.status}</span>
                     </div>
                     <div className="text-sm text-muted-foreground mb-1">{apt.reason}</div>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">

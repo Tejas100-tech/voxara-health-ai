@@ -53,6 +53,12 @@ export default function VideoCallPage() {
   const streamRef = useRef<MediaStream | null>(null);
   const peerRef = useRef<RTCPeerConnection | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
+  const endedRef = useRef(false);
+  const pendingIceRef = useRef<RTCIceCandidateInit[]>([]);
+  const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const httpFallbackStartedRef = useRef(false);
+  const wsAttemptsRef = useRef(0);
+  const endCallRef = useRef<() => void>(() => { });
 
   const [connected, setConnected] = useState(false);
   const [connecting, setConnecting] = useState(true);
@@ -81,6 +87,7 @@ export default function VideoCallPage() {
   useEffect(() => {
     if (!roomId || !user) return;
 
+    endedRef.current = false;
     let cancelled = false;
     let pc: RTCPeerConnection | null = null;
 
@@ -112,9 +119,14 @@ export default function VideoCallPage() {
         };
 
         pc.onconnectionstatechange = () => {
-          if (pc?.connectionState === "connected") {
+          const state = pc?.connectionState;
+          if (state === "connected") {
             setConnected(true);
             setConnecting(false);
+          } else if (state === "failed" || state === "disconnected") {
+            // Peer link dropped — show the waiting state; a rejoin /
+            // renegotiation from the other side will reconnect media.
+            setConnected(false);
           }
         };
 
@@ -125,106 +137,140 @@ export default function VideoCallPage() {
           }
         };
 
-        // Connect WebSocket
+        // Connect WebSocket — with automatic reconnect + backoff so a call
+        // survives network blips between two devices.
         const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
         const wsUrl = `${wsProtocol}//${window.location.host}/ws/signaling`;
-        const ws = new WebSocket(wsUrl);
-        wsRef.current = ws;
 
-        ws.onopen = () => {
-          // Join the room
-          ws.send(JSON.stringify({
-            type: "join",
-            roomId,
-            participantId: user!.patientId,
-            participantName: user!.name,
-          }));
+        const flushPendingIce = async () => {
+          if (!pc) { pendingIceRef.current = []; return; }
+          const pending = pendingIceRef.current.splice(0, pendingIceRef.current.length);
+          for (const c of pending) {
+            try { await pc.addIceCandidate(new RTCIceCandidate(c)); } catch { /* ignore */ }
+          }
         };
 
-        ws.onmessage = async (event) => {
-          if (cancelled) return;
-          const msg = JSON.parse(event.data);
+        const openSocket = () => {
+          if (cancelled || endedRef.current) return;
+          const ws = new WebSocket(wsUrl);
+          wsRef.current = ws;
 
-          switch (msg.type) {
-            case "room-joined":
-              setParticipantCount(msg.participantCount);
-              // I'm the latest joiner — if others are already here, I create the offer (I'm the polite peer)
-              if (msg.participants.length > 0 && pc && pc.signalingState === "stable") {
-                try {
-                  const offer = await pc.createOffer();
-                  await pc.setLocalDescription(offer);
-                  ws.send(JSON.stringify({ type: "offer", sdp: pc.localDescription!.toJSON() }));
-                } catch (e) { console.error("Failed to create offer on room-joined:", e); }
-              }
-              break;
+          ws.onopen = () => {
+            if (cancelled || endedRef.current) return;
+            wsAttemptsRef.current = 0;
+            // Live socket is back — stop the HTTP fallback if it had started
+            if (httpFallbackStartedRef.current) {
+              httpFallbackStartedRef.current = false;
+              if (pollRef.current) clearInterval(pollRef.current);
+            }
+            ws.send(JSON.stringify({
+              type: "join",
+              roomId,
+              participantId: user!.patientId,
+              participantName: user!.name,
+            }));
+          };
 
-            case "participant-joined":
-              setParticipantCount(msg.participantCount);
-              // A new participant joined AFTER me — I was here first, so I wait for their offer.
-              // Do NOT create an offer here — that causes glare.
-              break;
+          ws.onmessage = async (event) => {
+            if (cancelled) return;
+            const msg = JSON.parse(event.data);
 
-            case "offer":
-              if (pc) {
-                // Only set remote description if we're in stable state (no local offer pending)
-                if (pc.signalingState === "stable") {
+            switch (msg.type) {
+              case "room-joined":
+                setParticipantCount(msg.participantCount);
+                // I'm the latest joiner — if others are already here I create the
+                // offer (I'm the polite peer). This also fires after a reconnect,
+                // which re-negotiates media with the other device.
+                if (msg.participants.length > 0 && pc && pc.signalingState === "stable") {
+                  try {
+                    const offer = await pc.createOffer();
+                    await pc.setLocalDescription(offer);
+                    ws.send(JSON.stringify({ type: "offer", sdp: pc.localDescription!.toJSON() }));
+                  } catch (e) { console.error("Failed to create offer on room-joined:", e); }
+                }
+                break;
+
+              case "participant-joined":
+                setParticipantCount(msg.participantCount);
+                // A new participant joined AFTER me — I was here first, so I wait
+                // for their offer. Do NOT create an offer here — that causes glare.
+                break;
+
+              case "offer":
+                if (pc && pc.signalingState === "stable") {
                   await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+                  await flushPendingIce();
                   const answer = await pc.createAnswer();
                   await pc.setLocalDescription(answer);
                   ws.send(JSON.stringify({ type: "answer", sdp: pc.localDescription!.toJSON() }));
                 }
-              }
-              break;
+                break;
 
-            case "answer":
-              if (pc) {
-                // Only set remote answer if we have a pending local offer
-                if (pc.signalingState === "have-local-offer") {
+              case "answer":
+                if (pc && pc.signalingState === "have-local-offer") {
                   await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+                  await flushPendingIce();
                 }
-              }
-              break;
+                break;
 
-            case "ice-candidate":
-              if (pc && msg.candidate) {
-                try {
-                  await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
-                } catch {}
-              }
-              break;
+              case "ice-candidate":
+                if (pc && msg.candidate) {
+                  if (pc.remoteDescription) {
+                    try { await pc.addIceCandidate(new RTCIceCandidate(msg.candidate)); } catch { }
+                  } else {
+                    // Remote description not ready yet — buffer and apply later
+                    pendingIceRef.current.push(msg.candidate);
+                  }
+                }
+                break;
 
-            case "participant-left":
-              setParticipantCount((c) => Math.max(0, c - 1));
-              break;
+              case "participant-left":
+                setParticipantCount((c) => Math.max(0, c - 1));
+                setConnected(false);
+                break;
 
-            case "call-ended":
-              // Other party ended call
-              setConnected(false);
-              endCall();
-              break;
+              case "call-ended":
+                setConnected(false);
+                endCallRef.current();
+                break;
 
-            case "chat":
-              setChatMessages((prev) => [...prev, {
-                from: msg.from,
-                text: msg.text,
-                time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-              }]);
-              break;
-          }
+              case "room-full":
+                if (!cancelled) {
+                  setError("This call room already has two participants.");
+                  setConnecting(false);
+                }
+                break;
+
+              case "chat":
+                setChatMessages((prev) => [...prev, {
+                  from: msg.from,
+                  text: msg.text,
+                  time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+                }]);
+                break;
+            }
+          };
+
+          ws.onerror = () => {
+            try { ws.close(); } catch { /* noop */ }
+          };
+
+          ws.onclose = () => {
+            if (cancelled || endedRef.current) return;
+            if (wsRef.current === ws) wsRef.current = null;
+            const attempt = wsAttemptsRef.current++;
+            if (attempt < 4) {
+              // Reconnect with backoff (1s → 2s → 3s → 4s)
+              reconnectTimerRef.current = setTimeout(openSocket, Math.min(1000 * (attempt + 1), 4000));
+            } else if (pc && !httpFallbackStartedRef.current) {
+              // WebSocket unavailable — degrade to HTTP polling
+              httpFallbackStartedRef.current = true;
+              startHttpPolling(pc, roomId, user!.patientId);
+            }
+          };
         };
 
-        ws.onerror = () => {
-          // Fall back to HTTP signaling
-          console.log("WebSocket failed, falling back to HTTP polling");
-          startHttpPolling(pc!, roomId, user!.patientId);
-        };
-
-        ws.onclose = () => {
-          if (!cancelled) {
-            // Try HTTP fallback
-            startHttpPolling(pc!, roomId, user!.patientId);
-          }
-        };
+        openSocket();
 
         // Register room via HTTP too
         await joinVideoRoom(roomId, user!.patientId, user!.name);
@@ -268,7 +314,7 @@ export default function VideoCallPage() {
               try {
                 const offerRes = await fetch(`/api/video/room/${rid}/offer/${otherId}`);
                 if (offerRes.ok) { hasOffer = true; break; }
-              } catch {}
+              } catch { }
             }
 
             if (hasOffer && pcRef.signalingState === "stable") {
@@ -311,7 +357,7 @@ export default function VideoCallPage() {
               await pcRef.setRemoteDescription(new RTCSessionDescription(sdp));
             }
           }
-        } catch {}
+        } catch { }
       }, 1500);
     }
 
@@ -319,11 +365,13 @@ export default function VideoCallPage() {
 
     return () => {
       cancelled = true;
+      endedRef.current = true;
       if (pollRef.current) clearInterval(pollRef.current);
+      if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
       if (streamRef.current) streamRef.current.getTracks().forEach((track) => track.stop());
       if (peerRef.current) peerRef.current.close();
       if (wsRef.current) wsRef.current.close();
-      leaveVideoRoom(roomId, user?.patientId || "").catch(() => {});
+      leaveVideoRoom(roomId, user?.patientId || "").catch(() => { });
     };
   }, [roomId, user, sendWs]);
 
@@ -373,20 +421,25 @@ export default function VideoCallPage() {
         screenTrack.onended = () => toggleScreenShare();
         setScreenSharing(true);
       }
-    } catch {}
+    } catch { }
   }, [screenSharing]);
 
   const endCall = useCallback(async () => {
+    endedRef.current = true;
+    if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
+    if (pollRef.current) clearInterval(pollRef.current);
     sendWs({ type: "end-call" });
+    try { wsRef.current?.close(); } catch { /* noop */ }
     if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
     if (peerRef.current) peerRef.current.close();
-    await endVideoCall(roomId).catch(() => {});
+    await endVideoCall(roomId).catch(() => { });
     if (user?.role === "clinician") {
       setLocation("/clinician/appointments");
     } else {
       setLocation("/appointments");
     }
   }, [roomId, setLocation, user, sendWs]);
+  endCallRef.current = endCall;
 
   const sendChatMessage = useCallback(() => {
     if (!chatInput.trim()) return;

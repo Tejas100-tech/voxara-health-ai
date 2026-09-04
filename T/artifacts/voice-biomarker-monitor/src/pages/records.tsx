@@ -16,9 +16,10 @@ export default function MyRecords() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
-    getAllIntakeSessions().then(setSessions).catch(() => {});
-    getAllClinicalSummaries().then(setSummaries).catch(() => {});
-  }, []);
+    if (!user) return;
+    getAllIntakeSessions(user.patientId).then(setSessions).catch(() => {});
+    getAllClinicalSummaries(user.patientId).then(setSummaries).catch(() => {});
+  }, [user]);
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);

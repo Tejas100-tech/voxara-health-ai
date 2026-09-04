@@ -253,10 +253,14 @@ router.patch("/clinical-summary/:sessionId/review", (req, res) => {
   res.json(summary);
 });
 
-router.get("/clinical-summary", (_req, res) => {
-  const all = Object.values(summaries).sort(
+router.get("/clinical-summary", (req, res) => {
+  const { patientId } = req.query;
+  let all = Object.values(summaries).sort(
     (a: any, b: any) => new Date(b.generatedAt).getTime() - new Date(a.generatedAt).getTime()
   );
+  if (typeof patientId === "string" && patientId) {
+    all = all.filter((s: any) => s.patientId === patientId);
+  }
   res.json(all);
 });
 
