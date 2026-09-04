@@ -12,6 +12,7 @@ export interface AuthUser {
   phone?: string;
   doctorId?: string;
   department?: string;
+  city?: string;
 }
 
 interface AuthContextValue {
@@ -43,6 +44,7 @@ const demoUsers: Array<AuthUser & { password: string }> = [
     dob: "1970-05-15",
     phone: "+91 98765 43210",
     department: "General Medicine",
+    city: "Mumbai",
   },
   {
     id: "demo-sunita",
@@ -56,6 +58,20 @@ const demoUsers: Array<AuthUser & { password: string }> = [
     dob: "1981-08-22",
     phone: "+91 87654 32109",
     department: "Cardiology",
+    city: "Delhi",
+  },
+  {
+    id: "demo-ankit",
+    email: "ankit@medikiosk.ai",
+    password: "patient123",
+    name: "Ankit Verma",
+    role: "patient",
+    patientId: "PT-003",
+    age: 28,
+    dob: "1997-11-03",
+    phone: "+91 76543 21098",
+    department: "General Medicine",
+    city: "Bangalore",
   },
   {
     id: "demo-doctor",
@@ -64,8 +80,20 @@ const demoUsers: Array<AuthUser & { password: string }> = [
     name: "Dr. Priya Sharma",
     role: "clinician",
     patientId: "CL-001",
-    doctorId: "DR-003",
+    doctorId: "DR-001",
     department: "General Medicine",
+    city: "Mumbai",
+  },
+  {
+    id: "demo-doctor2",
+    email: "dr.rajesh@medikiosk.ai",
+    password: "doctor123",
+    name: "Dr. Rajesh Gupta",
+    role: "clinician",
+    patientId: "CL-002",
+    doctorId: "DR-002",
+    department: "Cardiology",
+    city: "Delhi",
   },
 ];
 

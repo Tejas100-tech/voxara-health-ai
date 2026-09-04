@@ -4,6 +4,7 @@ import { connectMongoDB, demoUsers, hasMongoDB } from "../lib/mongodb";
 import { User, seedUsers } from "../models/user";
 import { Doctor } from "../models/doctor";
 import { logger } from "../lib/logger";
+import { broadcastNewDoctor } from "../lib/discovery";
 
 const router = Router();
 
@@ -77,6 +78,7 @@ router.post("/auth/login", async (req, res) => {
         dob: user.dob,
         phone: user.phone,
         clinicianName: user.clinicianName,
+        city: user.city,
         doctorId,
       },
     });
@@ -88,7 +90,7 @@ router.post("/auth/login", async (req, res) => {
 
 router.post("/auth/register", async (req, res) => {
   try {
-    const { name, email, password, role, dob, phone, conditions, clinicianName, age, specialty } = req.body;
+    const { name, email, password, role, dob, phone, conditions, clinicianName, age, specialty, city } = req.body;
 
     if (!name || !email || !password || !role) {
       res.status(400).json({ error: "Name, email, password, and role are required" });
@@ -139,6 +141,7 @@ router.post("/auth/register", async (req, res) => {
       phone: phone || undefined,
       clinicianName: clinicianName || undefined,
       age: age ? Number(age) : undefined,
+      city: city || undefined,
     });
 
     if (role === "clinician") {
@@ -152,6 +155,27 @@ router.post("/auth/register", async (req, res) => {
           available: true,
           email: email.toLowerCase().trim(),
           phone: phone || undefined,
+          city: city || "Mumbai",
+          region: city || "India",
+        });
+
+        // Broadcast new doctor to all connected patients in real-time
+        broadcastNewDoctor({
+          doctorId,
+          name: name.trim(),
+          specialty: specialty || "General Medicine",
+          department: specialty || "General Medicine",
+          available: true,
+          city: city || "Mumbai",
+          region: city || "India",
+          clinic: "",
+          experience: 1,
+          consultationFee: 500,
+          consultationTypes: ["in-person", "video", "chat"],
+          rating: 4.5,
+          totalPatients: 0,
+          languages: ["English", "Hindi"],
+          availableSlots: ["10:00-11:00", "14:00-15:00"],
         });
       } catch (err) {
         logger.error({ err }, "Failed to auto-create Doctor record for clinician");
@@ -170,6 +194,7 @@ router.post("/auth/register", async (req, res) => {
         dob: user.dob,
         phone: user.phone,
         clinicianName: user.clinicianName,
+        city: user.city,
       },
     });
   } catch (err) {

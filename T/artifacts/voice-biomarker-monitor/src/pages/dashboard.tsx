@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/layout";
 import { Link } from "wouter";
-import { ArrowRight, ClipboardList, Clock, FileText, ScanLine, ShieldCheck, Activity } from "lucide-react";
+import { ArrowRight, ClipboardList, Clock, FileText, ScanLine, ShieldCheck, Activity, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import { useLanguage } from "@/lib/language";
@@ -63,7 +63,7 @@ export default function PatientDashboard() {
         </section>
 
         {/* Quick Actions */}
-        <section className="grid md:grid-cols-3 gap-4">
+        <section className="grid md:grid-cols-4 gap-4">
           <Link href="/intake">
             <div className="bg-gradient-to-br from-[#54ACBF] to-[#26658C] rounded-[2rem] p-7 text-white shadow-xl card-hover cursor-pointer">
               <ClipboardList size={28} className="mb-4" />
@@ -76,6 +76,13 @@ export default function PatientDashboard() {
               <ScanLine size={28} className="text-[#26658C] dark:text-cyan-300 mb-4" />
               <h4 className="font-bold text-lg font-[Manrope] mb-1">{t("step.scan")}</h4>
               <p className="text-muted-foreground text-sm">{t("step.scanDesc")}</p>
+            </div>
+          </Link>
+          <Link href="/find-doctors">
+            <div className="bg-gradient-to-br from-[#26658C] to-[#011C40] rounded-[2rem] p-7 text-white shadow-xl card-hover cursor-pointer">
+              <Search size={28} className="mb-4" />
+              <h4 className="font-bold text-lg font-[Manrope] mb-1">Find Doctors</h4>
+              <p className="text-white/80 text-sm">Search by city, specialty & proximity</p>
             </div>
           </Link>
           <Link href="/profile">

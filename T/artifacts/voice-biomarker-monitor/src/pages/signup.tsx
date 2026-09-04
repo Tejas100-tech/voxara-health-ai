@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation, Link } from "wouter";
-import { AlertCircle, ArrowLeft, Loader2, Mail, ShieldCheck, Stethoscope, User, CircleCheck, ArrowRight } from "lucide-react";
+import { AlertCircle, ArrowLeft, Loader2, Mail, ShieldCheck, Stethoscope, User, CircleCheck, ArrowRight, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { registerUser } from "@/lib/api";
@@ -17,6 +17,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [abhaId, setAbhaId] = useState("");
+  const [city, setCity] = useState("");
   const [role, setRole] = useState<"patient" | "clinician">("patient");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,7 +27,7 @@ export default function SignupPage() {
     setError("");
     setLoading(true);
     try {
-      await registerUser({ name, email, password, role, phone, abhaId });
+      await registerUser({ name, email, password, role, phone, abhaId, city });
       setLocation("/login");
     } catch (err: any) { setError(err.message || "Registration failed"); }
     setLoading(false);
@@ -115,6 +116,20 @@ export default function SignupPage() {
                   className="h-12 rounded-2xl border-[#B9DCE3] bg-[#F7FCFD] text-[#011C40] focus:border-[#54ACBF]" />
               </div>
             )}
+
+            <div>
+              <label className="text-xs font-extrabold text-[#26658C] uppercase tracking-wider mb-2 block">City / Region</label>
+              <div className="relative">
+                <MapPin size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#54ACBF]" />
+                <select value={city} onChange={(e) => setCity(e.target.value)}
+                  className="w-full h-12 pl-11 pr-4 rounded-2xl border border-[#B9DCE3] bg-[#F7FCFD] text-[#011C40] text-sm font-semibold focus:outline-none focus:border-[#54ACBF] appearance-none">
+                  <option value="">Select your city</option>
+                  {"Mumbai,Delhi,Bangalore,Hyderabad,Chennai,Kolkata,Pune,Ahmedabad,Jaipur,Lucknow,Chandigarh,Kochi".split(",").map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
             {error && (
               <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-2xl text-red-600 text-sm font-semibold">

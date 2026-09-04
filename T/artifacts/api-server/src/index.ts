@@ -9,6 +9,7 @@ dotenv.config({ override: true });
 import http from "http";
 import app from "./app";
 import { attachSignaling } from "./lib/signaling";
+import { attachDiscovery } from "./lib/discovery";
 import { logger } from "./lib/logger";
 
 const rawPort = process.env["PORT"];
@@ -27,6 +28,7 @@ if (Number.isNaN(port) || port <= 0) {
 
 const server = http.createServer(app);
 attachSignaling(server);
+attachDiscovery(server);
 
 server.listen(port, "0.0.0.0", () => {
   logger.info({ port }, "Server listening");

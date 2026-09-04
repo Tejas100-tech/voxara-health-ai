@@ -13,6 +13,7 @@ export interface IUser extends Document {
   dob?: string;
   phone?: string;
   clinicianName?: string;
+  city?: string;
   createdAt: Date;
   comparePassword(password: string): Promise<boolean>;
 }
@@ -30,6 +31,7 @@ const UserSchema = new Schema<IUser>(
     dob: { type: String },
     phone: { type: String },
     clinicianName: { type: String },
+    city: { type: String },
   },
   { timestamps: true }
 );

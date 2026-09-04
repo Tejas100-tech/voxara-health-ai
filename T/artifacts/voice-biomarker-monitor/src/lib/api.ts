@@ -274,12 +274,60 @@ export interface Doctor {
   specialty: string;
   department: string;
   available: boolean;
+  city?: string;
+  region?: string;
+  lat?: number;
+  lng?: number;
+  clinic?: string;
+  experience?: number;
+  consultationFee?: number;
+  consultationTypes?: string[];
+  rating?: number;
+  totalPatients?: number;
+  languages?: string[];
+  availableSlots?: string[];
+  distance?: number;
 }
 
 export async function getDoctors(): Promise<Doctor[]> {
   const res = await fetch(`${API_BASE}/doctors`);
   if (!res.ok) throw new Error("Failed to fetch doctors");
+  const data = await res.json();
+  return data.doctors || data;
+}
+
+export async function searchDoctors(params: {
+  city?: string;
+  specialty?: string;
+  lat?: number;
+  lng?: number;
+  radius?: number;
+  available?: boolean;
+}): Promise<{ doctors: Doctor[]; total: number; filters: any }> {
+  const qs = new URLSearchParams();
+  if (params.city) qs.set("city", params.city);
+  if (params.specialty) qs.set("specialty", params.specialty);
+  if (params.lat) qs.set("lat", String(params.lat));
+  if (params.lng) qs.set("lng", String(params.lng));
+  if (params.radius) qs.set("radius", String(params.radius));
+  if (params.available) qs.set("available", "true");
+  const res = await fetch(`${API_BASE}/doctors?${qs.toString()}`);
+  if (!res.ok) throw new Error("Failed to search doctors");
   return res.json();
+}
+
+export async function getDoctorSpecialties(): Promise<string[]> {
+  const res = await fetch(`${API_BASE}/doctors/specialties`);
+  if (!res.ok) throw new Error("Failed to fetch specialties");
+  const data = await res.json();
+  return data.specialties;
+}
+
+export async function getDoctorCities(): Promise<string[]> {
+  const res = await fetch(`${API_BASE}/doctors/cities`);
+  if (!res.ok) throw new Error("Failed to fetch cities");
+  const data = await res.json();
+  return data.cities;
 }
 
 export async function getMCQs(sessionId: string): Promise<{ mcqs: (string[] | null)[]; totalQuestions: number }> {

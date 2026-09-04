@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import {
   ClipboardList, FileSearch, FileText, LayoutDashboard, LogOut, Moon, Sun,
   Menu, X, Stethoscope, ShieldCheck, User, Globe, Calendar, MessageSquare, Leaf,
+  Search, MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
@@ -28,6 +29,7 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
     { name: t("nav.dashboard"), href: "/", icon: LayoutDashboard },
     { name: t("nav.newIntake"), href: "/intake", icon: ClipboardList },
     { name: t("nav.records"), href: "/records", icon: FileText },
+    { name: t("nav.findDoctors") || "Find Doctors", href: "/find-doctors", icon: Search },
     { name: t("nav.appointments") || "Appointments", href: "/appointments", icon: Calendar },
     { name: t("nav.chatGeneral") || "Health Chat", href: "/chat/general", icon: MessageSquare },
     { name: t("nav.chatAyush") || "AYUSH Chat", href: "/chat/ayush", icon: Leaf },
