@@ -52,7 +52,7 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
     <div className="flex flex-col h-full">
       <div className="shrink-0 p-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-600 to-sky-500 text-white flex items-center justify-center shadow-lg shadow-cyan-500/30">
+          <div className="w-10 h-10 rounded-2xl luna-brand-gradient text-white flex items-center justify-center shadow-lg shadow-[#26658C]/30">
             <Stethoscope size={22} />
           </div>
           <div>
@@ -72,7 +72,7 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
       {user && (
         <div className="shrink-0 mx-4 mb-4 rounded-2xl bg-white/5 border border-white/10 p-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-600 to-sky-500 flex items-center justify-center text-white font-black text-sm shrink-0">
+            <div className="w-9 h-9 rounded-xl luna-brand-gradient flex items-center justify-center text-white font-black text-sm shrink-0">
               {user.name.charAt(0)}
             </div>
             <div className="min-w-0">
@@ -110,7 +110,7 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
       <div className="shrink-0 p-4 border-t space-y-2">
         {effectiveRole === "patient" && (
           <Link href="/intake" onClick={() => setMobileOpen(false)}>
-            <Button className="w-full rounded-xl py-6 bg-gradient-to-r from-cyan-600 to-sky-500 hover:from-cyan-700 hover:to-sky-600 shadow-lg shadow-cyan-500/20" size="lg">
+            <Button className="w-full rounded-xl py-6 luna-btn-teal hover:brightness-105 shadow-lg shadow-[#54ACBF]/25" size="lg">
               <ClipboardList className="mr-2" size={18} />{t("nav.startNewIntake")}
             </Button>
           </Link>
@@ -169,7 +169,7 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
             </button>
 
             {user && (
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-600 to-sky-500 flex items-center justify-center text-white font-black text-sm cursor-default select-none shadow-md">
+              <div className="w-9 h-9 rounded-full luna-brand-gradient flex items-center justify-center text-white font-black text-sm cursor-default select-none shadow-md">
                 {user.name.charAt(0)}
               </div>
             )}

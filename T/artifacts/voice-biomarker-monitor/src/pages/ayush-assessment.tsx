@@ -239,12 +239,12 @@ export default function AyushAssessment() {
         {/* Progress */}
         <div className="bg-card border rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="font-bold flex items-center gap-2"><Leaf size={16} className="text-green-700" /> AYUSH Assessment</h3>
-            <span className="text-sm font-black text-green-700">{totalProgress}%</span>
+            <h3 className="font-bold flex items-center gap-2"><Leaf size={16} className="text-cyan-700" /> AYUSH Assessment</h3>
+            <span className="text-sm font-black text-cyan-700">{totalProgress}%</span>
           </div>
           <div className="h-2 bg-muted rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-green-700 to-amber-500 rounded-full"
+              className="h-full bg-gradient-to-r from-cyan-700 to-amber-500 rounded-full"
               animate={{ width: `${totalProgress}%` }}
               transition={{ duration: 0.5 }}
             />
@@ -287,14 +287,14 @@ export default function AyushAssessment() {
                 onClick={() => { setCurrentSectionIdx(i); toggleSection(section.id); }}
                 className={`p-3 rounded-xl border text-left transition-all ${
                   currentSectionIdx === i
-                    ? "bg-green-50 border-green-500/30 shadow-sm"
+                    ? "bg-cyan-50 border-cyan-500/30 shadow-sm"
                     : "bg-card hover:bg-muted/50"
                 }`}
               >
                 <span className="text-lg">{section.icon}</span>
                 <p className="text-xs font-bold mt-1 leading-tight">{section.title.split("—")[0].trim()}</p>
                 <div className="h-1 bg-muted rounded-full overflow-hidden mt-2">
-                  <div className="h-full bg-green-600 rounded-full" style={{ width: `${progress}%` }} />
+                  <div className="h-full bg-cyan-600 rounded-full" style={{ width: `${progress}%` }} />
                 </div>
               </button>
             );
@@ -334,13 +334,13 @@ export default function AyushAssessment() {
                             onClick={() => handleFieldChange(field.id, opt)}
                             className={`p-3 rounded-xl border text-left text-sm transition-all ${
                               currentValue === opt
-                                ? "bg-green-50 border-green-500/30 font-semibold"
-                                : "bg-muted/30 hover:border-green-500/20"
+                                ? "bg-cyan-50 border-cyan-500/30 font-semibold"
+                                : "bg-muted/30 hover:border-cyan-500/20"
                             }`}
                           >
                             <div className="flex items-center gap-2">
                               <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                                currentValue === opt ? "border-green-600 bg-green-600" : "border-muted-foreground/30"
+                                currentValue === opt ? "border-cyan-600 bg-cyan-600" : "border-muted-foreground/30"
                               }`}>
                                 {currentValue === opt && <Check size={10} className="text-white" />}
                               </div>
@@ -360,13 +360,13 @@ export default function AyushAssessment() {
                               onClick={() => toggleMultiOption(field.id, opt)}
                               className={`p-3 rounded-xl border text-left text-sm transition-all ${
                                 selected
-                                  ? "bg-green-50 border-green-500/30 font-semibold"
-                                  : "bg-muted/30 hover:border-green-500/20"
+                                  ? "bg-cyan-50 border-cyan-500/30 font-semibold"
+                                  : "bg-muted/30 hover:border-cyan-500/20"
                               }`}
                             >
                               <div className="flex items-center gap-2">
                                 <div className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 ${
-                                  selected ? "border-green-600 bg-green-600" : "border-muted-foreground/30"
+                                  selected ? "border-cyan-600 bg-cyan-600" : "border-muted-foreground/30"
                                 }`}>
                                   {selected && <Check size={10} className="text-white" />}
                                 </div>
@@ -407,7 +407,7 @@ export default function AyushAssessment() {
                 <Button
                   onClick={handleSave}
                   disabled={saving}
-                  className="rounded-xl bg-gradient-to-r from-green-700 to-cyan-600"
+                  className="rounded-xl bg-gradient-to-r from-cyan-700 to-cyan-600"
                 >
                   {saving ? <Loader2 className="animate-spin mr-2" size={16} /> : <Save className="mr-2" size={16} />}
                   {saved ? "Saved ✓" : "Save Assessment"}

@@ -14,7 +14,7 @@ import { t } from "@/lib/medikiosk-i18n";
 
 const DOCUMENT_TYPES = [
   { id: "prescription", label: "Prescription", icon: Pill, color: "text-blue-500", bg: "bg-blue-500/10" },
-  { id: "lab_report", label: "Lab Report", icon: FlaskConical, color: "text-green-500", bg: "bg-green-500/10" },
+  { id: "lab_report", label: "Lab Report", icon: FlaskConical, color: "text-cyan-500", bg: "bg-cyan-500/10" },
   { id: "discharge_summary", label: "Discharge Summary", icon: FileText, color: "text-purple-500", bg: "bg-purple-500/10" },
   { id: "imaging", label: "Imaging / X-Ray", icon: ScanLine, color: "text-orange-500", bg: "bg-orange-500/10" },
   { id: "other", label: "Other", icon: File, color: "text-gray-500", bg: "bg-gray-500/10" },

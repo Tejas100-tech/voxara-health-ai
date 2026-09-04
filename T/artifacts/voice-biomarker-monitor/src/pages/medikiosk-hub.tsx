@@ -115,7 +115,7 @@ export default function MedikioskHub() {
         {/* Hero Banner */}
         <section className={`relative overflow-hidden rounded-[2rem] text-white p-8 md:p-10 shadow-2xl ${
           globalMode === "ayush"
-            ? "bg-gradient-to-br from-green-950 via-green-900 to-amber-950 shadow-green-900/30"
+            ? "bg-gradient-to-br from-cyan-950 via-cyan-900 to-amber-950 shadow-cyan-900/30"
             : "bg-[#011C40] shadow-primary/10"
         }`}>
           {/* AYUSH decorative elements */}
@@ -304,30 +304,30 @@ export default function MedikioskHub() {
                 onClick={() => { setSelectedMode("ayush"); }}
                 className={`p-6 rounded-2xl border text-left transition-all relative overflow-hidden ${
                   selectedMode === "ayush"
-                    ? "bg-gradient-to-br from-green-50 to-amber-50 border-green-500/30 shadow-md ring-2 ring-green-500/10"
-                    : "bg-muted/20 border hover:border-green-500/20"
+                    ? "bg-gradient-to-br from-cyan-50 to-amber-50 border-cyan-500/30 shadow-md ring-2 ring-cyan-500/10"
+                    : "bg-muted/20 border hover:border-cyan-500/20"
                 }`}>
                 {selectedMode === "ayush" && (
                   <div className="absolute top-0 right-0 w-24 h-24 opacity-5">
                     <svg viewBox="0 0 80 80" className="w-full h-full">
-                      <path d="M40 5 C25 25 25 45 40 65 C55 45 55 25 40 5Z" stroke="currentColor" strokeWidth="2" fill="none" className="text-green-700"/>
+                      <path d="M40 5 C25 25 25 45 40 65 C55 45 55 25 40 5Z" stroke="currentColor" strokeWidth="2" fill="none" className="text-cyan-700"/>
                     </svg>
                   </div>
                 )}
                 <div className="relative flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500/15 to-amber-500/15 flex items-center justify-center">
-                    <Leaf size={22} className={selectedMode === "ayush" ? "text-green-700" : "text-muted-foreground"} />
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/15 to-amber-500/15 flex items-center justify-center">
+                    <Leaf size={22} className={selectedMode === "ayush" ? "text-cyan-700" : "text-muted-foreground"} />
                   </div>
                   <div>
                     <h4 className="font-bold">{tr.ayushMode}</h4>
-                    <p className="text-[10px] text-green-700/70 uppercase tracking-wider font-bold">Ayurveda & Siddha</p>
+                    <p className="text-[10px] text-cyan-700/70 uppercase tracking-wider font-bold">Ayurveda & Siddha</p>
                   </div>
                 </div>
                 <p className="relative text-sm text-muted-foreground leading-relaxed">
                   {tr.ayushDesc}
                 </p>
                 {selectedMode === "ayush" && (
-                  <div className="mt-3 relative inline-flex items-center gap-1 text-xs font-bold text-green-700">
+                  <div className="mt-3 relative inline-flex items-center gap-1 text-xs font-bold text-cyan-700">
                     <CheckCircle size={14} /> Selected · Dashavidha Pariksha Mode
                   </div>
                 )}
@@ -500,9 +500,9 @@ export default function MedikioskHub() {
         <section className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {(globalMode === "ayush"
             ? [
-                { icon: Sprout, title: "Prakriti & Vikriti", desc: "AI-powered constitutional assessment analyzing Prakriti (body constitution) and Vikriti (current imbalance) through guided conversation.", color: "text-green-700" },
+                { icon: Sprout, title: "Prakriti & Vikriti", desc: "AI-powered constitutional assessment analyzing Prakriti (body constitution) and Vikriti (current imbalance) through guided conversation.", color: "text-cyan-700" },
                 { icon: Mic, title: tr.voiceTouch, desc: "Speak in your preferred language — Hindi, Tamil, Kannada, or 10+ Indian languages. AI guides you through Dashavidha Pariksha naturally.", color: "text-amber-600" },
-                { icon: Sparkles, title: "Samprapti Analysis", desc: "AI maps your symptoms through Ayurvedic pathogenesis — Nidana, Samprapti, and Dosha assessment — for a physician-ready summary.", color: "text-green-800" },
+                { icon: Sparkles, title: "Samprapti Analysis", desc: "AI maps your symptoms through Ayurvedic pathogenesis — Nidana, Samprapti, and Dosha assessment — for a physician-ready summary.", color: "text-cyan-800" },
               ]
             : [
                 { icon: MessageCircle, title: tr.adaptiveInterview, desc: tr.adaptiveDesc, color: "text-primary" },

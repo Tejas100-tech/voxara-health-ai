@@ -54,7 +54,7 @@ export default function AyushChat() {
             {/* Assessment Progress */}
             <div className="bg-card border rounded-2xl p-5 shadow-sm">
               <div className="flex items-center gap-2 mb-4">
-                <Leaf size={16} className="text-green-700" />
+                <Leaf size={16} className="text-cyan-700" />
                 <h4 className="font-bold text-sm">My AYUSH Information</h4>
               </div>
               {recordedFields.length === 0 ? (
@@ -62,8 +62,8 @@ export default function AyushChat() {
               ) : (
                 <div className="space-y-2">
                   {recordedFields.map(([key, value]) => (
-                    <div key={key} className="flex items-center gap-2 p-2 bg-green-50 dark:bg-green-950/20 rounded-lg">
-                      <CheckCircle size={14} className="text-green-600 shrink-0" />
+                    <div key={key} className="flex items-center gap-2 p-2 bg-cyan-50 dark:bg-cyan-950/20 rounded-lg">
+                      <CheckCircle size={14} className="text-cyan-600 shrink-0" />
                       <div className="min-w-0">
                         <p className="text-xs font-bold capitalize">{key.replace(/_/g, " ")}</p>
                         <p className="text-[11px] text-muted-foreground truncate">{String(value)}</p>
@@ -88,7 +88,7 @@ export default function AyushChat() {
                   return (
                     <div key={section} className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs">
                       {hasData ? (
-                        <CheckCircle size={12} className="text-green-600" />
+                        <CheckCircle size={12} className="text-cyan-600" />
                       ) : (
                         <div className="w-3 h-3 rounded-full border-2 border-muted-foreground/30" />
                       )}
@@ -105,7 +105,7 @@ export default function AyushChat() {
                 onClick={() => setLocation("/patient/ayush/assessment")}
                 className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left text-sm font-semibold hover:bg-muted transition-colors"
               >
-                <FileText size={16} className="text-green-700" />
+                <FileText size={16} className="text-cyan-700" />
                 View Full Assessment
               </button>
               <button

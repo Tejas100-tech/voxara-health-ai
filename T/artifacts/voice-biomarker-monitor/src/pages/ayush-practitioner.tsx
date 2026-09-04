@@ -99,7 +99,7 @@ export default function AyushPractitioner() {
     .filter((p) => p.patientName.toLowerCase().includes(searchTerm.toLowerCase()));
 
   const statusColor = (status: string) => {
-    if (status === "verified") return "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300";
+    if (status === "verified") return "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300";
     if (status === "completed") return "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300";
     return "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300";
   };
@@ -115,7 +115,7 @@ export default function AyushPractitioner() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-extrabold font-[Manrope] flex items-center gap-3">
-                  <Leaf size={24} className="text-green-700" /> AYUSH Practitioner Dashboard
+                  <Leaf size={24} className="text-cyan-700" /> AYUSH Practitioner Dashboard
                 </h2>
                 <p className="text-sm text-muted-foreground mt-1">Review patient assessments, AI briefs, and verify findings</p>
               </div>
@@ -130,7 +130,7 @@ export default function AyushPractitioner() {
               {[
                 { label: "Total Patients", value: patients.length, icon: Users, color: "text-blue-600" },
                 { label: "In Progress", value: patients.filter((p) => p.assessmentStatus === "in_progress").length, icon: Clock, color: "text-amber-600" },
-                { label: "Completed", value: patients.filter((p) => p.assessmentStatus === "completed").length, icon: CheckCircle, color: "text-green-600" },
+                { label: "Completed", value: patients.filter((p) => p.assessmentStatus === "completed").length, icon: CheckCircle, color: "text-cyan-600" },
                 { label: "Verified", value: patients.filter((p) => p.assessmentStatus === "verified").length, icon: Shield, color: "text-purple-600" },
               ].map((stat) => (
                 <div key={stat.label} className="bg-card border rounded-2xl p-4">
@@ -170,7 +170,7 @@ export default function AyushPractitioner() {
             {/* Patient Cards */}
             {loading ? (
               <div className="flex items-center justify-center py-20">
-                <Loader2 className="animate-spin text-green-700" size={32} />
+                <Loader2 className="animate-spin text-cyan-700" size={32} />
               </div>
             ) : filteredPatients.length === 0 ? (
               <div className="text-center py-20 bg-card border rounded-2xl">
@@ -190,7 +190,7 @@ export default function AyushPractitioner() {
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-cyan-600 flex items-center justify-center text-white font-black text-sm">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center text-white font-black text-sm">
                           {patient.patientName.charAt(0)}
                         </div>
                         <div>
@@ -209,10 +209,10 @@ export default function AyushPractitioner() {
                     )}
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1"><FileText size={12} /> {patient.documentCount} docs</span>
-                      {patient.hasAiBrief && <span className="flex items-center gap-1 text-green-600"><CheckCircle size={12} /> AI Brief</span>}
+                      {patient.hasAiBrief && <span className="flex items-center gap-1 text-cyan-600"><CheckCircle size={12} /> AI Brief</span>}
                       <span className="flex items-center gap-1"><Clock size={12} /> {new Date(patient.updatedAt).toLocaleDateString()}</span>
                     </div>
-                    <div className="mt-3 flex items-center gap-1 text-xs font-semibold text-green-700 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="mt-3 flex items-center gap-1 text-xs font-semibold text-cyan-700 opacity-0 group-hover:opacity-100 transition-opacity">
                       View Details <ArrowRight size={12} />
                     </div>
                   </motion.button>
@@ -234,7 +234,7 @@ export default function AyushPractitioner() {
             <div className="bg-card border rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-cyan-600 flex items-center justify-center text-white font-black text-lg">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center text-white font-black text-lg">
                     {selectedPatient.assessment?.patientName?.toString().charAt(0) || "?"}
                   </div>
                   <div>
@@ -248,7 +248,7 @@ export default function AyushPractitioner() {
                   </span>
                   {selectedPatient.assessment?.assessmentStatus !== "verified" && (
                     <>
-                      <Button size="sm" onClick={() => handleVerify("confirm")} className="rounded-xl bg-green-700 hover:bg-green-800">
+                      <Button size="sm" onClick={() => handleVerify("confirm")} className="rounded-xl bg-cyan-700 hover:bg-cyan-800">
                         <CheckCircle size={14} className="mr-1" /> Confirm
                       </Button>
                       <Button size="sm" variant="outline" onClick={() => handleVerify("reject")} className="rounded-xl text-destructive">
@@ -311,11 +311,11 @@ export default function AyushPractitioner() {
               ) : activeTab === "brief" ? (
                 <div>
                   <div className="flex items-center gap-2 mb-4">
-                    <Stethoscope size={18} className="text-green-700" />
+                    <Stethoscope size={18} className="text-cyan-700" />
                     <h3 className="font-bold text-lg">AI-Generated AYUSH Brief</h3>
                   </div>
                   {selectedPatient.aiBrief ? (
-                    <div className="p-5 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-xl">
+                    <div className="p-5 bg-cyan-50 dark:bg-cyan-950/20 border border-cyan-200 dark:border-cyan-800 rounded-xl">
                       {selectedPatient.aiBrief.split("\n").map((line, i) => (
                         <p key={i} className={`text-sm ${line.startsWith("**") ? "font-bold mt-3" : "mt-1"} ${line.startsWith("⚠") ? "text-amber-700 font-semibold" : ""}`}>
                           {line.replace(/\*\*/g, "")}
@@ -372,7 +372,7 @@ export default function AyushPractitioner() {
                     <div className="space-y-2">
                       {selectedPatient.timeline.map((entry: Record<string, unknown>) => (
                         <div key={String(entry.entryId)} className="flex items-start gap-2 p-2 bg-muted/30 rounded-lg text-xs">
-                          <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${entry.type === "ayush" ? "bg-green-500" : "bg-blue-500"}`} />
+                          <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${entry.type === "ayush" ? "bg-cyan-500" : "bg-blue-500"}`} />
                           <div>
                             <p className="font-semibold">{String(entry.title)}</p>
                             <p className="text-muted-foreground">{String(entry.description)}</p>

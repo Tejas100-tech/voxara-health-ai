@@ -294,23 +294,23 @@ export function SosButton() {
                 </div>
               ) : result ? (
                 <div className="text-center space-y-4">
-                  <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto">
-                    <Check size={32} className="text-green-600" />
+                  <div className="w-16 h-16 rounded-full bg-cyan-100 flex items-center justify-center mx-auto">
+                    <Check size={32} className="text-cyan-600" />
                   </div>
-                  <h3 className="text-xl font-extrabold text-green-600">
+                  <h3 className="text-xl font-extrabold text-cyan-600">
                     ✅ Emergency Alert Sent
                   </h3>
                   <p className="text-sm text-muted-foreground">{result.message}</p>
 
                   {result.location?.label && (
-                    <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/30 rounded-xl text-left">
+                    <div className="p-3 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800/30 rounded-xl text-left">
                       <div className="flex items-center gap-2 mb-1">
-                        <MapPin size={14} className="text-green-600" />
-                        <span className="text-[10px] font-black uppercase tracking-wider text-green-700">
+                        <MapPin size={14} className="text-cyan-600" />
+                        <span className="text-[10px] font-black uppercase tracking-wider text-cyan-700">
                           Your Location Sent
                         </span>
                       </div>
-                      <p className="text-xs text-green-800 dark:text-green-200 break-words">
+                      <p className="text-xs text-cyan-800 dark:text-cyan-200 break-words">
                         {result.location.label}
                       </p>
                     </div>

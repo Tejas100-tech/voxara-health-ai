@@ -384,13 +384,13 @@ export default function MedikioskIntake() {
             </button>
             <div className="flex items-center gap-2">
               <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">Progress</span>
-              <span className={`text-sm font-black ${isAyush ? "text-green-700" : "text-primary"}`}>{completeness}%</span>
+              <span className={`text-sm font-black ${isAyush ? "text-cyan-700" : "text-primary"}`}>{completeness}%</span>
             </div>
           </div>
           <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
             <motion.div
               className={`h-full rounded-full ${
-                isAyush ? "bg-gradient-to-r from-green-700 to-amber-500" : "bg-gradient-to-r from-primary to-secondary"
+                isAyush ? "bg-gradient-to-r from-cyan-700 to-amber-500" : "bg-gradient-to-r from-primary to-secondary"
               }`}
               initial={{ width: 0 }}
               animate={{ width: `${completeness}%` }}
@@ -444,8 +444,8 @@ export default function MedikioskIntake() {
             {currentPhase === "chief_complaint" && (
               <div>
                 <div className="text-center mb-8">
-                  <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${isAyush ? "bg-green-500/10" : "bg-primary/10"}`}>
-                    {isAyush ? <Sprout size={28} className="text-green-700" /> : <Stethoscope size={28} className="text-primary" />}
+                  <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${isAyush ? "bg-cyan-500/10" : "bg-primary/10"}`}>
+                    {isAyush ? <Sprout size={28} className="text-cyan-700" /> : <Stethoscope size={28} className="text-primary" />}
                   </div>
                   <h3 className="text-2xl font-extrabold font-[Manrope] mb-2">{t("whatBringsYou")}</h3>
                   <p className="text-muted-foreground">{t("selectSymptom")}</p>
@@ -546,7 +546,7 @@ export default function MedikioskIntake() {
                                 className={`flex-1 h-10 rounded-lg font-bold text-sm transition-all ${
                                   scaleValue === val
                                     ? val <= 3
-                                      ? "bg-green-500 text-white"
+                                      ? "bg-cyan-500 text-white"
                                       : val <= 6
                                         ? "bg-amber-500 text-white"
                                         : "bg-destructive text-white"
@@ -561,7 +561,7 @@ export default function MedikioskIntake() {
                         </div>
                         <p className="text-center text-sm font-bold text-foreground mt-2">
                           {t("severity")}: <span className={
-                            scaleValue <= 3 ? "text-green-600" : scaleValue <= 6 ? "text-amber-600" : "text-destructive"
+                            scaleValue <= 3 ? "text-cyan-600" : scaleValue <= 6 ? "text-amber-600" : "text-destructive"
                           }>{scaleValue}/10</span>
                         </p>
                       </div>

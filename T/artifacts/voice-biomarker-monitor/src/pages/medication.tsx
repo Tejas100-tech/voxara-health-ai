@@ -150,11 +150,11 @@ export default function MedicationWorkflow() {
                         <h4 className="text-lg font-[Manrope] font-bold text-secondary mb-4">Safety Check: AI Confirmation</h4>
                         <div className="space-y-3">
                           <div className="flex items-center gap-3 text-sm font-medium">
-                            <CheckCircle2 className="text-green-600 shrink-0" size={20}/>
+                            <CheckCircle2 className="text-cyan-600 shrink-0" size={20}/>
                             <span>No contraindications detected with concurrent Methotrexate use.</span>
                           </div>
                           <div className="flex items-center gap-3 text-sm font-medium">
-                            <CheckCircle2 className="text-green-600 shrink-0" size={20}/>
+                            <CheckCircle2 className="text-cyan-600 shrink-0" size={20}/>
                             <span>Patient weight (68kg) supports the 20mg tapering threshold.</span>
                           </div>
                         </div>

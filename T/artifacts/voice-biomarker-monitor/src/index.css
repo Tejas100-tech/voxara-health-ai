@@ -250,3 +250,92 @@
   pointer-events: none;
   z-index: 0;
 }
+
+/* ── LUNA site design utilities ─────────────────────────────── */
+
+/* Sky-blue page wash used by the new light landing + auth pages */
+.luna-sky {
+  background:
+    radial-gradient(1200px 620px at 85% -10%, hsl(186 60% 80% / 0.55) 0%, transparent 60%),
+    radial-gradient(900px 520px at -10% 20%, hsl(189 40% 54% / 0.28) 0%, transparent 55%),
+    linear-gradient(180deg, hsl(186 70% 92%) 0%, hsl(186 45% 96%) 45%, hsl(0 0% 100%) 100%);
+}
+
+.luna-sky-dark {
+  background:
+    radial-gradient(1200px 620px at 85% -10%, hsl(189 40% 54% / 0.16) 0%, transparent 60%),
+    radial-gradient(900px 520px at -10% 20%, hsl(202 57% 35% / 0.14) 0%, transparent 55%),
+    linear-gradient(180deg, hsl(210 98% 8%) 0%, hsl(204 96% 12%) 60%, hsl(210 98% 7%) 100%);
+}
+
+/* Soft dot grid used inside hero panels */
+.luna-dots {
+  background-image: radial-gradient(hsl(202 57% 35% / 0.16) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+
+/* Gradient text (steel blue → teal) */
+.luna-text-gradient {
+  background: linear-gradient(92deg, #26658C 0%, #54ACBF 45%, #26658C 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Brand gradient pill (teal → steel blue → navy) */
+.luna-brand-gradient {
+  background: linear-gradient(135deg, #54ACBF 0%, #26658C 55%, #023859 130%);
+}
+
+/* Hero button gradient */
+.luna-btn {
+  background: linear-gradient(135deg, #26658C 0%, #023859 100%);
+  color: #fff;
+  box-shadow: 0 10px 30px -10px hsl(202 57% 35% / 0.55);
+}
+.luna-btn:hover {
+  background: linear-gradient(135deg, #54ACBF 0%, #26658C 100%);
+}
+
+.luna-btn-teal {
+  background: linear-gradient(135deg, #54ACBF 0%, #26658C 100%);
+  color: #fff;
+  box-shadow: 0 10px 30px -10px hsl(189 40% 54% / 0.55);
+}
+.luna-btn-teal:hover {
+  filter: brightness(1.06);
+}
+
+/* Soft floating motion for hero cards */
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-floaty { animation: floaty 6s ease-in-out infinite; }
+.animate-floaty-slow { animation: floaty 9s ease-in-out infinite; }
+
+/* Voice waveform equalizer bars */
+@keyframes eq {
+  0%, 100% { transform: scaleY(0.25); }
+  50% { transform: scaleY(1); }
+}
+.eq-bar {
+  transform-origin: center;
+  animation: eq 1.1s ease-in-out infinite;
+}
+
+/* Pulse dot for live badges */
+@keyframes ping-soft {
+  0% { box-shadow: 0 0 0 0 hsl(189 40% 54% / 0.5); }
+  75%, 100% { box-shadow: 0 0 0 8px hsl(189 40% 54% / 0); }
+}
+.animate-ping-soft { animation: ping-soft 1.6s cubic-bezier(0, 0, 0.2, 1) infinite; }
+
+/* Card hover lift used across light sections */
+.lift-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.lift-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 48px -16px hsl(202 57% 35% / 0.22);
+}

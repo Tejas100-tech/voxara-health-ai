@@ -55,7 +55,7 @@ function AlertCard({
       className={`relative rounded-2xl border-2 overflow-hidden transition-all ${
         isActive
           ? "border-red-500 bg-red-50 dark:bg-red-950/30 shadow-lg shadow-red-500/20"
-          : "border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/10"
+          : "border-cyan-200 dark:border-cyan-800 bg-cyan-50/50 dark:bg-cyan-950/10"
       }`}
     >
       {/* Active alert pulse animation */}
@@ -77,7 +77,7 @@ function AlertCard({
               className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
                 isActive
                   ? "bg-red-500 text-white animate-pulse"
-                  : "bg-green-500 text-white"
+                  : "bg-cyan-500 text-white"
               }`}
             >
               {isActive ? <Siren size={24} /> : <CheckCircle size={24} />}
@@ -89,7 +89,7 @@ function AlertCard({
                   className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
                     isActive
                       ? "bg-red-500 text-white"
-                      : "bg-green-500 text-white"
+                      : "bg-cyan-500 text-white"
                   }`}
                 >
                   {isActive ? "EMERGENCY" : "ACKNOWLEDGED"}
@@ -120,17 +120,17 @@ function AlertCard({
             className={`mb-4 p-3 rounded-xl ${
               isActive
                 ? "bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800/40"
-                : "bg-green-100 dark:bg-green-900/20 border border-green-200 dark:border-green-800/30"
+                : "bg-cyan-100 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800/30"
             }`}
           >
             <div className="flex items-center gap-2 mb-1">
               <MapPin
                 size={14}
-                className={isActive ? "text-red-600" : "text-green-600"}
+                className={isActive ? "text-red-600" : "text-cyan-600"}
               />
               <span
                 className={`text-[10px] font-black uppercase tracking-wider ${
-                  isActive ? "text-red-700" : "text-green-700"
+                  isActive ? "text-red-700" : "text-cyan-700"
                 }`}
               >
                 Patient Location
@@ -140,7 +140,7 @@ function AlertCard({
               className={`text-xs break-words ${
                 isActive
                   ? "text-red-800 dark:text-red-200"
-                  : "text-green-800 dark:text-green-200"
+                  : "text-cyan-800 dark:text-cyan-200"
               }`}
             >
               {alert.locationLabel}
@@ -173,7 +173,7 @@ function AlertCard({
             )}
           </div>
           {alert.acknowledgedAt && (
-            <span className="text-xs text-green-600 font-bold">
+            <span className="text-xs text-cyan-600 font-bold">
               Acknowledged by {alert.acknowledgedBy}
             </span>
           )}
@@ -185,7 +185,7 @@ function AlertCard({
             <Button
               onClick={() => onAcknowledge(alert.alertId)}
               disabled={isAcknowledging}
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold"
+              className="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl font-bold"
             >
               <CheckCircle size={16} className="mr-2" />
               Acknowledge & Dispatch
@@ -357,9 +357,9 @@ export default function SosDashboard() {
                 🚨 SOS Emergency Center
               </h2>
               {sseConnected && (
-                <div className="flex items-center gap-1.5 px-3 py-1 bg-green-100 dark:bg-green-900/30 rounded-full">
-                  <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-[10px] font-black uppercase tracking-wider text-green-700 dark:text-green-300">
+                <div className="flex items-center gap-1.5 px-3 py-1 bg-cyan-100 dark:bg-cyan-900/30 rounded-full">
+                  <span className="h-2 w-2 rounded-full bg-cyan-500 animate-pulse" />
+                  <span className="text-[10px] font-black uppercase tracking-wider text-cyan-700 dark:text-cyan-300">
                     Live
                   </span>
                 </div>
@@ -421,7 +421,7 @@ export default function SosDashboard() {
           </div>
         ) : filteredAlerts.length === 0 ? (
           <div className="text-center py-20 bg-card border rounded-2xl">
-            <CheckCircle className="mx-auto text-green-500 mb-4" size={48} />
+            <CheckCircle className="mx-auto text-cyan-500 mb-4" size={48} />
             <h3 className="text-xl font-extrabold mb-2">
               {filter === "active"
                 ? "No Active Emergencies"
@@ -453,7 +453,7 @@ export default function SosDashboard() {
           <div className="flex items-center gap-1.5">
             <span
               className={`h-2 w-2 rounded-full ${
-                sseConnected ? "bg-green-500" : "bg-red-500"
+                sseConnected ? "bg-cyan-500" : "bg-red-500"
               }`}
             />
             SSE: {sseConnected ? "Connected" : "Disconnected"}

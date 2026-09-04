@@ -61,7 +61,7 @@ export default function AyushHub() {
     <AppLayout userType={user?.role === "clinician" ? "clinician" : "patient"}>
       <div className="max-w-5xl mx-auto space-y-8">
         {/* Hero */}
-        <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-green-950 via-green-900 to-amber-950 text-white p-8 md:p-10 shadow-2xl shadow-green-900/30">
+        <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-cyan-950 via-cyan-900 to-amber-950 text-white p-8 md:p-10 shadow-2xl shadow-cyan-900/30">
           <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_85%_15%,rgba(34,197,94,.22),transparent_38%),radial-gradient(ellipse_at_10%_90%,rgba(245,158,11,.18),transparent_40%)]" />
           <div className="absolute top-4 right-6 opacity-10">
             <svg viewBox="0 0 120 120" className="w-40 h-40" fill="none">
@@ -79,7 +79,7 @@ export default function AyushHub() {
               <h2 className="text-3xl md:text-4xl font-extrabold font-[Manrope] leading-tight">
                 Ayurvedic <span className="text-amber-300">Pre-Consultation</span> Assistant
               </h2>
-              <p className="text-green-200/80 text-base leading-relaxed">
+              <p className="text-cyan-200/80 text-base leading-relaxed">
                 AI-powered Ayurvedic intake that captures your lifestyle, dietary habits, digestive patterns, and constitutional characteristics — all before your consultation with a qualified Vaidya.
               </p>
               <div className="grid grid-cols-3 gap-3 pt-2">
@@ -102,8 +102,8 @@ export default function AyushHub() {
         {/* Mode Selection */}
         <section className="bg-card border rounded-[2rem] p-8 shadow-sm">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
-              <Activity size={20} className="text-green-700" />
+            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
+              <Activity size={20} className="text-cyan-700" />
             </div>
             <div>
               <h3 className="font-bold text-lg">Choose Your Path</h3>
@@ -113,22 +113,22 @@ export default function AyushHub() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <button
               onClick={() => setSelectedMode("pre_consultation")}
-              className={`p-6 rounded-2xl border text-left transition-all ${selectedMode === "pre_consultation" ? "bg-green-50 border-green-500/30 shadow-md ring-2 ring-green-500/10" : "bg-muted/20 border hover:border-green-500/20"}`}
+              className={`p-6 rounded-2xl border text-left transition-all ${selectedMode === "pre_consultation" ? "bg-cyan-50 border-cyan-500/30 shadow-md ring-2 ring-cyan-500/10" : "bg-muted/20 border hover:border-cyan-500/20"}`}
             >
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
-                  <Stethoscope size={22} className={selectedMode === "pre_consultation" ? "text-green-700" : "text-muted-foreground"} />
+                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
+                  <Stethoscope size={22} className={selectedMode === "pre_consultation" ? "text-cyan-700" : "text-muted-foreground"} />
                 </div>
                 <div>
                   <h4 className="font-bold">Pre-Consultation Assessment</h4>
-                  <p className="text-[10px] text-green-700/70 uppercase tracking-wider font-bold">Ayurvedic History</p>
+                  <p className="text-[10px] text-cyan-700/70 uppercase tracking-wider font-bold">Ayurvedic History</p>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Guided conversational intake covering Ahara, Vihara, Agni, Koshtha, Nidra, Dashavidha Pariksha, and more. Your information is prepared for the Vaidya.
               </p>
               {selectedMode === "pre_consultation" && (
-                <div className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-green-700">
+                <div className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-cyan-700">
                   ✓ Selected
                 </div>
               )}
@@ -161,7 +161,7 @@ export default function AyushHub() {
               size="lg"
               onClick={handleStartChat}
               disabled={loading}
-              className="px-10 py-6 rounded-2xl text-lg font-bold shadow-lg shadow-green-700/20 bg-gradient-to-r from-green-700 to-cyan-600 hover:from-green-800 hover:to-cyan-700"
+              className="px-10 py-6 rounded-2xl text-lg font-bold shadow-lg shadow-cyan-700/20 bg-gradient-to-r from-cyan-700 to-cyan-600 hover:from-cyan-800 hover:to-cyan-700"
             >
               {loading ? <Loader2 className="animate-spin mr-2" size={20} /> : <MessageCircle className="mr-2" size={20} />}
               {loading ? "Starting..." : "Open AyurBot"}
