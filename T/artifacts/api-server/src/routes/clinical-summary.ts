@@ -3,7 +3,7 @@ import { logger } from "../lib/logger";
 import { connectMongoDB, hasMongoDB } from "../lib/mongodb";
 import SummaryRecord from "../models/summary-record";
 import { translateCode, searchNAMASTE } from "../lib/namaste-icd11";
-import { generateWithGemini } from "../lib/gemini";
+import { generateWithLuna } from "../lib/gpt-luna";
 
 const router = Router();
 
@@ -238,21 +238,21 @@ router.post("/clinical-summary/generate", async (req, res) => {
         return text;
       }).join("\n\n");
 
-      // Use Google Gemini for clinical summary generation
+      // Use GPT-5.6 Luna for clinical summary generation
       try {
         const aiPrompt = isAyush
           ? `You are MediKiosk Ayurvedic AI expert. Generate a comprehensive AYUSH clinical summary as a JSON object with keys: chiefComplaint (object with symptom/duration/severity), dashavidhaPariksha (object with prakriti/vikriti/sara/samhanana/pramana/satatmya/sattva/aharaShakti/vyayamaShakti/vaya each with title and finding), aharaVihara (object with ahara/vihara each with title and finding), historyOfPresentIllness (string), priorInvestigations (array), abnormalFlags (array), aiAssessment (string with dominant dosha). Be extremely thorough and detailed. Patient: ${patientName} (${patientId}). Chief Complaint: ${chiefComplaint || answers[0]?.answer || "Not specified"}. History: ${historyText}. Documents: ${docsText || "None"}`
           : `You are MediKiosk Clinical AI expert. Generate a comprehensive clinical summary as a JSON object with keys: chiefComplaint (object with symptom/duration/severity), historyOfPresentIllness (detailed SOAP narrative), pastMedicalHistory (array), drugAllergyHistory (array), familyHistory (array), personalHistory (array), priorInvestigations (array), redFlags (array), aiAssessment (comprehensive with differential diagnosis and risk stratification). Be extremely thorough. Patient: ${patientName} (${patientId}). Chief Complaint: ${chiefComplaint || answers[0]?.answer || "Not specified"}. History: ${historyText}. Documents: ${docsText || "None"}`;
 
-        const aiResponse = await generateWithGemini("general" as any, aiPrompt, "en");
+        const aiResponse = await generateWithLuna("general" as any, aiPrompt, "en");
         summary = JSON.parse(aiResponse);
-        logger.info("Clinical summary generated using Gemini");
+        logger.info("Clinical summary generated using GPT-5.6 Luna");
       } catch (aiError: any) {
-        logger.info({ err: aiError.message }, "Gemini failed, using fallback summary generator");
+        logger.info({ err: aiError.message }, "GPT-5.6 Luna failed, using fallback summary generator");
         summary = isAyush ? generateAyushSummary(answers, docs || [], chiefComplaint || "") : generateAllopathicSummary(answers, docs || [], chiefComplaint || "");
       }
     } catch (aiError: any) {
-        logger.info({ err: aiError.message }, "Gemini failed, using fallback summary generator");
+        logger.info({ err: aiError.message }, "GPT-5.6 Luna failed, using fallback summary generator");
         summary = isAyush ? generateAyushSummary(answers, docs || [], chiefComplaint || "") : generateAllopathicSummary(answers, docs || [], chiefComplaint || "");
       }
 

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { logger } from "../lib/logger";
-import { generateWithGemini } from "../lib/gemini";
+import { generateWithLuna } from "../lib/gpt-luna";
 import { DISEASE_KNOWLEDGE, MEDICATION_KNOWLEDGE, EMERGENCY_KNOWLEDGE, DIET_KNOWLEDGE, AYUSH_KNOWLEDGE, getResponseForLanguage } from "../lib/medical-knowledge";
 import { EXTRA_MEDICATION_KNOWLEDGE } from "../lib/medications-extra";
 import { MEDICINE_DATABASE, DISEASE_MEDICINE_MAP, findMedicine, getMedicinesForDisease, formatMedicineResponse } from "../lib/medicine-database";
@@ -193,7 +193,7 @@ function detectIntent(message: string): { category: string; subcategory?: string
   return { category: "unknown" };
 }
 
-// ── Generate AI response using Google Gemini ──────────────────────────────
+// ── Generate AI response using GPT-5.6 Luna ───────────────────────────────
 async function generateResponse(
   chatType: "general" | "ayush",
   userMessage: string,
@@ -202,13 +202,13 @@ async function generateResponse(
 ): Promise<string> {
   const intent = detectIntent(userMessage);
 
-  // Try Google Gemini first for dynamic, conversational responses
+  // Try GPT-5.6 Luna first for dynamic, conversational responses
   try {
-    const response = await generateWithGemini(chatType, userMessage, language, conversationHistory);
+    const response = await generateWithLuna(chatType, userMessage, language, conversationHistory);
     if (response) return response;
-    throw new Error("Empty response from Gemini");
+    throw new Error("Empty response from GPT-5.6 Luna");
   } catch (error: any) {
-    logger.info({ err: error.message }, "Gemini failed, using fallback responses");
+    logger.info({ err: error.message }, "GPT-5.6 Luna failed, using fallback responses");
 
     // 1. Check casual conversation FIRST (greetings, thanks, jokes, etc.)
     const casualResponse = matchCasualConversation(userMessage, language);

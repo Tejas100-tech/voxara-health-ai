@@ -1,18 +1,21 @@
-import { GoogleGenAI } from "@google/genai";
+import OpenAI from "openai";
 
-// ── Gemini AI Client (replaces Groq/Anthropic) ─────────────────────────
+// ── GPT-5.6 Luna AI Client ────────────────────────────────────────────────
+// Replaces the Google Gemini integration. Uses OpenAI's fast, cost-efficient
+// tier model `gpt-5.6-luna`.
 // Read env lazily so esbuild doesn't capture empty value at bundle time
-let geminiClient: GoogleGenAI | null = null;
+let lunaClient: OpenAI | null = null;
 
-function getGeminiClient(): GoogleGenAI {
-  if (!geminiClient) {
-    const apiKey = process.env["GEMINI_API_KEY"];
+function getLunaClient(): OpenAI {
+  if (!lunaClient) {
+    const apiKey = process.env["OPENAI_API_KEY"];
     if (!apiKey) {
-      throw new Error("Google Gemini API key not configured (GEMINI_API_KEY)");
+      throw new Error("OpenAI API key not configured (OPENAI_API_KEY)");
     }
-    geminiClient = new GoogleGenAI({ apiKey });
+    const baseURL = process.env["OPENAI_BASE_URL"] || undefined;
+    lunaClient = baseURL ? new OpenAI({ apiKey, baseURL }) : new OpenAI({ apiKey });
   }
-  return geminiClient;
+  return lunaClient;
 }
 
 // ── Language code → full name mapping ────────────────────────────────────
@@ -75,7 +78,7 @@ function getAyushSystemPrompt(langName: string, langCode: string): string {
 🌿 Prakriti assessment and dosha analysis
 🌿 Vikriti (current imbalance) identification
 🌿 Agni (digestive fire) optimization
-🌿 Ayurvedic herb recommendations (Ashwagandha, Brahmi, Triphala, Shatavari, Guduchi, etc.)
+🌿 Ayurvedic herb recommendations (Ashwagandha, Brahmi, Triphala, Shatavati, Guduchi, etc.)
 🌿 Dinacharya (daily routine) and Ritucharya (seasonal routine)
 🌿 Ahara (diet) based on dosha type
 🌿 Panchakarma and detoxification
@@ -87,63 +90,58 @@ function getAyushSystemPrompt(langName: string, langCode: string): string {
 1. You MUST respond in the user's chosen language (language code: ${langCode}). ${langCode === 'hi-en' ? 'For Hinglish: Mix Hindi words with English naturally, like how urban Indians speak — e.g., "Prakriti test ke liye mujhe aapke body frame ke baare mein puchna hai" or "Ashwagandha bahut acchi herb hai stress ke liye, daily le sakte ho".' : `Every single word in your response must be in ${langName}. Do NOT use English except for proper Ayurvedic terminology (Prakriti, Dosha, Agni, etc.) and herb names.`}
 2. Be conversational, friendly, and empathetic — like a knowledgeable Ayurvedic practitioner who genuinely cares.
 3. Use emojis for visual appeal and structure.
-4. Keep responses comprehensive but well-organized.
+4. Keep responses comprehensive and well-organized.
 5. Always include Ayurvedic disclaimers.
 6. You can discuss ANY Ayurvedic topic — herbs, treatments, lifestyle, diet, yoga, detox, seasonal routines, etc.
 7. For casual conversation (greetings, jokes, small talk), respond warmly and naturally, then gently guide toward Ayurvedic wellness topics.`;
 }
 
-// ── Generate response using Google Gemini ────────────────────────────────
-export async function generateWithGemini(
+// ── Generate response using GPT-5.6 Luna ─────────────────────────────────
+export async function generateWithLuna(
   chatType: "general" | "ayush",
   userMessage: string,
   language: string = "en",
   conversationHistory?: Array<{ role: "user" | "assistant"; content: string }>
 ): Promise<string> {
-  const client = getGeminiClient();
+  const client = getLunaClient();
   const langName = LANGUAGE_NAMES[language] || "English";
 
   const systemPrompt = chatType === "ayush"
     ? getAyushSystemPrompt(langName, language)
     : getGeneralSystemPrompt(langName, language);
 
-  // Build message contents with conversation history
-  const contents: Array<{ role: string; parts: Array<{ text: string }> }> = [];
+  // Build OpenAI messages with conversation history (last 10 messages max)
+  const messages: Array<{ role: "system" | "user" | "assistant"; content: string }> = [
+    { role: "system", content: systemPrompt },
+  ];
 
-  // Add conversation history for context (last 10 messages max)
   if (conversationHistory && conversationHistory.length > 0) {
     const recentHistory = conversationHistory.slice(-10);
     for (const msg of recentHistory) {
-      contents.push({
-        role: msg.role === "assistant" ? "model" : "user",
-        parts: [{ text: msg.content }],
+      messages.push({
+        role: msg.role === "assistant" ? "assistant" : "user",
+        content: msg.content,
       });
     }
   }
 
   // Add current user message
-  contents.push({
-    role: "user",
-    parts: [{ text: userMessage }],
-  });
+  messages.push({ role: "user", content: userMessage });
 
-  // Try multiple models with fallback
-  const models = ["gemini-3.6-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+  // GPT-5.6 Luna with retry on transient errors
+  const models = ["gpt-5.6-luna"];
   let lastError: any = null;
 
   for (const model of models) {
     try {
-      const response = await client.models.generateContent({
+      const response = await client.chat.completions.create({
         model,
-        contents,
-        config: {
-          systemInstruction: systemPrompt,
-          temperature: 0.7,
-          maxOutputTokens: 2048,
-        },
+        messages,
+        temperature: 0.7,
+        max_tokens: 2048,
       });
 
-      const text = response.text;
+      const text = response.choices?.[0]?.message?.content;
       if (text) return text;
     } catch (err: any) {
       lastError = err;
@@ -157,5 +155,5 @@ export async function generateWithGemini(
     }
   }
 
-  throw lastError || new Error("All Gemini models failed");
+  throw lastError || new Error("All GPT-5.6 Luna models failed");
 }

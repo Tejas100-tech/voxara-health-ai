@@ -357,3 +357,148 @@
   transform: translateY(-6px);
   box-shadow: 0 24px 48px -16px hsl(202 57% 35% / 0.22);
 }
+
+/* ── Accessibility: Simple mode (bigger text & touch targets) ──────────── */
+/* Tailwind uses rem everywhere, so scaling the root font-size scales the
+   whole app proportionally (text, padding, buttons, spacing). */
+html.a11y-simple {
+  font-size: 18px;
+}
+html.a11y-simple body {
+  line-height: 1.6;
+}
+html.a11y-simple .luna-app-bg {
+  letter-spacing: 0.01em;
+}
+html.a11y-simple :focus-visible {
+  outline: 3px solid #54acbf;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html.a11y-simple *,
+  html.a11y-simple *::before,
+  html.a11y-simple *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Accessibility: High Contrast mode ─────────────────────────────────── */
+/* Forced light theme: black on white, black borders, underlined links. */
+html.a11y-hc {
+  color-scheme: light;
+  font-weight: 500;
+}
+html.a11y-hc body,
+html.a11y-hc aside,
+html.a11y-hc header,
+html.a11y-hc main,
+html.a11y-hc div,
+html.a11y-hc section {
+  background-color: #ffffff !important;
+  background-image: none !important;
+}
+html.a11y-hc h1, html.a11y-hc h2, html.a11y-hc h3, html.a11y-hc h4,
+html.a11y-hc p, html.a11y-hc span, html.a11y-hc li, html.a11y-hc label,
+html.a11y-hc td, html.a11y-hc th, html.a11y-hc a, html.a11y-hc small,
+html.a11y-hc select, html.a11y-hc option {
+  color: #000000 !important;
+}
+html.a11y-hc * {
+  border-color: #000000 !important;
+  box-shadow: none !important;
+}
+html.a11y-hc a {
+  text-decoration: underline !important;
+  text-underline-offset: 2px;
+}
+html.a11y-hc button,
+html.a11y-hc [role="button"],
+html.a11y-hc a[href*="intake"],
+html.a11y-hc a[href*="clinician"] {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #000000 !important;
+  font-weight: 700;
+}
+html.a11y-hc input, html.a11y-hc select, html.a11y-hc textarea {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+html.a11y-hc :focus-visible {
+  outline: 3px solid #0000ff !important;
+  outline-offset: 2px;
+}
+
+/* ── Sign-language avatar helper ───────────────────────────────────────── */
+.sig-avatar .arm-l,
+.sig-avatar .arm-r {
+  position: absolute;
+  width: 13px;
+  height: 46px;
+  border-radius: 999px;
+  background: linear-gradient(#3b86a8, #1f5270);
+  box-shadow: inset -2px 0 2px rgba(0, 0, 0, 0.15);
+  transform-origin: 50% 6px;
+  transition: transform 0.45s ease;
+  top: 66px;
+}
+.sig-avatar .arm-l::after,
+.sig-avatar .arm-r::after {
+  content: "";
+  position: absolute;
+  left: -4px;
+  bottom: -5px;
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  background: #f6c8a0;
+  border: 2px solid #5a3a22;
+}
+.sig-avatar .arm-l { left: 55px; transform: rotate(14deg); }
+.sig-avatar .arm-r { right: 55px; transform: rotate(-14deg); }
+
+/* hello → wave the right hand */
+.sig-avatar .arm-r.sign-arm-r-hello {
+  animation: sig-wave 0.45s ease-in-out 6;
+}
+@keyframes sig-wave {
+  0%, 100% { transform: rotate(-70deg); }
+  50% { transform: rotate(-100deg); }
+}
+/* wait → both hands raised */
+.sig-avatar .arm-l.sign-arm-l-wait { transform: rotate(-150deg); }
+.sig-avatar .arm-r.sign-arm-r-wait { transform: rotate(150deg); }
+/* start → point up-left */
+.sig-avatar .arm-l.sign-arm-l-start { transform: rotate(-125deg); }
+.sig-avatar .arm-r.sign-arm-r-start { transform: rotate(-20deg); }
+/* thank → hands pressed (namaste) */
+.sig-avatar .arm-l.sign-arm-l-thank { transform: rotate(-58deg); }
+.sig-avatar .arm-r.sign-arm-r-thank { transform: rotate(58deg); }
+/* pain → hand to the chest, slight wiggle */
+.sig-avatar .arm-r.sign-arm-r-pain {
+  transform: rotate(-96deg);
+  animation: sig-touch 0.5s ease-in-out 4;
+}
+@keyframes sig-touch {
+  0%, 100% { transform: rotate(-96deg); }
+  50% { transform: rotate(-78deg); }
+}
+
+/* head nod (yes) & shake (no) — preserve translateX centering */
+.sig-avatar .sign-head-yes { animation: sig-yes 0.55s ease-in-out 3; transform-origin: 50% 90%; }
+.sig-avatar .sign-head-no { animation: sig-no 0.45s ease-in-out 4; transform-origin: 50% 90%; }
+@keyframes sig-yes {
+  0%, 100% { transform: translateX(-50%) rotate(0deg); }
+  50% { transform: translateX(-50%) rotate(-12deg); }
+}
+@keyframes sig-no {
+  0%, 100% { transform: translateX(-50%) rotate(0deg); }
+  25% { transform: translateX(-50%) rotate(-16deg); }
+  75% { transform: translateX(-50%) rotate(16deg); }
+}

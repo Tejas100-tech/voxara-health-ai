@@ -1,11 +1,14 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 import {
   ClipboardList, FileSearch, FileText, LayoutDashboard, LogOut, Moon, Sun,
   Menu, X, Stethoscope, ShieldCheck, User, Globe, Calendar, CalendarClock, MessageSquare, Leaf,
-  Search, MapPin,
+  Search, MapPin, Accessibility, Volume2, VolumeX, HelpCircle, Contrast, AudioLines,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { A11yTour } from "@/components/a11y-tour";
+import { SignHelp } from "@/components/a11y-sign";
+import { useAccessibility } from "@/lib/accessibility";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { useLanguage } from "@/lib/language";
@@ -22,8 +25,52 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pageRef = useRef<HTMLDivElement>(null);
+
+  const {
+    simpleMode, toggleSimpleMode,
+    highContrast, toggleHighContrast,
+    audioMode, toggleAudioMode,
+    speak, stopSpeaking, speaking,
+    tourOpen, openTour, tourSeen,
+  } = useAccessibility();
+
+  // Tiny bilingual microcopy for the accessibility controls (icon-driven)
+  const a11yL = (enTxt: string, hiTxt: string) => (language === "hi" ? hiTxt : enTxt);
 
   const effectiveRole = user?.role ?? userType;
+
+  // Auto-open the guided tour for a first-time patient landing on the dashboard
+  useEffect(() => {
+    if (user && effectiveRole === "patient" && !tourSeen && !tourOpen && (location === "/" || location === "")) {
+      openTour();
+    }
+  }, [user, effectiveRole, tourSeen, tourOpen, location, openTour]);
+
+  // Read the current page's content aloud (audio prompts)
+  const handleSpeakPage = () => {
+    if (speaking) {
+      stopSpeaking();
+      return;
+    }
+    let text = pageRef.current?.innerText?.replace(/\s+/g, " ").trim() || "";
+    if (text.length > 1800) text = text.slice(0, 1800) + ".";
+    speak(`${currentPage}. ${text}`.trim(), { rate: 1 });
+  };
+
+  // Audio Mode: automatically narrate each screen for visually impaired users
+  useEffect(() => {
+    if (!audioMode || !user) return;
+    const timer = setTimeout(() => {
+      if (!speaking) {
+        let text = pageRef.current?.innerText?.replace(/\s+/g, " ").trim() || "";
+        if (text.length > 1000) text = text.slice(0, 1000) + ".";
+        if (text) speak(`${currentPage}. ${text}`.trim(), { rate: 0.96 });
+      }
+    }, 1100);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location, audioMode, user]);
 
   // t() returns the raw key when a translation is missing, so resolve labels
   // with a fallback for keys that may not be defined in every language yet.
@@ -115,7 +162,7 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
                   ? "bg-[#54ACBF] text-white shadow-md border border-transparent dark:bg-white/10 dark:text-cyan-300 dark:shadow-sm dark:border-cyan-500/30"
                   : "text-[#26658C] hover:bg-[#A7EBF2]/45 hover:text-[#023859] dark:text-cyan-100/60 dark:hover:bg-white/5 dark:hover:text-white"
               }`}>
-              <Icon size={18} />{item.name}
+              <Icon size={simpleMode ? 23 : 18} />{item.name}
             </Link>
           );
         })}
@@ -125,7 +172,7 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
         {effectiveRole === "patient" && (
           <Link href="/intake" onClick={() => setMobileOpen(false)}>
             <Button className="w-full rounded-xl py-6 luna-btn-teal hover:brightness-105 shadow-lg shadow-[#54ACBF]/25" size="lg">
-              <ClipboardList className="mr-2" size={18} />{t("nav.startNewIntake")}
+              <ClipboardList className="mr-2" size={simpleMode ? 24 : 18} />{t("nav.startNewIntake")}
             </Button>
           </Link>
         )}
@@ -176,6 +223,78 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
               ))}
             </select>
 
+            {/* Accessibility — read page aloud */}
+            <button
+              onClick={handleSpeakPage}
+              title={speaking ? a11yL("Stop speaking", "बोलना बंद करें") : a11yL("Read this page aloud", "यह पेज सुनें")}
+              aria-pressed={speaking}
+              aria-label={speaking ? a11yL("Stop speaking", "बोलना बंद करें") : a11yL("Read this page aloud", "यह पेज सुनें")}
+              className={`flex items-center gap-1.5 px-3 h-9 rounded-xl font-bold text-xs transition-all border ${
+                speaking
+                  ? "bg-[#54ACBF] text-white border-transparent shadow-md"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted border-transparent hover:border-border"
+              }`}>
+              {speaking ? <VolumeX size={18} /> : <Volume2 size={18} />}
+              <span className="hidden xl:inline">{speaking ? a11yL("Stop", "रोकें") : a11yL("Speak", "सुनें")}</span>
+            </button>
+
+            {/* Accessibility — Audio Mode (auto-narrates pages) */}
+            <button
+              onClick={toggleAudioMode}
+              title={audioMode ? a11yL("Audio Mode is ON — pages read aloud", "ऑडियो मोड चालू — पेज सुनाई देंगे") : a11yL("Audio Mode — reads every page aloud for visually impaired users", "ऑडियो मोड — हर पेज सुनाएगा")}
+              aria-pressed={audioMode}
+              aria-label={audioMode ? a11yL("Turn off audio mode", "ऑडियो मोड बंद करें") : a11yL("Turn on audio mode", "ऑडियो मोड चालू करें")}
+              className={`flex items-center gap-1.5 px-3 h-9 rounded-xl font-bold text-xs transition-all border ${
+                audioMode
+                  ? "bg-[#26658C] text-white border-transparent shadow-md"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted border-transparent hover:border-border"
+              }`}>
+              <AudioLines size={18} />
+              <span className="hidden xl:inline">{audioMode ? a11yL("Audio ON", "ऑडियो चालू") : a11yL("Audio", "ऑडियो")}</span>
+            </button>
+
+            {/* Accessibility — High contrast mode */}
+            <button
+              onClick={toggleHighContrast}
+              title={highContrast ? a11yL("High contrast is ON — tap to turn off", "उच्च कंट्रास्ट चालू — बंद करें") : a11yL("High contrast mode — black on white", "उच्च कंट्रास्ट मोड")}
+              aria-pressed={highContrast}
+              aria-label={highContrast ? a11yL("Turn off high contrast", "उच्च कंट्रास्ट बंद करें") : a11yL("Turn on high contrast", "उच्च कंट्रास्ट चालू करें")}
+              className={`flex items-center gap-1.5 px-3 h-9 rounded-xl font-bold text-xs transition-all border ${
+                highContrast
+                  ? "bg-[#000] text-white border-transparent shadow-md"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted border-transparent hover:border-border"
+              }`}>
+              <Contrast size={18} />
+              <span className="hidden xl:inline">{highContrast ? a11yL("High contrast", "उच्च कंट्रास्ट") : a11yL("Contrast", "कंट्रास्ट")}</span>
+            </button>
+
+            {/* Accessibility — Simple mode (bigger text & buttons) */}
+            <button
+              onClick={toggleSimpleMode}
+              title={simpleMode ? a11yL("Simple mode is ON — tap to turn off", "सरल मोड चालू है — बंद करने के लिए दबाएँ") : a11yL("Simple mode — bigger text and buttons", "सरल मोड — बड़ा टेक्स्ट और बटन")}
+              aria-pressed={simpleMode}
+              aria-label={simpleMode ? a11yL("Turn off simple mode", "सरल मोड बंद करें") : a11yL("Turn on simple mode", "सरल मोड चालू करें")}
+              className={`flex items-center gap-1.5 px-3 h-9 rounded-xl font-bold text-xs transition-all border ${
+                simpleMode
+                  ? "bg-[#26658C] text-white border-transparent shadow-md"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted border-transparent hover:border-border"
+              }`}>
+              <Accessibility size={18} />
+              <span className="hidden xl:inline">{simpleMode ? a11yL("Simple ON", "सरल चालू") : a11yL("Simple", "सरल")}</span>
+            </button>
+
+            {/* Guided tour (replay) */}
+            {effectiveRole === "patient" && (
+              <button
+                onClick={openTour}
+                title={a11yL("Show the guided tour", "मार्गदर्शन दिखाएँ")}
+                aria-label={a11yL("Show the guided tour", "मार्गदर्शन दिखाएँ")}
+                className="flex items-center gap-1.5 px-3 h-9 rounded-xl font-bold text-xs transition-all border text-muted-foreground hover:text-foreground hover:bg-muted border-transparent hover:border-border">
+                <HelpCircle size={18} />
+                <span className="hidden xl:inline">{a11yL("Help", "मदद")}</span>
+              </button>
+            )}
+
             <button onClick={toggleTheme}
               className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-all hover:text-foreground border border-transparent hover:border-border"
               title="Toggle theme">
@@ -190,10 +309,16 @@ export function AppLayout({ children, userType = "patient" }: LayoutProps) {
           </div>
         </header>
 
-        <div className="flex-1 p-4 md:p-8 page-enter">
+        <div ref={pageRef} className="flex-1 p-4 md:p-8 page-enter">
           {children}
         </div>
       </main>
+
+      {/* First-run guided tour (patients) */}
+      <A11yTour />
+
+      {/* Sign-language avatar helper */}
+      {user && <SignHelp />}
     </div>
   );
 }

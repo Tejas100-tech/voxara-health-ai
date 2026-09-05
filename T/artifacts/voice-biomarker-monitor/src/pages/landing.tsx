@@ -113,7 +113,7 @@ export default function LandingPage() {
               <div className="inline-flex items-center gap-2.5 rounded-full bg-white/80 border border-[#A7EBF2] px-4 py-2 shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-[#54ACBF] animate-ping-soft" />
                 <span className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#26658C]">
-                  New update · Gemini AI Clinical Summary
+                  New update · GPT-5.6 Luna AI Clinical Summary
                 </span>
               </div>
 
@@ -371,7 +371,7 @@ export default function LandingPage() {
             {[
               { icon: Mic, step: "Module A", title: "Conversational History Engine", desc: "Adaptive voice + touch interview. SOCRATES pain framework, systematic review for every other complaint.", accent: "from-[#A7EBF2] to-[#54ACBF]" },
               { icon: ScanLine, step: "Module B", title: "Document Digitization", desc: "Scan prescriptions, lab reports and discharge summaries. OCR extracts diagnoses, medications and lab values.", accent: "from-[#54ACBF] to-[#26658C]" },
-              { icon: BrainCircuit, step: "Module C", title: "Clinical Summary Generator", desc: "Gemini synthesizes conversation + documents into a structured, physician-ready summary in seconds.", accent: "from-[#26658C] to-[#023859]" },
+              { icon: BrainCircuit, step: "Module C", title: "Clinical Summary Generator", desc: "GPT-5.6 Luna synthesizes conversation + documents into a structured, physician-ready summary in seconds.", accent: "from-[#26658C] to-[#023859]" },
               { icon: ShieldCheck, step: "Module D", title: "Consent & ABDM Integration", desc: "DPDPA 2023 compliant consent, ABHA ID linking and FHIR interoperability — privacy by design.", accent: "from-[#54ACBF] to-[#A7EBF2]" },
             ].map(({ icon: Icon, step, title, desc, accent }) => (
               <Link

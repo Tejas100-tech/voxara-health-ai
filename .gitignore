@@ -36,3 +36,6 @@ Thumbs.db
 **/ .cache/
 **/ .local/
 .ideavo/project
+.freebuff/
+start-*.ps1
+

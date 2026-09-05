@@ -12,6 +12,7 @@ import consentRouter from "./consent";
 import doctorsRouter from "./doctors";
 import videoRouter from "./video";
 import chatbotRouter from "./chatbot";
+import ttsRouter from "./tts";
 import namasteIcd11Router from "./namaste-icd11";
 import prescriptionTrainingRouter from "./prescription-training";
 
@@ -30,6 +31,7 @@ router.use(consentRouter);
 router.use(doctorsRouter);
 router.use(videoRouter);
 router.use(chatbotRouter);
+router.use(ttsRouter);
 router.use(namasteIcd11Router);
 router.use(prescriptionTrainingRouter);
 
