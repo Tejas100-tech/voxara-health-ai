@@ -18,6 +18,7 @@ import {
   getDoctors, assignDoctor, downloadSummaryAsPDF,
   type IntakeSession, type UploadedDocument, type HistoryAnswer, type ClinicalSummary, type Doctor,
 } from "@/lib/api";
+import { validateABHA, type AbhaVerifyResponse } from "@/lib/medikiosk-api";
 
 type Step = "identity" | "consent" | "history" | "documents" | "summary";
 
@@ -42,6 +43,11 @@ export default function IntakeFlow() {
 
   // Identity
   const [abhaId, setAbhaId] = useState(user?.abhaId || "");
+  const [abhaVerifying, setAbhaVerifying] = useState(false);
+  // Full gateway verification outcome (status, beneficiary, gateway txn id) —
+  // persisted on the intake session + clinical summary for the doctor's view.
+  const [abhaVerified, setAbhaVerified] = useState<AbhaVerifyResponse | null>(null);
+  const [abhaCheckFailed, setAbhaCheckFailed] = useState<string | null>(null);
   const [language, setLanguage] = useState("en");
   const [mode, setMode] = useState<"allopathic" | "ayush">("allopathic");
 
@@ -142,6 +148,32 @@ export default function IntakeFlow() {
     setStepIndex(idx);
   };
 
+  // ── ABHA verification via ABDM gateway (sandbox / simulated sandbox) ──
+  const handleVerifyAbha = async () => {
+    if (!abhaId.trim()) return;
+    setAbhaVerifying(true);
+    setAbhaCheckFailed(null);
+    setAbhaVerified(null);
+    try {
+      const result = await validateABHA(abhaId.trim(), {
+        name: user?.name,
+        gender: (user as { gender?: string } | null)?.gender,
+        dateOfBirth:
+          (user as { dob?: string; dateOfBirth?: string } | null)?.dob ||
+          (user as { dob?: string; dateOfBirth?: string } | null)?.dateOfBirth,
+      });
+      if (result.verified) {
+        setAbhaVerified(result);
+      } else {
+        setAbhaVerified(null);
+        setAbhaCheckFailed(result.message || "Could not verify this ABHA number. You can continue without ABHA.");
+      }
+    } catch {
+      setAbhaCheckFailed("Verification service unavailable. You can continue without ABHA.");
+    }
+    setAbhaVerifying(false);
+  };
+
   // ── Identity Step ───────────────────────────────────────────────────────
   const handleIdentitySubmit = async () => {
     if (!user) return;
@@ -150,6 +182,7 @@ export default function IntakeFlow() {
         patientId: user.patientId,
         patientName: user.name,
         abhaId,
+        abhaVerification: abhaVerified ?? undefined,
         language,
         mode,
         track,
@@ -347,6 +380,7 @@ export default function IntakeFlow() {
         patientName: user.name,
         patientId: user.patientId,
         abhaId,
+        abhaVerification: abhaVerified ?? undefined,
         chiefComplaint,
         answers,
         documents: uploadedDocs,
@@ -444,8 +478,52 @@ export default function IntakeFlow() {
             <div>
               <label className="text-sm font-bold uppercase tracking-wider mb-2 block flex items-center gap-2">
                 <ShieldCheck size={14} className="text-cyan-600" /> {t("identity.abhaId")}
+                <span className="text-[10px] font-semibold text-muted-foreground normal-case tracking-normal">
+                  · verified against the ABDM gateway
+                </span>
               </label>
-              <Input placeholder={t("identity.abhaPlaceholder")} value={abhaId} onChange={(e) => setAbhaId(e.target.value)} className="h-14 rounded-xl text-base" />
+              <div className="flex gap-2">
+                <Input
+                  placeholder={t("identity.abhaPlaceholder")}
+                  value={abhaId}
+                  onChange={(e) => {
+                    setAbhaId(e.target.value);
+                    setAbhaVerified(null);
+                    setAbhaCheckFailed(null);
+                  }}
+                  className="h-14 rounded-xl text-base font-mono tracking-wider"
+                />
+                <Button
+                  type="button"
+                  onClick={handleVerifyAbha}
+                  disabled={abhaId.replace(/\D/g, "").length < 14 || abhaVerifying}
+                  className="h-14 px-4 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-700 shrink-0"
+                >
+                  {abhaVerifying ? <Loader2 size={18} className="animate-spin" /> : "Verify"}
+                </Button>
+              </div>
+
+              {abhaVerified?.verified && (
+                <div className="mt-2 flex items-start gap-2 text-xs font-semibold text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800 rounded-xl px-3 py-2">
+                  <CheckCircle2 size={14} className="shrink-0 mt-0.5" />
+                  <span>
+                    Verified — ABDM{abhaVerified.mode === "simulated" ? " sandbox (simulated demo)" : " sandbox"}
+                    {abhaVerified.beneficiary?.name ? ` · ${abhaVerified.beneficiary.name}` : ""}.
+                    {abhaVerified.mode === "simulated" && (
+                      <span className="block text-[10px] font-medium mt-0.5">
+                        Demo simulation — add ABDM sandbox credentials for a live gateway call.
+                      </span>
+                    )}
+                  </span>
+                </div>
+              )}
+
+              {abhaCheckFailed && (
+                <div className="mt-2 flex items-start gap-2 text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl px-3 py-2">
+                  <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+                  <span>{abhaCheckFailed}</span>
+                </div>
+              )}
             </div>
 
             {/* ── History-Taking Mode (Large Touch Cards) ──────────────── */}
@@ -879,7 +957,16 @@ export default function IntakeFlow() {
                   <div className="grid grid-cols-2 gap-3 text-xs text-muted-foreground">
                     <div>Patient: {summary.patientName}</div>
                     <div>ID: {summary.patientId}</div>
-                    {summary.abhaId && <div>ABHA: {summary.abhaId}</div>}
+                    {summary.abhaId && (
+                      <div>
+                        ABHA: {summary.abhaId}
+                        {summary.abhaVerification?.verified && (
+                          <span className="font-semibold text-cyan-600 dark:text-cyan-400">
+                            {" "}✓ {summary.abhaVerification.beneficiary?.name || "verified"}
+                          </span>
+                        )}
+                      </div>
+                    )}
                     <div>Generated: {new Date(summary.generatedAt).toLocaleString()}</div>
                   </div>
                 </div>

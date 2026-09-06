@@ -388,47 +388,70 @@ html.a11y-simple :focus-visible {
 }
 
 /* ── Accessibility: High Contrast mode ─────────────────────────────────── */
-/* Forced light theme: black on white, black borders, underlined links. */
+/* Forced light theme: black on white, black borders, underlined links.
+   Every element is flattened (solid white surfaces, solid black text) so no
+   text can ever blend into its background; interactive controls flip to
+   white-on-black so buttons/links stay clearly visible too. */
 html.a11y-hc {
   color-scheme: light;
   font-weight: 500;
 }
-html.a11y-hc body,
-html.a11y-hc aside,
-html.a11y-hc header,
-html.a11y-hc main,
-html.a11y-hc div,
-html.a11y-hc section {
+html.a11y-hc *,
+html.a11y-hc *::before,
+html.a11y-hc *::after {
+  color: #000000 !important;
   background-color: #ffffff !important;
   background-image: none !important;
-}
-html.a11y-hc h1, html.a11y-hc h2, html.a11y-hc h3, html.a11y-hc h4,
-html.a11y-hc p, html.a11y-hc span, html.a11y-hc li, html.a11y-hc label,
-html.a11y-hc td, html.a11y-hc th, html.a11y-hc a, html.a11y-hc small,
-html.a11y-hc select, html.a11y-hc option {
-  color: #000000 !important;
-}
-html.a11y-hc * {
   border-color: #000000 !important;
+  border-top-color: #000000 !important;
+  border-right-color: #000000 !important;
+  border-bottom-color: #000000 !important;
+  border-left-color: #000000 !important;
   box-shadow: none !important;
+  text-shadow: none !important;
+  text-decoration-color: #000000 !important;
+  caret-color: #000000 !important;
+  outline-color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+html.a11y-hc body {
+  background-color: #ffffff !important;
+}
+/* Let media keep its content on the white canvas */
+html.a11y-hc img, html.a11y-hc svg, html.a11y-hc video, html.a11y-hc canvas, html.a11y-hc iframe {
+  background-color: transparent !important;
+}
+html.a11y-hc ::placeholder {
+  color: #000000 !important;
+  opacity: 1 !important;
+}
+html.a11y-hc ::selection {
+  background-color: #000000 !important;
+  color: #ffffff !important;
 }
 html.a11y-hc a {
   text-decoration: underline !important;
   text-underline-offset: 2px;
 }
+html.a11y-hc input, html.a11y-hc select, html.a11y-hc textarea {
+  border: 2px solid #000000 !important;
+}
+/* Interactive controls become white-on-black blocks */
 html.a11y-hc button,
 html.a11y-hc [role="button"],
-html.a11y-hc a[href*="intake"],
-html.a11y-hc a[href*="clinician"] {
+html.a11y-hc [type="button"],
+html.a11y-hc input[type="submit"],
+html.a11y-hc input[type="reset"] {
   background-color: #000000 !important;
   color: #ffffff !important;
   border: 2px solid #000000 !important;
   font-weight: 700;
 }
-html.a11y-hc input, html.a11y-hc select, html.a11y-hc textarea {
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  border: 2px solid #000000 !important;
+html.a11y-hc button *,
+html.a11y-hc [role="button"] * {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 html.a11y-hc :focus-visible {
   outline: 3px solid #0000ff !important;

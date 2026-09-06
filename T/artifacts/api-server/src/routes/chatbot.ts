@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { logger } from "../lib/logger";
-import { generateWithLuna } from "../lib/gpt-luna";
+import { generateWithAI } from "../lib/gpt-luna";
 import { DISEASE_KNOWLEDGE, MEDICATION_KNOWLEDGE, EMERGENCY_KNOWLEDGE, DIET_KNOWLEDGE, AYUSH_KNOWLEDGE, getResponseForLanguage } from "../lib/medical-knowledge";
 import { EXTRA_MEDICATION_KNOWLEDGE } from "../lib/medications-extra";
 import { MEDICINE_DATABASE, DISEASE_MEDICINE_MAP, findMedicine, getMedicinesForDisease, formatMedicineResponse } from "../lib/medicine-database";
@@ -202,13 +202,13 @@ async function generateResponse(
 ): Promise<string> {
   const intent = detectIntent(userMessage);
 
-  // Try GPT-5.6 Luna first for dynamic, conversational responses
+  // Try Groq first (then OpenAI Luna) for dynamic, conversational responses
   try {
-    const response = await generateWithLuna(chatType, userMessage, language, conversationHistory);
+    const response = await generateWithAI(chatType, userMessage, language, conversationHistory);
     if (response) return response;
-    throw new Error("Empty response from GPT-5.6 Luna");
+    throw new Error("Empty response from AI provider");
   } catch (error: any) {
-    logger.info({ err: error.message }, "GPT-5.6 Luna failed, using fallback responses");
+    logger.info({ err: error.message }, "AI providers failed, using fallback responses");
 
     // 1. Check casual conversation FIRST (greetings, thanks, jokes, etc.)
     const casualResponse = matchCasualConversation(userMessage, language);

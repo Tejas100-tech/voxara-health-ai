@@ -76,6 +76,23 @@ export default function ClinicianReviews() {
                 <p className="text-xs text-muted-foreground">
                   {s.patientId} · {s.sessionId} {s.abhaId ? `· ABHA: ${s.abhaId}` : ""}
                 </p>
+                {s.abhaVerification?.verified && (
+                  <div className="mt-2 inline-flex flex-wrap items-center gap-x-3 gap-y-1 rounded-full bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800 px-3 py-1.5 text-[11px] font-semibold text-cyan-700 dark:text-cyan-400">
+                    <span className="inline-flex items-center gap-1">
+                      <CheckCircle2 size={12} />
+                      ABHA verified{s.abhaVerification.beneficiary?.name ? ` · ${s.abhaVerification.beneficiary.name}` : ""}
+                    </span>
+                    {s.abhaVerification.gatewayTxnId && (
+                      <span className="font-mono text-[10px] text-muted-foreground">Txn {s.abhaVerification.gatewayTxnId}</span>
+                    )}
+                    {s.abhaVerification.verifiedAt && (
+                      <span className="text-[10px] text-muted-foreground">{new Date(s.abhaVerification.verifiedAt).toLocaleString()}</span>
+                    )}
+                    <span className="text-[10px] text-muted-foreground">
+                      {s.abhaVerification.mode === "simulated" ? "ABDM sandbox (simulated demo)" : "ABDM sandbox"}
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-2">
                 {s.mode === "ayush" && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700">AYUSH</span>}

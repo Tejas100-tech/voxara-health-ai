@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout";
 import {
-  FileText, Calendar, Clock, BrainCircuit, AlertTriangle,
+  FileText, Calendar, Clock, BrainCircuit, AlertTriangle, BadgeCheck,
   ChevronDown, ChevronUp, Stethoscope, Download,
 } from "lucide-react";
-import { getAllIntakeSessions, getAllClinicalSummaries, type IntakeSession, type ClinicalSummary } from "@/lib/api";
+import { getAllIntakeSessions, getAllClinicalSummaries, type IntakeSession, type ClinicalSummary, type AbhaVerification } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { useLanguage } from "@/lib/language";
 
@@ -23,6 +23,20 @@ export default function MyRecords() {
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
+  };
+
+  // Small chip showing the persisted ABHA gateway verification result.
+  const abhaBadge = (v?: AbhaVerification | null) => {
+    if (!v?.verified) return null;
+    return (
+      <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800 px-3 py-1 text-[11px] font-semibold text-cyan-700 dark:text-cyan-400">
+        <BadgeCheck size={12} />
+        ABHA verified{v.beneficiary?.name ? ` · ${v.beneficiary.name}` : ""}
+        {v.gatewayTxnId && (
+          <span className="text-[10px] font-mono text-muted-foreground">· {v.gatewayTxnId}</span>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -83,6 +97,7 @@ export default function MyRecords() {
                     {summary.abnormalFlags.length} abnormal finding{summary.abnormalFlags.length > 1 ? "s" : ""}
                   </div>
                 )}
+                {abhaBadge(summary.abhaVerification)}
               </div>
             ))}
           </div>
@@ -128,6 +143,7 @@ export default function MyRecords() {
                     {expandedId === session.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                   </div>
                 </div>
+                {abhaBadge(session.abhaVerification)}
                 {expandedId === session.id && (
                   <div className="mt-4 pt-4 border-t space-y-3">
                     {session.chiefComplaint && (

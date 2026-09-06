@@ -85,6 +85,12 @@ MISTRAL_API_KEY=your_mistral_key
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
+
+# ABDM / ABHA — real gateway sandbox verification (see note below).
+# Leave empty for a clearly-labelled simulated sandbox response.
+ABDM_SANDBOX_CLIENT_ID=
+ABDM_SANDBOX_CLIENT_SECRET=
+# ABDM_SANDBOX_BASE_URL=https://abdm-sbx.ndhm.gov.in
 ```
 
 | Service | Purpose | Free key at |
@@ -95,8 +101,18 @@ CLOUDINARY_API_SECRET=your_api_secret
 | **Mistral** | Document OCR | https://console.mistral.ai/ |
 | **Cloudinary** | Document image storage | https://cloudinary.com/ |
 | **MongoDB** | Patient data | https://cloud.mongodb.com/ (free M0) |
+| **ABDM Sandbox** | Live ABHA gateway verification (`ABDM_SANDBOX_CLIENT_ID` + `ABDM_SANDBOX_CLIENT_SECRET`) | https://sandbox.abdm.gov.in/ |
 
-> 💡 Minimum for a working demo: **`GEMINI_API_KEY`** only. Without MongoDB the app auto-runs in demo mode.
+> 💡 Minimum for a working demo: **`GEMINI_API_KEY`** only. Without MongoDB the app auto-runs in demo mode. AI chat auto-falls back Gemini → Groq → OpenAI until a working key is found.
+
+### 🔐 ABHA verification — simulated vs live ABDM sandbox
+
+Patients can link an ABHA number in the intake identity step (and the MediKiosk hub) via **`POST /api/abha/verify`** (`{ abhaNumber, name?, gender?, dateOfBirth?, mobile? }`) and demo-register via **`POST /api/abha/register`**.
+
+* **Without sandbox credentials** the endpoint returns the **same ABDM-shaped envelope** the gateway would produce — beneficiary (`healthIdNumber`, KYC status, PHR address, masked mobile), a **FHIR `Patient`** resource, `requestId`, `gatewayTxnId`, and `mode: "simulated"` — clearly labelled so judges never mistake the demo for a live NHA call.
+* **With `ABDM_SANDBOX_CLIENT_ID` / `ABDM_SANDBOX_CLIENT_SECRET`** (optionally `ABDM_SANDBOX_BASE_URL`, default `https://abdm-sbx.ndhm.gov.in`) the same code path performs the **real gateway flow**: `POST /gateway/v0.5/sessions` (`X-CM-ID: abdm`) → beneficiary lookup, returning `mode: "abdm-sandbox"`.
+
+On a successful verification the result (verified status, **beneficiary name**, **gateway transaction id**, timestamp, mode) is **persisted on the intake session and the clinical summary** (`abhaVerification` field) and displayed as a verification chip on the patient's **Records** page and the **clinician review** header.
 
 ---
 

@@ -235,16 +235,41 @@ export async function recordConsent(
   return res.json();
 }
 
-export async function validateABHA(abhaId: string): Promise<{
-  valid: boolean;
-  linkedFacility?: string;
-  lastVisit?: string;
+// ─── ABDM / ABHA integration ────────────────────────────────────────────────
+
+export interface AbhaBeneficiaryInfo {
+  id?: string;
+  healthIdNumber?: string;
+  name?: string;
+  gender?: string;
+  dateOfBirth?: string;
+  mobile?: string;
+  status?: string;
+  kycStatus?: string;
+}
+
+export interface AbhaVerifyResponse {
+  verified: boolean;
+  mode: "abdm-sandbox" | "simulated";
+  source?: string;
+  requestId?: string;
+  gatewayTxnId?: string;
+  abhaNumber: string;
+  verifiedAt: string;
   message: string;
-}> {
-  const res = await fetch(`${API}/medikiosk/abha/validate`, {
+  attempt?: { realSandboxAttempted: boolean; sandboxError?: string };
+  beneficiary?: AbhaBeneficiaryInfo;
+  fhirPatient?: Record<string, unknown>;
+}
+
+export async function validateABHA(
+  abhaId: string,
+  demographics?: { name?: string; gender?: string; dateOfBirth?: string; mobile?: string }
+): Promise<AbhaVerifyResponse> {
+  const res = await fetch(`${API}/abha/verify`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ abhaId }),
+    body: JSON.stringify({ abhaNumber: abhaId, ...demographics }),
   });
   if (!res.ok) throw new Error("Failed to validate ABHA");
   return res.json();
@@ -254,8 +279,8 @@ export async function registerABHA(params: {
   name: string;
   phone: string;
   dob: string;
-}): Promise<{ abhaId: string; success: boolean; message: string }> {
-  const res = await fetch(`${API}/medikiosk/abha/register`, {
+}): Promise<{ abhaNumber: string; abhaId?: string; success: boolean; mode?: string; message: string }> {
+  const res = await fetch(`${API}/abha/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(params),

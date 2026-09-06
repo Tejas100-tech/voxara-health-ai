@@ -8,11 +8,38 @@ export interface HistoryAnswer {
   timestamp: string;
 }
 
+/**
+ * Persisted ABHA verification outcome (from POST /api/abha/verify). Attached
+ * to intake sessions and clinical summaries so the verification shown to the
+ * doctor — status, beneficiary name, gateway txn id — is never just a string.
+ */
+export interface AbhaVerification {
+  verified: boolean;
+  mode: "abdm-sandbox" | "simulated";
+  source?: string;
+  requestId?: string;
+  gatewayTxnId?: string;
+  abhaNumber?: string;
+  verifiedAt?: string;
+  message?: string;
+  beneficiary?: {
+    id?: string;
+    healthIdNumber?: string;
+    name?: string;
+    gender?: string;
+    dateOfBirth?: string;
+    mobile?: string;
+    status?: string;
+    kycStatus?: string;
+  };
+}
+
 export interface IntakeSession {
   id: string;
   patientId: string;
   patientName: string;
   abhaId?: string;
+  abhaVerification?: AbhaVerification | null;
   language: string;
   mode: "allopathic" | "ayush";
   status: "identity" | "history" | "documents" | "summary" | "complete" | "completed";
@@ -27,6 +54,7 @@ export async function startIntakeSession(params: {
   patientId: string;
   patientName: string;
   abhaId?: string;
+  abhaVerification?: AbhaVerification;
   language?: string;
   mode?: string;
   track?: string;
@@ -107,6 +135,7 @@ export interface ClinicalSummary {
   patientName: string;
   patientId: string;
   abhaId?: string;
+  abhaVerification?: AbhaVerification | null;
   mode?: string;
   chiefComplaint: string;
   dashavidhaPariksha?: Record<string, { title: string; finding: string }>;
@@ -134,6 +163,7 @@ export async function generateClinicalSummary(params: {
   patientName: string;
   patientId: string;
   abhaId?: string;
+  abhaVerification?: AbhaVerification;
   chiefComplaint: string;
   answers: HistoryAnswer[];
   documents: any[];

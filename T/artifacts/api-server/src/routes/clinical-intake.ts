@@ -371,7 +371,7 @@ function estimateNoiseLevel(): { level: "low" | "medium" | "high"; db: number; r
 // ── Start a new intake session ────────────────────────────────────────────
 router.post("/intake/start", async (req, res) => {
   try {
-    const { patientId, patientName, abhaId, language, mode, track } = req.body;
+    const { patientId, patientName, abhaId, abhaVerification, language, mode, track } = req.body;
 
     if (!patientId || !patientName) {
       res.status(400).json({ error: "patientId and patientName are required" });
@@ -388,6 +388,9 @@ router.post("/intake/start", async (req, res) => {
       patientId,
       patientName,
       abhaId: abhaId || "",
+      // Full ABHA verification outcome from the gateway (verified flag,
+      // beneficiary name, gateway txn id, mode) — persisted with the record.
+      abhaVerification: abhaVerification || null,
       language: language || "en",
       mode: sessionMode,
       track: sessionTrack,

@@ -3,7 +3,96 @@ import { logger } from "../lib/logger";
 import { connectMongoDB, hasMongoDB } from "../lib/mongodb";
 import SummaryRecord from "../models/summary-record";
 import { translateCode, searchNAMASTE } from "../lib/namaste-icd11";
-import { generateWithLuna } from "../lib/gpt-luna";
+import { generateWithAI } from "../lib/gpt-luna";
+
+/**
+ * AI models sometimes wrap JSON in prose/markdown. Extract the first JSON
+ * object from the response before parsing so a greeting or code fence never
+ * silently demotes a good summary to the template fallback.
+ */
+function parseJsonFromAi(text: string): any {
+  if (!text) throw new Error("Empty AI response");
+  try {
+    return JSON.parse(text);
+  } catch {
+    /* fall through to extraction */
+  }
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+  const candidate = fenced ? fenced[1] : text;
+  const start = candidate.indexOf("{");
+  const end = candidate.lastIndexOf("}");
+  if (start === -1 || end <= start) {
+    throw new Error("No JSON object found in AI response");
+  }
+  return JSON.parse(candidate.slice(start, end + 1));
+}
+
+/**
+ * Document-derived sections (investigations / prescriptions / discharge
+ * summaries / abnormal flags). Kept identical for the template generator and
+ * the AI path so a successful AI summary never loses structured doc data.
+ */
+function buildDocSections(documents: any[]) {
+  const abnormalFlags = (documents || []).flatMap((d: any) => d.abnormalFlags || []);
+  return {
+    priorInvestigations: (documents || []).filter((d: any) => d.type === "Lab Report").map((d: any) => ({
+      date: d.date, facility: d.facility,
+      values: d.extractedEntities?.labValues || [], flags: d.abnormalFlags || [],
+    })),
+    priorPrescriptions: (documents || []).filter((d: any) => d.type === "Prescription").map((d: any) => ({
+      date: d.date, facility: d.facility, doctor: d.doctor,
+      medications: d.extractedEntities?.medications || [],
+    })),
+    dischargeSummaries: (documents || []).filter((d: any) => d.type === "Discharge Summary").map((d: any) => ({
+      date: d.date, facility: d.facility, summary: d.summary || "No summary available.",
+    })),
+    abnormalFlags,
+  };
+}
+
+/**
+ * Coerce the AI's free-form JSON into the exact flat schema the review UI
+ * renders (chiefComplaint, histories and aiAssessment as plain strings;
+ * doc-derived sections rebuilt from the uploaded documents).
+ */
+function shapeAiSummary(ai: any, isAyush: boolean, answers: any[], documents: any[], chiefComplaint: string): any {
+  const asString = (v: any, fb = "") => {
+    if (v == null || v === "") return fb;
+    if (Array.isArray(v)) return v.filter((x) => x != null && x !== "").map((x) => (typeof x === "string" ? x : JSON.stringify(x))).join("; ");
+    if (typeof v === "object") return JSON.stringify(v);
+    return String(v);
+  };
+  const chiefToString = (v: any, fb: string): string => {
+    if (v == null || v === "") return fb;
+    if (typeof v === "string") return v;
+    if (typeof v === "object") {
+      const parts = [v.symptom, v.duration ? `duration: ${v.duration}` : "", v.severity ? `severity: ${v.severity}` : "", v.details].filter(Boolean);
+      return parts.join(", ") || JSON.stringify(v);
+    }
+    return String(v);
+  };
+  const strings = (v: any): string[] =>
+    Array.isArray(v) ? v.filter((x) => x != null && x !== "").map((x) => (typeof x === "string" ? x : JSON.stringify(x))) : [];
+
+  const ayushTemplate = isAyush ? generateAyushSummary(answers, documents, chiefComplaint) : null;
+  const out: any = {
+    ...buildDocSections(documents),
+    chiefComplaint: chiefToString(ai?.chiefComplaint, chiefComplaint || answers[0]?.answer || "Not specified"),
+    historyOfPresentIllness: asString(ai?.historyOfPresentIllness, `Patient presents with ${chiefComplaint || "symptoms"}.`),
+    pastMedicalHistory: asString(ai?.pastMedicalHistory),
+    drugAllergyHistory: asString(ai?.drugAllergyHistory),
+    familyHistory: asString(ai?.familyHistory),
+    personalHistory: asString(ai?.personalHistory),
+    redFlags: strings(ai?.redFlags),
+    aiAssessment: asString(ai?.aiAssessment),
+  };
+  if (isAyush && ayushTemplate) {
+    out.dashavidhaPariksha = ai?.dashavidhaPariksha && typeof ai.dashavidhaPariksha === "object" ? ai.dashavidhaPariksha : ayushTemplate.dashavidhaPariksha;
+    out.aharaVihara = ai?.aharaVihara && typeof ai.aharaVihara === "object" ? ai.aharaVihara : ayushTemplate.aharaVihara;
+    out.namasteIcd11Coding = ayushTemplate.namasteIcd11Coding;
+  }
+  return out;
+}
 
 const router = Router();
 
@@ -215,7 +304,7 @@ function generateAyushSummary(answers: any[], documents: any[], chiefComplaint: 
 // ── Generate clinical summary ─────────────────────────────────────────────
 router.post("/clinical-summary/generate", async (req, res) => {
   try {
-    const { sessionId, patientName, patientId, abhaId, chiefComplaint, answers, documents: docs, mode } = req.body;
+    const { sessionId, patientName, patientId, abhaId, abhaVerification, chiefComplaint, answers, documents: docs, mode } = req.body;
 
     if (!answers || !Array.isArray(answers)) {
       res.status(400).json({ error: "answers array is required" });
@@ -238,21 +327,22 @@ router.post("/clinical-summary/generate", async (req, res) => {
         return text;
       }).join("\n\n");
 
-      // Use GPT-5.6 Luna for clinical summary generation
+      // Use Groq (fallback OpenAI Luna) for clinical summary generation
       try {
         const aiPrompt = isAyush
-          ? `You are MediKiosk Ayurvedic AI expert. Generate a comprehensive AYUSH clinical summary as a JSON object with keys: chiefComplaint (object with symptom/duration/severity), dashavidhaPariksha (object with prakriti/vikriti/sara/samhanana/pramana/satatmya/sattva/aharaShakti/vyayamaShakti/vaya each with title and finding), aharaVihara (object with ahara/vihara each with title and finding), historyOfPresentIllness (string), priorInvestigations (array), abnormalFlags (array), aiAssessment (string with dominant dosha). Be extremely thorough and detailed. Patient: ${patientName} (${patientId}). Chief Complaint: ${chiefComplaint || answers[0]?.answer || "Not specified"}. History: ${historyText}. Documents: ${docsText || "None"}`
-          : `You are MediKiosk Clinical AI expert. Generate a comprehensive clinical summary as a JSON object with keys: chiefComplaint (object with symptom/duration/severity), historyOfPresentIllness (detailed SOAP narrative), pastMedicalHistory (array), drugAllergyHistory (array), familyHistory (array), personalHistory (array), priorInvestigations (array), redFlags (array), aiAssessment (comprehensive with differential diagnosis and risk stratification). Be extremely thorough. Patient: ${patientName} (${patientId}). Chief Complaint: ${chiefComplaint || answers[0]?.answer || "Not specified"}. History: ${historyText}. Documents: ${docsText || "None"}`;
+          ? `You are MediKiosk Ayurvedic AI expert. Generate a comprehensive AYUSH clinical summary and return it as ONE valid JSON object (no markdown fences, no text outside the JSON) with this exact flat schema: chiefComplaint (string), dashavidhaPariksha (object with keys prakriti/vikriti/sara/samhanana/pramana/satmya/sattva/aharaShakti/vyayamaShakti/vaya, each an object with title and finding), aharaVihara (object with ahara/vihara, each with title and finding), historyOfPresentIllness (string), pastMedicalHistory (string), drugAllergyHistory (string), familyHistory (string), personalHistory (string), redFlags (array of strings), aiAssessment (string naming the dominant dosha with personalized dinacharya and ahara guidance). Be extremely thorough and grounded only in the provided answers. Patient: ${patientName} (${patientId}). Chief Complaint: ${chiefComplaint || answers[0]?.answer || "Not specified"}. History: ${historyText}. Documents: ${docsText || "None"}`
+          : `You are MediKiosk Clinical AI expert. Generate a comprehensive allopathic clinical summary and return it as ONE valid JSON object (no markdown fences, no text outside the JSON) with this exact flat schema: chiefComplaint (string including duration and severity), historyOfPresentIllness (string, detailed SOAP-style narrative referencing the answers), pastMedicalHistory (string), drugAllergyHistory (string listing current medications and known allergies), familyHistory (string), personalHistory (string), redFlags (array of strings), aiAssessment (string: comprehensive assessment with differential diagnosis, risk stratification and recommended next steps, explicitly referencing any abnormal lab values). Be extremely thorough and grounded only in the provided answers. Patient: ${patientName} (${patientId}). Chief Complaint: ${chiefComplaint || answers[0]?.answer || "Not specified"}. History: ${historyText}. Documents: ${docsText || "None"}`;
 
-        const aiResponse = await generateWithLuna("general" as any, aiPrompt, "en");
-        summary = JSON.parse(aiResponse);
-        logger.info("Clinical summary generated using GPT-5.6 Luna");
+        const aiResponse = await generateWithAI("general" as any, aiPrompt, "en", undefined, { json: true });
+        const rawSummary = parseJsonFromAi(aiResponse);
+        summary = shapeAiSummary(rawSummary, isAyush, answers, docs || [], chiefComplaint || "");
+        logger.info("Clinical summary generated using AI");
       } catch (aiError: any) {
-        logger.info({ err: aiError.message }, "GPT-5.6 Luna failed, using fallback summary generator");
+        logger.info({ err: aiError.message }, "AI providers failed, using fallback summary generator");
         summary = isAyush ? generateAyushSummary(answers, docs || [], chiefComplaint || "") : generateAllopathicSummary(answers, docs || [], chiefComplaint || "");
       }
     } catch (aiError: any) {
-        logger.info({ err: aiError.message }, "GPT-5.6 Luna failed, using fallback summary generator");
+        logger.info({ err: aiError.message }, "AI providers failed, using fallback summary generator");
         summary = isAyush ? generateAyushSummary(answers, docs || [], chiefComplaint || "") : generateAllopathicSummary(answers, docs || [], chiefComplaint || "");
       }
 
@@ -262,6 +352,9 @@ router.post("/clinical-summary/generate", async (req, res) => {
       patientName,
       patientId,
       abhaId: abhaId || "",
+      // Persisted ABHA verification outcome (status, beneficiary name,
+      // gateway txn id) shown to the clinician during review.
+      abhaVerification: abhaVerification || null,
       mode: isAyush ? "ayush" : "allopathic",
       generatedAt: new Date().toISOString(),
       status: "pending_review",

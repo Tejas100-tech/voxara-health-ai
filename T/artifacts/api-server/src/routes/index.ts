@@ -13,6 +13,7 @@ import doctorsRouter from "./doctors";
 import videoRouter from "./video";
 import chatbotRouter from "./chatbot";
 import ttsRouter from "./tts";
+import abhaRouter from "./abha";
 import namasteIcd11Router from "./namaste-icd11";
 import prescriptionTrainingRouter from "./prescription-training";
 
@@ -32,6 +33,7 @@ router.use(doctorsRouter);
 router.use(videoRouter);
 router.use(chatbotRouter);
 router.use(ttsRouter);
+router.use(abhaRouter);
 router.use(namasteIcd11Router);
 router.use(prescriptionTrainingRouter);
 

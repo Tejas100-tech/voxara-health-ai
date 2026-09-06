@@ -42,36 +42,34 @@ export default function MedikioskHub() {
   const [currentStep, setCurrentStep] = useState(0);
   const [sessionId, setSessionId] = useState<string | null>(null);
 
-  // Validate ABHA ID
+  // Validate ABHA ID via the ABDM gateway (sandbox or simulated sandbox)
   const handleValidateABHA = async () => {
     if (abhaInput.length < 10) return;
     setAbhaStatus("validating");
     try {
-      const result = await validateABHA(abhaInput);
-      setAbhaResult(result);
-      setAbhaStatus(result.valid ? "valid" : "invalid");
+      const result = await validateABHA(abhaInput, { name: user?.name });
+      setAbhaResult(result as unknown as Record<string, unknown>);
+      setAbhaStatus(result.verified ? "valid" : "invalid");
     } catch {
       setAbhaStatus("invalid");
       setAbhaResult({ message: "Could not validate. You can continue without ABHA." });
     }
   };
 
-  // Register new ABHA
+  // Register new (demo) ABHA via the simulated ABDM create flow
   const handleRegisterABHA = async () => {
     if (!newAbhaForm.name || !newAbhaForm.phone) return;
     try {
       const result = await registerABHA(newAbhaForm);
       if (result.success) {
-        setAbhaInput(result.abhaId);
-        setAbhaResult({ valid: true, abhaId: result.abhaId, message: "ABHA ID created!" });
+        const abhaId = result.abhaNumber || result.abhaId || "";
+        setAbhaInput(abhaId);
+        setAbhaResult({ valid: true, abhaId, mode: result.mode, message: result.message || "ABHA ID created." });
         setAbhaStatus("valid");
       }
     } catch {
-      // Fallback: generate a demo ABHA
-      const demoAbha = `14${Date.now().toString().slice(-12)}`;
-      setAbhaInput(demoAbha);
-      setAbhaResult({ valid: true, abhaId: demoAbha, message: "Demo ABHA ID created!" });
-      setAbhaStatus("valid");
+      setAbhaStatus("invalid");
+      setAbhaResult({ message: "Could not create ABHA. You can continue without ABHA." });
     }
   };
 
@@ -374,11 +372,22 @@ export default function MedikioskHub() {
                   className="p-4 bg-secondary/10 border border-secondary/20 rounded-xl"
                 >
                   <p className="text-sm font-bold text-secondary flex items-center gap-2">
-                    <CheckCircle size={16} /> {String(abhaResult.message)}
+                    <CheckCircle size={16} /> {String(abhaResult.message || "ABHA verified")}
                   </p>
-                  {typeof abhaResult.linkedFacility === "string" && (
-                    <p className="text-xs text-muted-foreground mt-1">Linked: {abhaResult.linkedFacility}</p>
+                  {(abhaResult as { beneficiary?: { name?: string } }).beneficiary?.name && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      ABHA holder: {(abhaResult as { beneficiary?: { name?: string } }).beneficiary!.name}
+                    </p>
                   )}
+                  <span
+                    className={`mt-2 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                      abhaResult.mode === "simulated"
+                        ? "bg-amber-100 text-amber-700"
+                        : "bg-cyan-100 text-cyan-700"
+                    }`}
+                  >
+                    {abhaResult.mode === "simulated" ? "Simulated ABDM sandbox response" : "ABDM sandbox"}
+                  </span>
                 </motion.div>
               )}
 
