@@ -74,6 +74,10 @@ function useVoiceRecording() {
 
   const startRecording = useCallback(async () => {
     setError("");
+    if (!navigator?.mediaDevices?.getUserMedia) {
+      setError("Microphone recording requires a secure connection (HTTPS or localhost).");
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {

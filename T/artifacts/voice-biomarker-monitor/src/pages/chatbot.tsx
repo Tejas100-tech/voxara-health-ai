@@ -250,6 +250,10 @@ export default function ChatbotPage() {
   };
 
   const startRecording = async () => {
+    if (!navigator?.mediaDevices?.getUserMedia) {
+      alert("Microphone recording requires a secure connection (HTTPS or localhost). Please type your message instead.");
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream, {

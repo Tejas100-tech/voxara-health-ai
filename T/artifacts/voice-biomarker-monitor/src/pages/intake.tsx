@@ -194,6 +194,10 @@ export default function IntakeFlow() {
 
   // ── Voice Recording (Real Web Audio API) ────────────────────────────────
   const startRecording = useCallback(async () => {
+    if (!navigator?.mediaDevices?.getUserMedia) {
+      alert("Microphone recording requires a secure connection (HTTPS or localhost). Please type your answer or access via localhost.");
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream, {

@@ -240,6 +240,11 @@ export function FloatingChatbot() {
       return;
     }
 
+    if (!navigator?.mediaDevices?.getUserMedia) {
+      alert("Microphone recording requires a secure connection (HTTPS or localhost).");
+      return;
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream, { mimeType: "audio/webm;codecs=opus" });

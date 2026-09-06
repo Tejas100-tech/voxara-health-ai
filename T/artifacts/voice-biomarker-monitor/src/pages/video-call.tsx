@@ -5,11 +5,13 @@ import {
   Video, VideoOff, Mic, MicOff, PhoneOff,
   ScreenShare, ScreenShareOff, User,
   Loader2, AlertCircle, MessageSquare, X, Send,
+  Info,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import { useLanguage } from "@/lib/language";
 import { joinVideoRoom, leaveVideoRoom, endVideoCall } from "@/lib/api";
+import { getSafeUserMedia, getSafeDisplayMedia } from "@/lib/media-stream";
 
 const ICE_SERVERS: RTCIceServer[] = [
   { urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302", "stun:stun3.l.google.com:19302"] },
@@ -69,6 +71,7 @@ export default function VideoCallPage() {
   const [videoOff, setVideoOff] = useState(false);
   const [screenSharing, setScreenSharing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mediaNotice, setMediaNotice] = useState<string | null>(null);
   const [callDuration, setCallDuration] = useState(0);
   const [participantCount, setParticipantCount] = useState(0);
   const [showChat, setShowChat] = useState(false);
@@ -96,49 +99,68 @@ export default function VideoCallPage() {
 
     async function init() {
       try {
-        // Get local media
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: "user" },
-          audio: { echoCancellation: true, noiseSuppression: true },
-        });
+        // Get local media safely (supports real webcam, audio-only, or simulated fallback)
+        const mediaResult = await getSafeUserMedia(
+          {
+            video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: "user" },
+            audio: { echoCancellation: true, noiseSuppression: true },
+          },
+          user?.name || (user?.role === "clinician" ? "Doctor" : "Patient")
+        );
 
+        if (mediaResult.warning) {
+          setMediaNotice(mediaResult.warning);
+        }
+
+        const stream = mediaResult.stream;
         if (cancelled) { stream.getTracks().forEach((t) => t.stop()); return; }
         streamRef.current = stream;
         if (localVideoRef.current) localVideoRef.current.srcObject = stream;
 
         // Create peer connection
-        pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
-        peerRef.current = pc;
+        const RTCPeerConnectionClass =
+          window.RTCPeerConnection ||
+          (window as any).webkitRTCPeerConnection ||
+          (window as any).mozRTCPeerConnection;
 
-        stream.getTracks().forEach((track) => pc!.addTrack(track, stream));
+        if (RTCPeerConnectionClass) {
+          pc = new RTCPeerConnectionClass({ iceServers: ICE_SERVERS });
+          peerRef.current = pc;
 
-        // Handle remote stream
-        pc.ontrack = (event) => {
-          if (remoteVideoRef.current && event.streams[0]) {
-            remoteVideoRef.current.srcObject = event.streams[0];
-          }
-          setConnected(true);
-          setConnecting(false);
-        };
+          stream.getTracks().forEach((track) => {
+            try {
+              pc!.addTrack(track, stream);
+            } catch (e) {
+              console.warn("Could not add track to peer connection:", e);
+            }
+          });
 
-        pc.onconnectionstatechange = () => {
-          const state = pc?.connectionState;
-          if (state === "connected") {
+          // Handle remote stream
+          pc.ontrack = (event) => {
+            if (remoteVideoRef.current && event.streams[0]) {
+              remoteVideoRef.current.srcObject = event.streams[0];
+            }
             setConnected(true);
             setConnecting(false);
-          } else if (state === "failed" || state === "disconnected") {
-            // Peer link dropped — show the waiting state; a rejoin /
-            // renegotiation from the other side will reconnect media.
-            setConnected(false);
-          }
-        };
+          };
 
-        // ICE candidates → send via WebSocket
-        pc.onicecandidate = (event) => {
-          if (event.candidate) {
-            sendWs({ type: "ice-candidate", candidate: event.candidate.toJSON() });
-          }
-        };
+          pc.onconnectionstatechange = () => {
+            const state = pc?.connectionState;
+            if (state === "connected") {
+              setConnected(true);
+              setConnecting(false);
+            } else if (state === "failed" || state === "disconnected") {
+              setConnected(false);
+            }
+          };
+
+          // ICE candidates → send via WebSocket
+          pc.onicecandidate = (event) => {
+            if (event.candidate) {
+              sendWs({ type: "ice-candidate", candidate: event.candidate.toJSON() });
+            }
+          };
+        }
 
         // Connect WebSocket — with automatic reconnect + backoff so a call
         // survives network blips between two devices.
@@ -464,19 +486,23 @@ export default function VideoCallPage() {
   const toggleScreenShare = useCallback(async () => {
     try {
       if (screenSharing) {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        const videoTrack = stream.getVideoTracks()[0];
-        if (peerRef.current) {
+        const mediaResult = await getSafeUserMedia(
+          { video: true, audio: false },
+          user?.name || (user?.role === "clinician" ? "Doctor" : "Patient")
+        );
+        const videoTrack = mediaResult.stream.getVideoTracks()[0];
+        if (peerRef.current && videoTrack) {
           const sender = peerRef.current.getSenders().find((s) => s.track?.kind === "video");
           sender?.replaceTrack(videoTrack);
         }
-        if (localVideoRef.current) localVideoRef.current.srcObject = stream;
-        streamRef.current = stream;
+        if (localVideoRef.current) localVideoRef.current.srcObject = mediaResult.stream;
+        streamRef.current = mediaResult.stream;
         setScreenSharing(false);
       } else {
-        const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+        const screenStream = await getSafeDisplayMedia({ video: true });
+        if (!screenStream) return;
         const screenTrack = screenStream.getVideoTracks()[0];
-        if (peerRef.current) {
+        if (peerRef.current && screenTrack) {
           const sender = peerRef.current.getSenders().find((s) => s.track?.kind === "video");
           sender?.replaceTrack(screenTrack);
         }
@@ -484,8 +510,10 @@ export default function VideoCallPage() {
         screenTrack.onended = () => toggleScreenShare();
         setScreenSharing(true);
       }
-    } catch { }
-  }, [screenSharing]);
+    } catch (err) {
+      console.warn("Screen share toggle failed:", err);
+    }
+  }, [screenSharing, user?.name, user?.role]);
 
   const endCall = useCallback(async () => {
     endedRef.current = true;
@@ -559,6 +587,23 @@ export default function VideoCallPage() {
           )}
         </div>
       </div>
+
+      {/* Media / Insecure Context Notice Banner */}
+      {mediaNotice && (
+        <div className="bg-amber-500/15 border-b border-amber-500/30 text-amber-200 px-4 py-2 text-xs flex items-center justify-between gap-2 z-20">
+          <div className="flex items-center gap-2">
+            <Info size={16} className="text-amber-400 shrink-0" />
+            <span>{mediaNotice}</span>
+          </div>
+          <button
+            onClick={() => setMediaNotice(null)}
+            className="text-amber-300/80 hover:text-amber-100 p-1 rounded transition-colors"
+            title="Dismiss"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       {/* Video Area */}
       <div className="flex-1 relative">
